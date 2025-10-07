@@ -1,6 +1,6 @@
-# aptapp
+# Aktivplanplus Application
 
-A new Flutter project.
+Flutter multiplatform mobile application
 
 ## Getting Started
 
