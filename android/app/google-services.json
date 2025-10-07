@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "717638915284",
+    "project_id": "aktivplanplus",
+    "storage_bucket": "aktivplanplus.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:717638915284:android:ba968065d132e9deb41741",
+        "android_client_info": {
+          "package_name": "at.lbidhp.aktivplan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "717638915284-jb83lrft1hrmdg9uddqvoaa005rmd36o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcuG5UqWNte0sUlyuQwsMgmQw_IiysAWQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "717638915284-jb83lrft1hrmdg9uddqvoaa005rmd36o.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "717638915284-n4t7nslr15ccv5pgrvd4erf61kih3ps7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "at.lbidhp.aktivplan",
+                "app_store_id": "6484315372"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

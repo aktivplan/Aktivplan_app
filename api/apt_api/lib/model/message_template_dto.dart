@@ -1,0 +1,152 @@
+//
+// AUTO-GENERATED FILE, DO NOT MODIFY!
+//
+// @dart=2.18
+
+// ignore_for_file: unused_element, unused_import
+// ignore_for_file: always_put_required_named_parameters_first
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: lines_longer_than_80_chars
+
+part of openapi.api;
+
+class MessageTemplateDTO {
+  /// Returns a new [MessageTemplateDTO] instance.
+  MessageTemplateDTO({
+    this.title = const {},
+    this.text = const {},
+    this.id,
+    this.pictureId = const {},
+  });
+
+  Map<String, String> title;
+
+  Map<String, String> text;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? id;
+
+  Map<String, String> pictureId;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MessageTemplateDTO &&
+          _deepEquality.equals(other.title, title) &&
+          _deepEquality.equals(other.text, text) &&
+          other.id == id &&
+          _deepEquality.equals(other.pictureId, pictureId);
+
+  @override
+  int get hashCode =>
+      // ignore: unnecessary_parenthesis
+      (title.hashCode) +
+      (text.hashCode) +
+      (id == null ? 0 : id!.hashCode) +
+      (pictureId.hashCode);
+
+  @override
+  String toString() =>
+      'MessageTemplateDTO[title=$title, text=$text, id=$id, pictureId=$pictureId]';
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    json[r'title'] = this.title;
+    json[r'text'] = this.text;
+    if (this.id != null) {
+      json[r'id'] = this.id;
+    } else {
+      json[r'id'] = null;
+    }
+    json[r'pictureId'] = this.pictureId;
+    return json;
+  }
+
+  /// Returns a new [MessageTemplateDTO] instance and imports its values from
+  /// [value] if it's a [Map], null otherwise.
+  // ignore: prefer_constructors_over_static_methods
+  static MessageTemplateDTO? fromJson(dynamic value) {
+    if (value is Map) {
+      final json = value.cast<String, dynamic>();
+
+      // Ensure that the map contains the required keys.
+      // Note 1: the values aren't checked for validity beyond being non-null.
+      // Note 2: this code is stripped in release mode!
+      assert(() {
+        requiredKeys.forEach((key) {
+          assert(json.containsKey(key),
+              'Required key "MessageTemplateDTO[$key]" is missing from JSON.');
+          assert(json[key] != null,
+              'Required key "MessageTemplateDTO[$key]" has a null value in JSON.');
+        });
+        return true;
+      }());
+
+      return MessageTemplateDTO(
+        title: mapCastOfType<String, String>(json, r'title') ?? const {},
+        text: mapCastOfType<String, String>(json, r'text') ?? const {},
+        id: mapValueOfType<String>(json, r'id'),
+        pictureId:
+            mapCastOfType<String, String>(json, r'pictureId') ?? const {},
+      );
+    }
+    return null;
+  }
+
+  static List<MessageTemplateDTO> listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
+    final result = <MessageTemplateDTO>[];
+    if (json is List && json.isNotEmpty) {
+      for (final row in json) {
+        final value = MessageTemplateDTO.fromJson(row);
+        if (value != null) {
+          result.add(value);
+        }
+      }
+    }
+    return result.toList(growable: growable);
+  }
+
+  static Map<String, MessageTemplateDTO> mapFromJson(dynamic json) {
+    final map = <String, MessageTemplateDTO>{};
+    if (json is Map && json.isNotEmpty) {
+      json = json.cast<String, dynamic>(); // ignore: parameter_assignments
+      for (final entry in json.entries) {
+        final value = MessageTemplateDTO.fromJson(entry.value);
+        if (value != null) {
+          map[entry.key] = value;
+        }
+      }
+    }
+    return map;
+  }
+
+  // maps a json object with a list of MessageTemplateDTO-objects as value to a dart map
+  static Map<String, List<MessageTemplateDTO>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
+    final map = <String, List<MessageTemplateDTO>>{};
+    if (json is Map && json.isNotEmpty) {
+      // ignore: parameter_assignments
+      json = json.cast<String, dynamic>();
+      for (final entry in json.entries) {
+        map[entry.key] = MessageTemplateDTO.listFromJson(
+          entry.value,
+          growable: growable,
+        );
+      }
+    }
+    return map;
+  }
+
+  /// The list of required keys that must be present in a JSON.
+  static const requiredKeys = <String>{};
+}

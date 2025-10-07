@@ -1,0 +1,179 @@
+//
+// AUTO-GENERATED FILE, DO NOT MODIFY!
+//
+// @dart=2.18
+
+// ignore_for_file: unused_element, unused_import
+// ignore_for_file: always_put_required_named_parameters_first
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: lines_longer_than_80_chars
+
+part of openapi.api;
+
+class ExternalAppPostDTO {
+  /// Returns a new [ExternalAppPostDTO] instance.
+  ExternalAppPostDTO({
+    this.title = const {},
+    this.description = const {},
+    this.webUrl,
+    this.androidUrl,
+    this.iosurl,
+  });
+
+  Map<String, String> title;
+
+  Map<String, String> description;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? webUrl;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? androidUrl;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? iosurl;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ExternalAppPostDTO &&
+          _deepEquality.equals(other.title, title) &&
+          _deepEquality.equals(other.description, description) &&
+          other.webUrl == webUrl &&
+          other.androidUrl == androidUrl &&
+          other.iosurl == iosurl;
+
+  @override
+  int get hashCode =>
+      // ignore: unnecessary_parenthesis
+      (title.hashCode) +
+      (description.hashCode) +
+      (webUrl == null ? 0 : webUrl!.hashCode) +
+      (androidUrl == null ? 0 : androidUrl!.hashCode) +
+      (iosurl == null ? 0 : iosurl!.hashCode);
+
+  @override
+  String toString() =>
+      'ExternalAppPostDTO[title=$title, description=$description, webUrl=$webUrl, androidUrl=$androidUrl, iosurl=$iosurl]';
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    json[r'title'] = this.title;
+    json[r'description'] = this.description;
+    if (this.webUrl != null) {
+      json[r'webUrl'] = this.webUrl;
+    } else {
+      json[r'webUrl'] = null;
+    }
+    if (this.androidUrl != null) {
+      json[r'androidUrl'] = this.androidUrl;
+    } else {
+      json[r'androidUrl'] = null;
+    }
+    if (this.iosurl != null) {
+      json[r'iosurl'] = this.iosurl;
+    } else {
+      json[r'iosurl'] = null;
+    }
+    return json;
+  }
+
+  /// Returns a new [ExternalAppPostDTO] instance and imports its values from
+  /// [value] if it's a [Map], null otherwise.
+  // ignore: prefer_constructors_over_static_methods
+  static ExternalAppPostDTO? fromJson(dynamic value) {
+    if (value is Map) {
+      final json = value.cast<String, dynamic>();
+
+      // Ensure that the map contains the required keys.
+      // Note 1: the values aren't checked for validity beyond being non-null.
+      // Note 2: this code is stripped in release mode!
+      assert(() {
+        requiredKeys.forEach((key) {
+          assert(json.containsKey(key),
+              'Required key "ExternalAppPostDTO[$key]" is missing from JSON.');
+          assert(json[key] != null,
+              'Required key "ExternalAppPostDTO[$key]" has a null value in JSON.');
+        });
+        return true;
+      }());
+
+      return ExternalAppPostDTO(
+        title: mapCastOfType<String, String>(json, r'title') ?? const {},
+        description:
+            mapCastOfType<String, String>(json, r'description') ?? const {},
+        webUrl: mapValueOfType<String>(json, r'webUrl'),
+        androidUrl: mapValueOfType<String>(json, r'androidUrl'),
+        iosurl: mapValueOfType<String>(json, r'iosurl'),
+      );
+    }
+    return null;
+  }
+
+  static List<ExternalAppPostDTO> listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
+    final result = <ExternalAppPostDTO>[];
+    if (json is List && json.isNotEmpty) {
+      for (final row in json) {
+        final value = ExternalAppPostDTO.fromJson(row);
+        if (value != null) {
+          result.add(value);
+        }
+      }
+    }
+    return result.toList(growable: growable);
+  }
+
+  static Map<String, ExternalAppPostDTO> mapFromJson(dynamic json) {
+    final map = <String, ExternalAppPostDTO>{};
+    if (json is Map && json.isNotEmpty) {
+      json = json.cast<String, dynamic>(); // ignore: parameter_assignments
+      for (final entry in json.entries) {
+        final value = ExternalAppPostDTO.fromJson(entry.value);
+        if (value != null) {
+          map[entry.key] = value;
+        }
+      }
+    }
+    return map;
+  }
+
+  // maps a json object with a list of ExternalAppPostDTO-objects as value to a dart map
+  static Map<String, List<ExternalAppPostDTO>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
+    final map = <String, List<ExternalAppPostDTO>>{};
+    if (json is Map && json.isNotEmpty) {
+      // ignore: parameter_assignments
+      json = json.cast<String, dynamic>();
+      for (final entry in json.entries) {
+        map[entry.key] = ExternalAppPostDTO.listFromJson(
+          entry.value,
+          growable: growable,
+        );
+      }
+    }
+    return map;
+  }
+
+  /// The list of required keys that must be present in a JSON.
+  static const requiredKeys = <String>{};
+}

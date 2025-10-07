@@ -1,0 +1,23 @@
+{
+  "dart.lineLength": 150,
+  "[dart]": {
+    "editor.rulers": [
+      150
+    ]
+  },
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 160,
+  "prettier.printWidth": 160,
+
+  "dart.flutterSdkPath": ".fvm/versions/3.24.5",
+
+  
+  "search.exclude": {
+    "**/.fvm": true
+  },
+  "files.watcherExclude": {
+    "**/.fvm": true
+  },
+  "editor.formatOnSave": true,
+  "java.configuration.updateBuildConfiguration": "interactive"
+}

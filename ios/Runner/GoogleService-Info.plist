@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>CLIENT_ID</key>
+		<string>717638915284-n4t7nslr15ccv5pgrvd4erf61kih3ps7.apps.googleusercontent.com</string>
+		<key>REVERSED_CLIENT_ID</key>
+		<string>com.googleusercontent.apps.717638915284-n4t7nslr15ccv5pgrvd4erf61kih3ps7</string>
+		<key>API_KEY</key>
+		<string>AIzaSyABW0BlbZ2y0v7mhQJTL40lOBao4Lf9IIA</string>
+		<key>GCM_SENDER_ID</key>
+		<string>717638915284</string>
+		<key>PLIST_VERSION</key>
+		<string>1</string>
+		<key>BUNDLE_ID</key>
+		<string>at.lbidhp.aktivplan</string>
+		<key>PROJECT_ID</key>
+		<string>aktivplanplus</string>
+		<key>STORAGE_BUCKET</key>
+		<string>aktivplanplus.appspot.com</string>
+		<key>IS_ADS_ENABLED</key>
+		<false></false>
+		<key>IS_ANALYTICS_ENABLED</key>
+		<false></false>
+		<key>IS_APPINVITE_ENABLED</key>
+		<true></true>
+		<key>IS_GCM_ENABLED</key>
+		<true></true>
+		<key>IS_SIGNIN_ENABLED</key>
+		<true></true>
+		<key>GOOGLE_APP_ID</key>
+		<string>1:717638915284:ios:9c266bc5abcf7514b41741</string>
+	</dict>
+</plist>

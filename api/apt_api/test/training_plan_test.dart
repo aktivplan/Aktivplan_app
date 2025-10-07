@@ -1,0 +1,59 @@
+//
+// AUTO-GENERATED FILE, DO NOT MODIFY!
+//
+// @dart=2.12
+
+// ignore_for_file: unused_element, unused_import
+// ignore_for_file: always_put_required_named_parameters_first
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: lines_longer_than_80_chars
+
+import 'package:apt_api/api.dart';
+import 'package:test/test.dart';
+
+// tests for TrainingPlan
+void main() {
+  // final instance = TrainingPlan();
+
+  group('test TrainingPlan', () {
+    // String name
+    test('to test the property `name`', () async {
+      // TODO
+    });
+
+    // String description
+    test('to test the property `description`', () async {
+      // TODO
+    });
+
+    // String hint
+    test('to test the property `hint`', () async {
+      // TODO
+    });
+
+    // List<TrainingPlanExercisePostDTO> exercises (default value: const [])
+    test('to test the property `exercises`', () async {
+      // TODO
+    });
+
+    // int numberOfWeeks
+    test('to test the property `numberOfWeeks`', () async {
+      // TODO
+    });
+
+    // String id
+    test('to test the property `id`', () async {
+      // TODO
+    });
+
+    // String institutionId
+    test('to test the property `institutionId`', () async {
+      // TODO
+    });
+
+    // String importId
+    test('to test the property `importId`', () async {
+      // TODO
+    });
+  });
+}
