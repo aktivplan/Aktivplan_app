@@ -1,0 +1,1177 @@
+{
+  "achievedActivityShort": "Gratulation, Ziel erreicht!",
+  "achieveUntil": "Erreichen bis",
+  "active": "aktiv",
+  "activeMinutes": "Aktive Minuten",
+  "activeMinutesKlimafit": "Aktivitätspunkte",
+  "activeMinutesHide": "Aktive Minuten ausblenden",
+  "activeMinutesHideKlimafit": "Aktivitätspunkte ausblenden",
+  "activeMinutesInCalendarWeek": "Aktive Minuten in KW {calendarWeek}",
+  "@activeMinutesInCalendarWeek": {
+    "placeholders": {
+      "calendarWeek": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "activeMinutesInCalendarWeekKlimafit": "Aktivitätspunkte in KW {calendarWeek}",
+  "@activeMinutesInCalendarWeekKlimafit": {
+    "placeholders": {
+      "calendarWeek": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "activeMinutesPerWeek": "Aktive Minuten pro Woche",
+  "activeMinutesPerWeekKlimafit": "Aktivitätspunkte pro Woche",
+  "activeMinutesPerWeekAmount": "{amount} aktive Minuten pro Woche",
+  "@activeMinutesPerWeekAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "activeMinutesPerWeekAmountKlimafit": "{amount} Aktivitätspunkte pro Woche",
+  "@activeMinutesPerWeekAmountKlimafit": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "activeMinutesShow": "Aktive Minuten anzeigen",
+  "activeMinutesShowKlimafit": "Aktivitätspunkte anzeigen",
+  "activities": "Aktivitäten",
+  "activity": "Aktivität",
+  "activity_APPOINTMENT": "Termin",
+  "activity_ENDURANCE": "Ausdauer",
+  "activity_EXTRA": "Extra",
+  "activity_HYPERTROPHY": "Hypertrophietraining",
+  "activity_INTERVAL": "Intervall Ausdauer",
+  "activity_OTHER": "Andere Übung",
+  "activity_PREDEFINED_ACTIVE_MOBILITY": "Aktive Mobilität",
+  "activity_PREDEFINED_ACTIVITY": "Aktivität",
+  "activity_STRENGTHENING": "Kraftausdauer",
+  "activity_TASK": "Aufgabe",
+  "activity_WORKOUT": "Workout",
+  "activityClass": "Aktivitätsklasse",
+  "activityClass_0_description": "Kein Training",
+  "activityClass_0_frequency": "-",
+  "activityClass_0_duration": "-",
+  "activityClass_1_description": "Gelegentliches, leichtes Training",
+  "activityClass_1_frequency": "Einmal alle zwei Wochen",
+  "activityClass_1_duration": "Weniger als 15 Minuten",
+  "activityClass_2_description": "Gelegentliches, leichtes Training",
+  "activityClass_2_frequency": "Einmal alle zwei Wochen",
+  "activityClass_2_duration": "15 bis 30 Minuten",
+  "activityClass_3_description": "Gelegentliches, leichtes Training",
+  "activityClass_3_frequency": "Einmal pro Woche",
+  "activityClass_3_duration": "ca. 30 Minuten",
+  "activityClass_4_description": "Regelmäßiges Training",
+  "activityClass_4_frequency": "Zwei- bis dreimal pro Woche",
+  "activityClass_4_duration": "ca. 45 Minuten",
+  "activityClass_5_description": "Regelmäßiges Training",
+  "activityClass_5_frequency": "Zwei- bis dreimal pro Woche",
+  "activityClass_5_duration": "45 Minuten bis 1 Stunde",
+  "activityClass_6_description": "Regelmäßiges Training",
+  "activityClass_6_frequency": "Zwei- bis dreimal pro Woche",
+  "activityClass_6_duration": "1 bis 3 Stunden",
+  "activityClass_7_description": "Regelmäßiges Training",
+  "activityClass_7_frequency": "Zwei- bis dreimal pro Woche",
+  "activityClass_7_duration": "3 bis 7 Stunden",
+  "activityClass_8_description": "Tägliches Training",
+  "activityClass_8_frequency": "Fast täglich",
+  "activityClass_8_duration": "7 bis 11 Stunden",
+  "activityClass_9_description": "Tägliches Training",
+  "activityClass_9_frequency": "Täglich",
+  "activityClass_9_duration": "11 bis 15 Stunden",
+  "activityClass_10_description": "Tägliches Training",
+  "activityClass_10_frequency": "Täglich",
+  "activityClass_10_duration": "Mehr als 15 Stunden",
+  "activityClasses": "Aktivitätsklassen",
+  "activityDataCheckQuestion": "Sind die folgenden Angaben korrekt?",
+  "activityMoveHint": "Drücke lange auf eine Aktivität, um sie auf einen anderen Tag zu verschieben.",
+  "activityMoveWarning": "Hinweis: Durch das Verschieben ist diese Aktivität nun nicht mehr Teil der Terminserie.",
+  "activityPlanStep1": "Art der Aktivität wählen",
+  "activityPlanStep1Short": "Aktivität wählen",
+  "activityPlanStep2": "Aktivität anpassen",
+  "activityPlanStep2Appointment": "Termin anpassen",
+  "activityPlanStep3": "Aktivität planen",
+  "activityPlanStep3Appointment": "Termin planen",
+  "activityPreference": "Aktivitätspräferenz",
+  "activityRepeat_BIWEEKLY": "Alle 2 Wochen",
+  "activityRepeat_NEVER": "Keine Wiederholung",
+  "activityRepeat_WEEKLY": "Wöchentliche Wiederholung",
+  "activityRepeatShort_BIWEEKLY": "Alle 2 Wochen",
+  "activityRepeatShort_NEVER": "Niemals",
+  "activityRepeatShort_WEEKLY": "Wöchentlich",
+  "activityScore": "Aktivitätsscore",
+  "actualHeartFrequency": "Tatsächliche Herzfrequenz",
+  "actualTotalDuration": "Tatsächliche Gesamtdauer",
+  "actualTotalDurationMin": "Tatsächliche Gesamtdauer (min)",
+  "add": "Hinzufügen",
+  "addActivity": "Aktivität hinzufügen",
+  "addApp": "App hinzufügen",
+  "addContact": "Kontakt hinzufügen",
+  "addedApp": "App erfolgreich hinzugefügt",
+  "addedAt": "Hinzugefügt am",
+  "addedContact": "Kontakt erfolgreich hinzugefügt",
+  "addedContactError": "Fehler beim Hinzufügen des Kontakts",
+  "addedExercise_ENDURANCE": "Ausdauertraining erfolgreich hinzugefügt",
+  "addedExercise_HYPERTROPHY": "Hypertrophietraining erfolgreich hinzugefügt",
+  "addedExercise_INTERVAL": "Intervall Ausdauertraining erfolgreich hinzugefügt",
+  "addedExercise_OTHER": "Übung erfolgreich hinzugefügt",
+  "addedExercise_STRENGTHENING": "Kraftausdauertraining erfolgreich hinzugefügt",
+  "addedExercise_TASK": "Aufgabe erfolgreich hinzugefügt",
+  "addedHealthcareProfessional": "Gesundheitsexpert*in erfolgreich hinzugefügt",
+  "addedInstitution": "Institut erfolgreich hinzugefügt",
+  "addedMessage": "Nachricht erfolgreich hinzugefügt",
+  "addedPatient": "Nutzer*in erfolgreich hinzugefügt",
+  "addedTrainingPlan": "Trainingsplan erfolgreich hinzugefügt",
+  "addedVideo": "Video erfolgreich hinzugefügt",
+  "addedWorkout": "Workout erfolgreich hinzugefügt",
+  "addExercise": "Übung hinzufügen",
+  "addHealthcareProfessional": "Gesundheitsexpert*in hinzufügen",
+  "addInstitution": "Institut hinzufügen",
+  "additionalApp": "Weitere App",
+  "additionalApps": "Weitere Apps",
+  "additionalAppsDescription": "Im Folgenden sind frei verfügbare Apps gelistet, die du dir installieren kannst, um zusätzliche Unterstützung bei deinen Aktivitäten zu erhalten. Bitte beachte, dass wir keinerlei Haftung für die Inhalte dieser Apps übernehmen.",
+  "addMessage": "Nachricht hinzufügen",
+  "addPatient": "Nutzer*in hinzufügen",
+  "addPersonalGoal": "Ziel hinzufügen",
+  "addProfilePicture": "Profilbild hinzufügen",
+  "addRecipient": "Empfänger*in hinzufügen",
+  "addTask": "Aufgabe hinzufügen",
+  "addTrainingPlan": "Trainingsplan hinzufügen",
+  "addVideo": "Video hinzufügen",
+  "addWorkout": "Workout hinzufügen",
+  "adherenceToTrainingPlan": "Einhaltung Trainingsplan",
+  "adherenceToTrainingPlanInCalendarWeek": "Einhaltung Trainingsplan in KW {calendarWeek}",
+  "@adherenceToTrainingPlanInCalendarWeek": {
+    "placeholders": {
+      "calendarWeek": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "adjust": "anpassen",
+  "administrator": "Administrator*in",
+  "allowTrainingPlans": "Erstellung und Anwendung von vorgefertigten Trainingsplänen erlauben",
+  "allowRescheduleActivities": "Nutzer*innen erlauben, eine geplante Aktivität innerhalb einer Woche zu verschieben",
+  "allPatients": "Alle Patienten",
+  "amount": "Anzahl",
+  "amountRepeats": "Anzahl der Wiederholungen",
+  "appTitle": "aktivplan+",
+  "back": "Zurück",
+  "birthdate": "Geburtsdatum",
+  "bodyHeight": "Körpergröße",
+  "bodyHeightWithUnit": "Körpergröße (cm)",
+  "bodyWeight": "Körpergewicht",
+  "bodyWeightWithUnit": "Körpergewicht (kg)",
+  "browseGallery": "Galerie durchsuchen",
+  "calendarEntry": "Kalendereintrag",
+  "calendarInfoActiveMinutes": "Hat in den letzten vier Wochen <color>{percentage}%</color> der geplanten aktiven Minuten absolviert.",
+  "@calendarInfoActiveMinutes": {
+    "placeholders": {
+      "percentage": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "calendarInfoActiveMinutesKlimafit": "Hat in den letzten vier Wochen <color>{percentage}%</color> der geplanten Aktivitätspunkte absolviert.",
+  "@calendarInfoActiveMinutesKlimafit": {
+    "placeholders": {
+      "percentage": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "calendarInfoActiveMinutesThreeWeeks": "Hat in den letzten drei Wochen <color>{percentage}%</color> der aktiven Minuten absolviert. Davon waren {percentagePlanned}% geplante Aktivitäten.",
+  "@calendarInfoActiveMinutesThreeWeeks": {
+    "placeholders": {
+      "percentage": {
+        "type": "int",
+        "example": "30"
+      },
+      "percentagePlanned": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "calendarInfoActiveMinutesNoTraining": "Vier Wochenstatus nicht vorhanden, da in den vergangen vier Wochen kein Training geplant war.",
+  "calendarInfoActiveMinutesNoTrainingThreeWeeks": "Drei Wochenstatus nicht vorhanden, da in den vergangen drei Wochen kein Training geplant war.",
+  "calendarWeek": "Kalenderwoche",
+  "calendarWeekShort": "KW",
+  "cancel": "Abbrechen",
+  "cancelText": "Sind Sie sicher, dass Sie den Vorgang abbrechen wollen? Ihre Eingaben/Änderungen gehen dabei verloren.",
+  "cancelYes": "Ja, abbrechen",
+  "captureImageWithCamera": "Bild mit Kamera aufnehmen",
+  "changeOfMyHealthData": "Änderung meiner Daten",
+  "changePassword": "Passwort ändern",
+  "choose": "Wählen",
+  "close": "Schließen",
+  "comorbidities": "Begleiterkrankungen",
+  "confirmNewPassword": "Bestätige neues Passwort",
+  "confirmPassword": "Passwort bestätigen",
+  "copy": "Kopieren",
+  "consentTextCreatePatient": "Ich bestätige hiermit, dass ich den künftigen Nutzer/die künftige Nutzerin aufgeklärt habe und seine/ihre Zustimmung zur Verarbeitung seiner/ihrer Daten zum Zweck der Registrierung eingeholt habe.",
+  "consentTextCreatePatientDetail": "<b>Ziel</b>\n• <b>Unterstützung der Aktivitätsplanung:</b> Die aktivplan App soll Sie und Ihre Gesundheitsexpert*innen dabei unterstützen, Trainingsaktivitäten individuell zu planen und optimal an Ihren Gesundheitszustand anzupassen.\n• <b>Visualisierung und Verfolgung der Aktivitäten:</b> Die App bietet Ihnen die Möglichkeit, die mit Ihren Gesundheitsexpert*innen geplanten Aktivitäten auf Ihrem Smartphone anzusehen und zu verfolgen, sowie zusätzliche Aktivitäten einzutragen.\n\n<b>Ablauf</b>\n• <b>Expliziter Nutzungswille:</b> Wenn Sie sich explizit zur Nutzung der aktivplan App bereit erklären, werden die im Leistungstest erhobenen Daten von Ihren Gesundheitsexpert*innen in die Anwendung eingegeben.\n• <b>Leistungsdaten - Basis für Trainingsplan:</b>Die im Leistungstest erhobenen Daten schaffen die Basis für einen individuell angepassten Trainingsplan. (Zum Beispiel Training im optimalen Herzfrequenzbereich.)\n• <b>Installation über E-Mail Link:</b> Nach der Eingabe Ihrer Daten erhalten Sie eine E-Mail mit einem Link. Über diesen Link können Sie die aktivplan App auf Ihrem Handy installieren und sich anmelden. Wenn Sie sich nicht innerhalb der nächsten 10 Tage anmelden, werden Ihre Daten aus der Anwendung gelöscht.\n\n<b>Datenschutz und Datenverwertung</b>\n• <b>Vertraulichkeit:</b> Alle Information werden vertraulich behandelt.\n• <b>Sichere Datenspeicherung:</b> Ihre persönlichen Daten werden pseudonymisiert und auf sicheren Servern gespeichert, gemäß der DSGVO.\n• <b>Zweck der Datenverwertung:</b> Die aufgenommenen Daten dienen dazu, dass ein individuell an Sie angepasstes und optimal auf Ihren Gesundheitszustand abgestimmtes Training erstellt wird. (Zum Beispiel Training im optimalen Herzfrequenzbereich.)\n\n<b>Freiwillige Teilnahme und Rücktrittsfreiheit</b>\n• <b>Freiwilligkeit:</b> Die Nutzung der aktivplan App ist vollkommen freiwillig.\n• <b>Automatische Löschung der Daten nach 10 Tagen:</b> Wenn Sie sich nicht innerhalb der nächsten 10 Tage über den in der E-Mail bereitgestellten Link anmelden, werden Ihre Daten aus der Anwendung gelöscht.\n• <b>Beendigung jederzeit:</b> Nach der Registrierung können Sie die Nutzung der aktivplan App natürlich auch jederzeit beenden, womit auch die Löschung aller Ihrer Daten einhergeht.\n\n<b>Fragen</b>\n• <b>Jederzeit Kontaktaufnahme:</b> Sollten Sie noch Fragen haben, können Sie jederzeit gerne Kontakt aufnehmen.",
+  "consentText_PRIVACY_POLICY": "Ich habe die <a>Datenschutzerklärung</a> gelesen und bin damit einverstanden.",
+  "consentText_TERMS_AND_CONDITIONS": "Ich habe die <a>Nutzungsbedingungen</a> gelesen und bin damit einverstanden.",
+  "contact": "Kontaktieren",
+  "content": "Inhalt",
+  "contentEnglish": "Inhalt (englische Übersetzung)",
+  "conversationGuide": "Leitfaden Gespräch",
+  "conversationGuideStep0Question1": "Worum geht es in diesem Gespräch und was ist das Ziel?",
+  "conversationGuideStep0Question1Answer": "In diesem Gespräch geht es darum, dass wir gemeinsam einen wöchentlichen Trainingsplan für Sie erstellen, den Sie dann nach Abschluss Ihres kardiologischen Reha Programms selber weiterführen können.",
+  "conversationGuideStep0Question1AnswerHealthyLifeStyle": "In diesem Gespräch geht es darum, dass wir gemeinsam einen wöchentlichen Trainingsplan für Sie erstellen, den Sie dann selber weiterführen können.",
+  "conversationGuideStep0Question2": "Warum sollen Sie in den Entscheidungsprozess einbezogen werden?",
+  "conversationGuideStep0Question2Answer": "Es gibt verschiedene Möglichkeiten, so einen Trainingsplan zu gestalten, und es ist wichtig, Ihre Vorlieben in der Entscheidung einzubringen.",
+  "conversationGuideStep1": "Wissensstand erörtern\nund Informieren",
+  "conversationGuideStep1Headline": "Was wissen Sie bereits über Ihre Herz-Kreislauf-Erkrankung?",
+  "conversationGuideStep1Short": "Wissensstand",
+  "conversationGuideStep1Question1": "Was versteht man unter einer Herz-Kreislauf-Erkrankung? / Sind Sie mit Ihrer Herz-Kreislauf-Erkrankung vertraut?",
+  "conversationGuideStep1Question1Answer": "<b>Herz-Kreislauf-Erkrankungen sind Erkrankungen des Herzens und der Blutgefäße.</b>\nEs gibt viele verschiedene Herz-Kreislauf-Erkrankungen, aber einige wenige machen den größten Anteil aus.\nDie häufigsten Herz-Kreislauf-Erkrankungen sind:\n\n• Bluthochdruck,\n• Arteriosklerose („Verkalkung“ der Arterien)\n• Koronare Herzerkrankung\n• Chronisches Herzversagen (Herzinsuffizienz)\n\nHerz-Kreislauf-Erkrankungen sind in Österreich die häufigste Todesursache.\n<b>Zu den schwerwiegenden Folgen von Herz-Kreislauf-Erkrankungen zählen:</b>\n\n• Herzinfarkt (durch Gefäßverschluss am Herzen)\n• Schlaganfall (durch Gefäßverschluss im Gehirn)\n• Herzrhythmusstörungen",
+  "conversationGuideStep1Question2": "Was verursacht Herz-Kreislauf-Erkrankungen? / Was sind die Risikofaktoren für Herz-Kreislauf-Erkrankungen?",
+  "conversationGuideStep1Question2Answer": "Manche Herz-Kreislauf-Erkrankungen haben spezifische und individuelle Gründe.\nAber im Allgemeinen kann man sagen, <b>dass bestimmtes ungesundes Verhalten Herz-Kreislauf-Erkrankungen begünstigt:</b>\n\n• Sehr kalorien-, zucker- und fetthaltige Ernährung\n• Bewegungsmangel\n• Alkoholkonsum\n• Nikotinkonsum",
+  "conversationGuideStep1Question3": "Kann man Herz-Kreislauf-Erkrankungen vorbeugen?",
+  "conversationGuideStep1Question3Answer": "Man kann Herz-Kreislauf-Erkrankungen mit Anpassungen des Lebensstils gut vorbeugen.\nPersonen, die bereits ein schwerwiegendes Ereignis wie einen Herzinfarkt hatten, können weiteren Ereignissen vorbeugen.\n<b>Die wichtigsten Maßnahmen zur Vorbeugung sind:</b>\n\n• Regelmäßige herzgesunde Bewegung\n• Nicht rauchen\n• Normaler Blutdruck\n• Normaler Blutzuckerspiegel\n• Normaler Gesamtcholesterinspiegel (durch gesunde Ernährung und Medikamente)\n• Herz-Kreislauf Medikamente regelmäßig einnehmen\n• Normales Gewicht\n• Gesunde Ernährung",
+  "conversationGuideStep1Question4": "Was sind die Auswirkungen von herzgesunder Bewegung?",
+  "conversationGuideStep1Question4Answer": "Regelmäßige herzgesunde Bewegung ist eine der wichtigsten vorbeugenden Maßnahmen für Personen mit Herz-Kreislauf-Erkrankungen und <more1>für alle Menschen</more1>. <more2>Positive Wirkungen</more2> treten bis ins höchste Alter ein – es gibt keine „Altersgrenze“.\n\nEine körperliche Aktivität ist dann besonders herzgesund, wenn man sich bei mittlerer Anstrengung (Intensität) bewegt. Moderate Anstrengung bedeutet, dass man etwas außer Atem kommt und dabei noch plaudern, aber nicht mehr singen kann.\n\nFür Personen, die „körperlich inaktiv“ sind, bringt schon der Wechsel zu „ein wenig körperlich aktiv“ einen wesentlichen gesundheitlichen Nutzen. „Ein wenig körperlich aktiv“ bedeutet z.B., dass man mehrmals pro Tag 5 Minuten zügig zu Fuß geht.\n\nEin möglicher Nachteil von Bewegung und körperlicher Aktivität ist eine gewisse Verletzungsgefahr. Diese ist bei richtiger Durchführung aber gering.",
+  "conversationGuideStep1Question4AnswerHealthyLifeStyle": "Regelmäßige herzgesunde Bewegung ist eine der wichtigsten vorbeugenden Maßnahmen <more1>für jeden von uns</more1>. <more2>Positive Wirkungen</more2> treten bis ins höchste Alter ein – es gibt keine „Altersgrenze“.\n\nEine körperliche Aktivität ist dann besonders herzgesund, wenn man sich bei mittlerer Anstrengung (Intensität) bewegt. Moderate Anstrengung bedeutet, dass man etwas außer Atem kommt und dabei noch plaudern, aber nicht mehr singen kann.\n\nFür Personen, die „körperlich inaktiv“ sind, bringt schon der Wechsel zu „ein wenig körperlich aktiv“ einen wesentlichen gesundheitlichen Nutzen. „Ein wenig körperlich aktiv“ bedeutet z.B., dass man mehrmals pro Tag 5 Minuten zügig zu Fuß geht.\n\nEin möglicher Nachteil von Bewegung und körperlicher Aktivität ist eine gewisse Verletzungsgefahr. Diese ist bei richtiger Durchführung aber gering.",
+  "conversationGuideStep1Question4AnswerMore1": "<b>Erwachsene, die sich regelmäßig bewegen:</b>\n\n• sind fitter und gesünder\n• fühlen sich besser\n• bekommen seltener chronische Erkrankungen, z.B. Herz-Kreislauf-Erkrankungen, Diabetes oder verschiedene Arten von Krebs\n• haben weniger Angstgefühle und das Gehirn arbeitet nach der Bewegung besser\n• schlafen besser\n• werden im Alltag nicht so schnell müde, z.B. wenn sie Stiegen steigen oder etwas Schweres tragen\n• werden seltener übergewichtig",
+  "conversationGuideStep1Question4AnswerMore2": "<b>Positive Wirkungen von regelmäßiger herzgesunder Bewegung für Personen mit Herz-Kreislauf-Erkrankungen:</b>\n\n• Verbesserung des Fettstoffwechsels\n• Reduktion von Übergewicht und Blutdruck\n• Reduktion von Entzündungen\n• Verbesserung der Insulinempfindlichkeit und damit Behandlung und Vorbeugung von Typ-2-Diabetes\n• Normalisierung des Blutglukosespiegels",
+  "conversationGuideStep2": "Vorlieben erfragen\nund Möglichkeiten anbieten",
+  "conversationGuideStep2Headline": "Welche Art von Bewegung oder Sport sagt Ihnen persönlich zu?",
+  "conversationGuideStep2Short": "Vorlieben",
+  "conversationGuideStep2Question1": "Welche Art der Bewegung oder Sport machen Sie aktuell oder haben Sie früher gerne gemacht?",
+  "conversationGuideStep2Question1Answer": "Dabei soll nicht nur an klassische Sportarten und gezieltes Training gedacht werden, sondern auch an soziale Gelegenheiten (z.B. Tanz, Gruppenwanderung) und alltägliche Bewegung und Aktivitäten (z.B. den Hund ausführen, Hausarbeit, Gartenarbeit, Treppensteigen).\n\n• Mit welcher Art der Bewegung oder Sport haben Sie bereits positive Erfahrung gemacht?\n• Mit welcher Art der Bewegung oder Sport haben Sie negative Erfahrung gemacht?\n• Gibt es Bewegungsformen oder Sportarten, mit denen Sie keine Erfahrung haben, die Sie aber interessieren?\n\n<b>Optional (eventuell hilfreich bei wenig Bewegung):</b>\n\n• Wobei kommen Sie in Ihrem üblichen Alltag am meisten zum Schwitzen oder zum Schnaufen?\n• Sind Sie oder waren Sie früher in einem Sportverein?\n• Was hat Ihnen damals im Turnunterricht Spaß gemacht?",
+  "conversationGuideStep2Question2": "Sind Sie sich bewusst, dass auch Alltagsaktivitäten als herzgesunde Bewegung gelten?",
+  "conversationGuideStep2Question2Answer": "<b>Nicht nur klassischer Sport und gezieltes Training gelten als herzgesunde Bewegung, sondern auch alltägliche Bewegung und Aktivitäten leisten einen Beitrag zur Herzgesundheit.</b>\n\nBeispiele sind den Hund ausführen, Hausarbeit, Gartenarbeit, Treppensteigen oder eine Steigung hochgehen.\n\nDiese Bewegung und Aktivitäten sind besonders bei mittlerer oder starker Anstrengung herzgesund, das heißt, wenn dabei das Herz deutlich schneller schlägt, man stärker atmen muss, es einem warm wird und man ein bisschen ins Schwitzen kommt.",
+  "conversationGuideStep2Question3": "Welche verschiedenen Trainingsmethoden gibt es und welche Vorteile haben diese?",
+  "conversationGuideStep2Question3Answer": "<b>Es wird empfohlen, jede Woche sowohl ausdauerorientierte Bewegung als auch muskelkräftigende Bewegung auszuüben.</b>\n\n<more1>Ausdauerorientierte Bewegung</more1> nützt generell mehr dem Herz-Kreislauf-System, der Atmung und dem Stoffwechsel.\n\n<more2>Muskelkräftigende Bewegung</more2> nützt generell mehr der Körperhaltung, Knochendichte, Sturzprophylaxe und beim Bewegen schwerer Gegenstände im Alltag.",
+  "conversationGuideStep2Question3AnswerMore1": "<b>Ausdauerorientierte Bewegung</b>\n\n• Man bewegt den ganzen Körper rhythmisch über einen längeren Zeitraum.\n• Beispiele sind zügiges Gehen, Laufen, Radfahren, Tanzen, Basketball, Schwimmen.\n• Das Herz schlägt deutlich schneller, man muss stärker atmen, es wird einem warm und man kommt ins Schwitzen.\n• Erwachsenen mit chronischen Erkrankungen wird empfohlen, jede Woche zusammengezählt 150 Minuten (2 ½ Stunden ausdauerorientierte Bewegung mit mittlerer Anstrengung auszuüben.\n• Mittlere Anstrengung bedeutet, dass das Herz deutlich schneller schlägt und man dabei etwas stärker atmen muss - aber nicht zu stark (man sollte dabei noch reden aber nicht mehr singen können).",
+  "conversationGuideStep2Question3AnswerMore2": "<b>Muskelkräftigende Bewegung</b>\n\n• Man trainiert gezielt große Muskelgruppen (Bein-, Hüft, Brust, Rücken,Bauch, Schulter- und Armmuskulatur).\n• Beispiele sind Übungen mit Gewichten oder elastischen Bändern, Kniebeugen, Liegestütze.\n• Beim Training zum Kraftaufbau (Hypertrophietraining) wählt man ein Gewicht mit dem man gerade 8 bis 12 Wiederholungen schafft.\n• Beim Kraftausdauertraining macht man 20 bis 40 Wiederholungen.\n• Erwachsenen mit chronischen Erkrankungen wird empfohlen, zweimal pro Woche muskelkräftigende Bewegung für alle großen Muskelgruppen auszuüben.",
+  "conversationGuideStep2Question4": "Wie oft können Sie sich vorstellen Bewegung in Ihren Alltag einzuplanen?",
+  "conversationGuideStep2Question4Answer": "Sowohl <b>längere und strukturierte Trainingseinheiten</b> (z.B. jede Woche eine Stunde Herzsportgruppe, zweimal pro Woche eine halbe Stunde Joggen) als auch <b>kürzere in den Alltag eingebaute Bewegungseinheiten</b> (z.B. jeden Tag 10 Minuten am Stück zu Fuß gehen, jeden Tag einmal Treppensteigen anstatt mit dem Lift fahren) sind hilfreich.\n\n<b>Wenn möglich sollte beides in der Trainingsplanung berücksichtigt werden:</b>\n\n• Wie oft könnten Sie sich vorstellen eine längere und strukturierte Trainingseinheiten durchzuführen?\n• Wie oft könnten Sie sich vorstellen eine kürzere, in den Alltag integrierte Bewegungseinheit durchzuführen?",
+  "conversationGuideStep3": "Bedeutsame Ziele setzen",
+  "conversationGuideStep3Short": "Ziele",
+  "conversationGuideStep3Headline": "Da Sie ja Ihre körperliche Aktivität steigern wollen, lassen Sie uns dieses Ziel nun etwas konkreter machen.",
+  "conversationGuideStep3Question1": "Was würden Sie sich persönlich von regelmässiger herzgesunder Bewegung erhoffen?",
+  "conversationGuideStep3Question1Answer": "Diese Frage ist bewusst offen formuliert, um die Gedanken der Person zu hören.\nDie Gedanken der Person sollten ohne Beeinflussung, Filtern oder Bewertung aufgenommen werden.\n<more1>Verschiedenste Aussagen</more1> können hier möglich sein, zum Beispiel aus einer gesundheitlichen oder sozialen Motivation heraus.\nEs soll auch festgehalten werden, wenn eine Person keine konkrete Erwartung äußern kann.\n\nDiese Aussagen können Ausgangspunkte für die Formulierung der konkreten Bewegungsziele im nächsten Schritt bieten.",
+  "conversationGuideStep3Question1AnswerMore1": "<b>Mögliche Aussagen:</b>\n\n• „Dass ich keinen weiteren Herzinfarkt haben werde“\n• „Dass ich noch lange genug lebe und fit bleibe, um auf der Hochzeit meines Enkelkindes zu tanzen“\n• „Dass ich dadurch mein Körpergewicht im gesunden Bereich halte“\n• „Dass ich dadurch meinen ungesunden Lebensstil ausgleiche“",
+  "conversationGuideStep3Question2": "Lassen Sie uns jetzt versuchen, konkrete Bewegungsziele zu formulieren. Also etwas, worauf Sie hinarbeiten mõchten, und das man dann abhaken kann wenn Sie es geschafft haben. Gibt es da etwas woran Sie denken?",
+  "conversationGuideStep3Question2Answer": "<b>Ideen sammeln:</b> „Es soll durchaus herausfordernd sein, und auch etwas sein, was für Sie persönlich eine gewisse Bedeutung hat.“\n\n<b>Konkretes Beispiel:</b> „Andere Personen haben sich ein Bewegungsziel gesetzt, einen bestimmten Wanderweg zurückzulegen, oder eine bestimmte Fahrradstrecke abzufahren.“\n\n<b>Große Ziele in kleine Schritte aufteilen:</b> „Das ist ein gutes Ziel, das notieren wir - es klingt aber auch durchaus herausfordernd. Wollen wir zusätzlich ein Ziel formulieren, das einen Zwischenschritt auf dem Weg dahin darstellt - und wie würde dieses Zwischenziel aussehen?“\n\n<b>Bewegungsziele mit einem „Erreichen bis“ Datum versehen:</b> „Bis wann würden Sie denn sagen, dass Sie dieses Ziel erreicht haben möchten?“\n\nldealerweise sollten Bewegungsziele so konkret formuliert sein, dass man klar beurteilen kann, wann ein Ziel erreicht worden ist und <more1>„abgehakt“</more1> werden kann. Wenn es einer Person schwerfällt, an ein konkretes „abhakbares“ Ziel zu denken, kann auch eine <more2>vage Zielformulierung</more2> festgehalten werden (z.B. „mich mehr bewegen“ oder „etwas gesünder leben“).",
+  "conversationGuideStep3Question2AnswerMore1": "<b>„Abhakbares“ Ziel formulieren</b>\n\nTypischerweise werden sogenannte <b>„Leistungsziele“</b> formuliert. Das heißt das Ziel ist erreicht, wenn eine bestimmte neue körperliche Leistung geschafft wurde, zum Beispiel „10.000 Schritte ohne Pause gehen“.\n\nAber auch sogenannte <b>„Lernziele“ oder „Prozessziele“</b> können formuliert werden.\n\nBeim <b>Lernziel</b> geht es ums <b>Erlangen neuen Wissens</b> (z.B. „Einen Gehweg nahe meiner Wohnadresse ausfindig machen, auf dem ich dann regelmäßig meine Gehstrecke trainieren kann“) oder <b>neuer Fertigkeiten</b> (z.B. „Lernen, wie ich meine Gehstrecke auf dem Laufband im Fitness Center trainieren kann“).\n\nBeim <b>Prozessziel</b> geht es ums <b>Umsetzen oder Erhalten bestehender Strategien</b> (z.B. „immer mit zügigem Tempo zu gehen“ oder „weiterhin regelmäßig einmal am Tag 10 Minuten am Stück gehen“).",
+  "conversationGuideStep3Question2AnswerMore2": "<b>Vage Zielformulierung</b>\n\nVage formulierte Ziele sollten auch mit einem „Erreichen bis“ Datum versehen werden.\n\nEs sollte bei einem Nachfolgegespräch dann wieder versucht werden, ein konkretes „abhakbares“ Ziel zu formulieren. Eine erste vage Zielformulierung kann hilfreich sein, um später eine konkrete Zielformulierung zu finden.",
+  "copyWeek": "Woche kopieren",
+  "create": "Erstellen",
+  "createdBy": "Erstellt von",
+  "databaseOverwritten": "Datenbank erfolgreich überschrieben",
+  "date": "Datum",
+  "day": "Tag",
+  "delete": "Löschen",
+  "deleteActivity": "Aktivität löschen",
+  "deleteAll": "Alle Löschen",
+  "deleteImage": "Bild löschen",
+  "deleteVideo": "Video löschen",
+  "deletedApp": "App erfolgreich gelöscht",
+  "deletedExercise_ENDURANCE": "Ausdauertraining erfolgreich gelöscht",
+  "deletedExercise_HYPERTROPHY": "Hypertrophietraining erfolgreich gelöscht",
+  "deletedExercise_INTERVAL": "Intervall Ausdauertraining erfolgreich gelöscht",
+  "deletedExercise_OTHER": "Übung erfolgreich gelöscht",
+  "deletedExercise_STRENGTHENING": "Kraftausdauertraining erfolgreich gelöscht",
+  "deletedExercise_TASK": "Aufgabe erfolgreich gelöscht",
+  "deletedHealthcareProfessional": "Gesundheitsexpert*in erfolgreich gelöscht",
+  "deletedInstitution": "Institut erfolgreich gelöscht",
+  "deletedMessage": "Nachricht erfolgreich gelöscht",
+  "deletedPatient": "Nutzer*in erfolgreich gelöscht",
+  "deletedTrainingPlan": "Trainingsplan erfolgreich gelöscht",
+  "deletedVideo": "Video erfolgreich gelöscht",
+  "deletedWorkout": "Workout erfolgreich gelöscht",
+  "deleteForAllRecipients": "Ja, für alle Empfänger*innen löschen",
+  "deleteForThisRecipient": "Ja, für diese*n Empfänger*in löschen",
+  "deleteLastWeek": "Letzte Woche löschen",
+  "deleteMessageActivity": "Bist du sicher, dass du die geplante Aktivität {name} löschen wollen?",
+  "@deleteMessageActivity": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alphaport"
+      }
+    }
+  },
+  "deleteMessageAdditionalApp": "Bist du sicher, dass du diese App löschen willst? Es wird damit für alle Mitglieder des Instituts gelöscht.",
+  "deleteMessageAdditionalAppTitle": "App löschen",
+  "deleteMessageAllActivities": "Bist du sicher, dass du alle zukünftigen Instanzen dieser Übung löschen willst?\n\n*Aktivitäten, die bereits abgeschlossen wurden, werden nicht gelöscht.",
+  "deleteMessageAllActivitiesTrainingPlan": "Bist du sicher, dass du alle Instanzen dieser Übung löschen willst?",
+  "deleteMessageAllAppointments": "Bist du sicher, dass du alle zukünftigen Instanzen dieses Termins löschen willst?",
+  "deleteMessageExerciseType": "Bist du sicher, dass du dieses {typeName} löschen willst? Es wird damit für alle Mitglieder des Instituts gelöscht.",
+  "@deleteMessageExerciseType": {
+    "placeholders": {
+      "typeName": {
+        "type": "String",
+        "example": "Training"
+      }
+    }
+  },
+  "deleteMessageExerciseTypeEndurance": "Bist du sicher, dass du dieses kontinuerliche Ausdauertraining löschen willst? Es wird damit für alle Mitglieder des Instituts gelöscht.",
+  "deleteMessageExerciseTypeOther": "Bist du sicher, dass du diese andere Übung löschen willst? Es wird damit für alle Mitglieder des Instituts gelöscht.",
+  "deleteMessageExerciseTypeTitle": "{typeName} löschen",
+  "@deleteMessageExerciseTypeTitle": {
+    "placeholders": {
+      "typeName": {
+        "type": "String",
+        "example": "Training"
+      }
+    }
+  },
+  "deleteMessageExerciseTypeTrainingPlan": "Bist du sicher, dass du diesen Trainingsplan löschen willst? Es wird damit für alle Mitglieder des Instituts gelöscht.",
+  "deleteMessageHealthcareProfessionals": "Bist du sicher, dass du das Konto des/der Gesundheitsexpert*in {name} löschen willst? Alle zugehörigen Konten von {patientCount} Nutzer*innen werden ebenfalls unwiderruflich und mit sofortiger Wirkung gelöscht.",
+  "@deleteMessageHealthcareProfessionals": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alphaport"
+      },
+      "patientCount": {
+        "type": "int",
+        "example": "0"
+      }
+    }
+  },
+  "deleteMessageHealthcareProfessionalsTitle": "Gesundheitsexpert*in löschen",
+  "deleteMessageInstitutions": "Bist du sicher, dass du das Institut {name} löschen willst? Alle zugehörigen Konten von {healthcareProfessionalCount} Gesundheitsexpert*innen und {patientCount} Nutzer*innen werden ebenfalls unwiderruflich und mit sofortiger Wirkung gelöscht.",
+  "@deleteMessageInstitutions": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alphaport"
+      },
+      "healthcareProfessionalCount": {
+        "type": "int",
+        "example": "0"
+      },
+      "patientCount": {
+        "type": "int",
+        "example": "0"
+      }
+    }
+  },
+  "deleteMessageInstitutionsTitle": "Institut löschen",
+  "deleteMessageMessagePersonal": "Bist du sicher, dass du diese Nachricht löschen willst?",
+  "deleteMessageMessageTemplate": "Bist du sicher, dass du diese Nachricht löschen willst? Sie wird damit für alle Mitglieder des Instituts gelöscht.",
+  "deleteMessageMessageTemplateTitle": "Nachricht löschen",
+  "deleteMessageNotes": "Bist du sicher, dass du diese Notizen löschen willst?",
+  "deleteMessageNotesTitle": "Notizen löschen",
+  "deleteMessagePatientActivity": "Sind Sie sicher, dass Sie die geplante Aktivität {name} löschen wollen? Alle eingetragenen Wiederholungen werden ebenfalls gelöscht!",
+  "@deleteMessagePatientActivity": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alphaport"
+      }
+    }
+  },
+  "deleteMessagePatients": "Bist du sicher, dass du das Konto des/der Nutzer*in {name} unwiderruflich und mit sofortiger Wirkung löschen willst?",
+  "@deleteMessagePatients": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alphaport"
+      }
+    }
+  },
+  "deleteMessagePatientsTitle": "Nutzer*in löschen",
+  "deleteMessagePersonalGoal": "Bist du sicher, dass du dieses Ziel löschen willst?",
+  "deleteMessagePersonalGoalTitle": "Ziel löschen",
+  "deleteMessageThisActivity": "Bist du sicher, dass du diese Aktivität löschen willst?",
+  "deleteMessageThisActivityTitle": "Aktivität löschen",
+  "deleteMessageThisActivityTooltip": "Aktivitäten, die bereits ausgeführt wurden, können nicht gelöscht werden.",
+  "deleteMessageThisAppointment": "Bist du sicher, dass du diesen Termin löschen möchtest?",
+  "deleteMessageThisAppointmentTitle": "Termin löschen",
+  "deleteMessageVideoTemplate": "Bist du sicher, dass du dieses Video löschen willst? Es wird damit für alle Mitglieder des Instituts gelöscht.",
+  "deleteMessageVideoTemplateTitle": "Themenvideo löschen",
+  "deleteMessageWorkout": "Sind Sie sicher, dass Sie das Workout {name} löschen wollen? Das Workout wird damit für alle Mitglieder des Instituts gelöscht.",
+  "@deleteMessageWorkout": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alphaport"
+      }
+    }
+  },
+  "deleteObject": "Objekt löschen",
+  "deleteProfilePicture": "Profilbild löschen",
+  "deleteProfilePictureText": "Bist du sicher, dass du dein Profilbild endgültig löschen willst?",
+  "deleteNo": "Nein, nicht löschen",
+  "deleteThis": "diese löschen",
+  "deleteYes": "Ja, unwiderruflich löschen",
+  "description": "Beschreibung",
+  "descriptionShort": "Beschreibung",
+  "details": "Details",
+  "detailsToMessage": "Details zur Nachricht",
+  "dislikedActivityPreference": "Anti-Aktivität",
+  "dislikedMobilityPreference": "Anti-Mobilität",
+  "documentation": "Dokumentation",
+  "documentTitle": "Titel des Dokuments",
+  "csvExport": "CSV Export",
+  "duplicate": "Duplizieren",
+  "duration": "Dauer",
+  "durationValueMinutes": "min",
+  "durationValuePoints": "Punkte",
+  "durationValueSeconds": "sek",
+  "edit": "Bearbeiten",
+  "editActivity": "Aktivität bearbeiten",
+  "editAll": "alle bearbeiten",
+  "editThis": "diese bearbeiten",
+  "editThisActivityTooltip": "Aktivitäten, die bereits ausgeführt wurden, können nicht bearbeitet werden.",
+  "editHealthcareProfessional": "Gesundheitsexpert*in bearbeiten",
+  "editInstitution": "Institut bearbeiten",
+  "editPatient": "Nutzer*in bearbeiten",
+  "editProfilePicture": "Profilbild bearbeiten",
+  "email": "E-Mail",
+  "emailAdministrator": "E-Mail Administrator*in",
+  "emailBeingSent": "E-Mail wird gesendet...",
+  "emailSent": "E-Mail gesendet",
+  "emailSentError": "E-Mail konnte nicht gesendet werden.",
+  "enableSocialFeatures": "Soziale Funktionen aktivieren",
+  "endLocation": "Zielort",
+  "endTime": "Endzeit",
+  "englishTranslationNote": "(englische Übersetzung)",
+  "englishTranslationOptional": "Englische Übersetzung (optional)",
+  "error": "Leider ist etwas schiefgelaufen. Versuchen Sie es später erneut.",
+  "errorNoInternet": "Die Anfrage konnte nicht verarbeitet werden, bitte überprüfe Deine Internetverbindung.",
+  "errorPageNotFound": "Diese Seite haben wir leider nicht gefunden...",
+  "equipment": "Gerät",
+  "exercise": "Übung",
+  "exercise_ENDURANCE": "Kontinuierliches Ausdauertraining",
+  "exercise_HYPERTROPHY": "Hypertrophietraining",
+  "exercise_INTERVAL": "Intervall Ausdauertraining",
+  "exercise_OTHER": "Andere Übung",
+  "exercise_STRENGTHENING": "Kraftausdauertraining",
+  "exercise_TASK": "Aufgabe",
+  "exerciseBreakBetweenSets": "Pause zwischen Sätzen (sek)",
+  "exerciseDurationMinutes": "Dauer (min)",
+  "exerciseDurationSeconds": "Dauer (sek)",
+  "exerciseIntensity": "Belastungsintensität (% max. HF)",
+  "exerciseIntensityPhase": "Belastungsphase",
+  "exerciseNeedsEquipment": "Gerät erforderlich",
+  "exerciseNumberOfIntervals": "Anzahl Intervalle",
+  "exerciseNumberOfSets": "Anzahl der Sätze",
+  "exerciseRecoveryPhase": "Erholungsphase",
+  "exerciseRepeats": "Wiederholungen",
+  "exerciseTrainingHeartRateLowerLimit": "Trainingsherzfrequenz (untere Grenze)",
+  "exerciseTrainingHeartRateUpperLimit": "Trainingsherzfrequenz (obere Grenze)",
+  "exercises": "Übungen",
+  "exerciseWorkoutStrength": "Krafttraining",
+  "executeActivity": "Aktivität eintragen",
+  "executed": "Ausgeführt",
+  "executeTask": "Aufgabe eintragen",
+  "execution": "Ausführung",
+  "executionWithSetRepeats": "1 Satz je {setRepeats} Wh.",
+  "@executionWithSetRepeats": {
+    "placeholders": {
+      "setRepeats": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "executionWithSetsRepeats": "{numberSets} Sätze je {setRepeats} Wh.",
+  "@executionWithSetsRepeats": {
+    "placeholders": {
+      "numberSets": {
+        "type": "int",
+        "example": "3"
+      },
+      "setRepeats": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "executionWithSetRepeatsAndBreak": "1 Satz je {setRepeats} Wh. / {breakDuration} sek. Pause zwischen den Sätzen",
+  "@executionWithSetRepeatsAndBreak": {
+    "placeholders": {
+      "setRepeats": {
+        "type": "int",
+        "example": "10"
+      },
+      "breakDuration": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "executionWithSetsRepeatsAndBreak": "{numberSets} Sätze je {setRepeats} Wh. / {breakDuration} sek. Pause zwischen den Sätzen",
+  "@executionWithSetsRepeatsAndBreak": {
+    "placeholders": {
+      "numberSets": {
+        "type": "int",
+        "example": "3"
+      },
+      "setRepeats": {
+        "type": "int",
+        "example": "10"
+      },
+      "breakDuration": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "executionWithSetSeconds": "1 Satz je {setDuration} sek.",
+  "@executionWithSetSeconds": {
+    "placeholders": {
+      "setDuration": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "executionWithSetsSeconds": "{amountSets} Sätze je {setDuration} sek.",
+  "@executionWithSetsSeconds": {
+    "placeholders": {
+      "amountSets": {
+        "type": "int",
+        "example": "3"
+      },
+      "setDuration": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "executionWithSetSecondsAndBreak": "1 Satz je {setDuration} sek. / {breakDuration} sek. Pause zwischen den Sätzen",
+  "@executionWithSetSecondsAndBreak": {
+    "placeholders": {
+      "setDuration": {
+        "type": "int",
+        "example": "30"
+      },
+      "breakDuration": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "executionWithSetsSecondsAndBreak": "{numberSets} Sätze je {setDuration} sek. / {breakDuration} sek. Pause zwischen den Sätzen",
+  "@executionWithSetsSecondsAndBreak": {
+    "placeholders": {
+      "numberSets": {
+        "type": "int",
+        "example": "3"
+      },
+      "setDuration": {
+        "type": "int",
+        "example": "30"
+      },
+      "breakDuration": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "export_END_OF_DOCUMENT": "Am Ende des Dokuments",
+  "export_WEEKLY": "Wöchentlich",
+  "export_NO_IDENTIFICATOR": "Kein Identifikator",
+  "export_ID": "Alphanumerische ID",
+  "export_NAME": "Name",
+  "export": "Exportieren",
+  "exportDocumentation": "Dokumentation exportieren",
+  "exportEndDate": "Zeitraum (bis)",
+  "exportHint": "Um die Dokumentation herunterladen zu können, stelle sicher, dass Pop-ups in Deinem Browser zugelassen sind.",
+  "exportStartDate": "Zeitraum (von)",
+  "extraActivity": "Extra Aktivität",
+  "extraActivityPlural": "Extra Aktivitäten",
+  "filename": "Dateiname",
+  "finalCheck": "Finaler Check",
+  "finalCheck1": "mindestens ein bedeutungsvolles Ziel gesetzt",
+  "finalCheck2": "ein Trainingsplan gemeinsam erarbeitet",
+  "finalCheck3": "offene Fragen/Sorgen/Befürchtungen besprochen",
+  "finalCheck4": "ausreichend Informationsmaterial (in gewünschter Form) zur Verfügung gestellt",
+  "finalCheck5": "darauf hingewiesen, dass die Ziele und der Trainingsplan in Folgeterminen noch angepasst werden können",
+  "finalCheckText": "Mit <u>Fokus auf den/die Patient*in</u> und unter <u>Berücksichtigung seiner/ihrer Vorlieben und Vorerfahrungen</u> wurde ...",
+  "firstAppointment": "Erster Termin",
+  "firstName": "Vorname",
+  "firstNameAdministrator": "Vorname Administrator*in",
+  "german": "Deutsch",
+  "goal": "Ziel",
+  "handOver": "Übergeben",
+  "heatTolerance": "Subjektive Hitzetoleranz",
+  "heatTolerance_AVERAGE": "Mittel",
+  "heatTolerance_GOOD": "Gut",
+  "heatTolerance_POOR": "Schlecht",
+  "healthcareProfessional": "Gesundheitsexpert*in",
+  "healthcareProfessionals": "Gesundheitsexpert*innen",
+  "help": "Hilfe",
+  "helpOnboardingGuide": "<a>App-Rundgang &gt;</a>",
+  "helpTextProblems": "Bei Fragen oder Problemen mit aktivplan bitten wir um Kontaktaufnahme.",
+  "helpUserGuideExperts": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/Handbuch_Gesundheitsexperten.pdf'>Benutzerhandbuch &gt;</a>",
+  "helpUserGuidePatients": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/Handbuch_Patienten.pdf'>Benutzerhandbuch &gt;</a>",
+  "hintRequiredFields": "* Pflichtfelder",
+  "homeLocation": "Heimatort",
+  "id": "ID",
+  "identificator": "Identifikator",
+  "inactive": "inaktiv",
+  "institution": "Institut",
+  "institutionAdministrator": "Administrator*in des Instituts",
+  "institutionAvailabilityPhone": "Telefonische Erreichbarkeit (z.B. Montag - Freitag, 9.00 - 15.00 Uhr)",
+  "institutionAvailabilityPhoneEnglish": "Telefonische Erreichbarkeit (z.B. Monday - Friday, 9.00 - 15.00 o'clock)",
+  "institutionEmailUserQueries": "E-Mail für Rückfragen von Nutzer*innen",
+  "institutionFocus": "Schwerpunkt des Instituts",
+  "institutionFocus_CARDIOVASCULAR_REHABILITATION": "Herz-Kreislauf-Rehabilitation",
+  "institutionFocus_KLIMAFIT": "Klimafit",
+  "institutionFocus_KLIMAFIT_LIGHT": "Klimafit Light",
+  "institutionFocus_PREHAB_TO_REHAB": "Prehab2Rehab",
+  "institutionFocus_PROMOTING_A_HEALTHY_LIFESTYLE": "Förderung eines gesunden Lebensstils",
+  "institutionFocusP2RFocus_GENERAL": "Allgemein",
+  "institutionGetInTouchNotes": "Sonstige Hinweise zur Kontaktaufnahme (z.B. Wir bemühen uns, alle Anfragen innerhalb von 24 Stunden zu bearbeiten.)",
+  "institutionGetInTouchNotesEnglish": "Sonstige Hinweise zur Kontaktaufnahme (z.B. We strive to process all requests within 24 hours.)",
+  "institutionOverview": "Institutsübersicht",
+  "institutionPhoneNumberUserQueries": "Telefonnummer für Rückfragen von Nutzer*innen",
+  "institutionUrl": "Website des Instituts",
+  "intensity": "Belastungsintensität",
+  "intensityDuration": "Belastungsintensität / Dauer",
+  "intensityLineBreak": "Belastungs-\nintensität",
+  "intervalCount": "Anzahl der Intervalle",
+  "intervals": "Intervalle",
+  "jobName": "Berufsbezeichnung",
+  "kg": "kg",
+  "lastActiveAt": "Zuletzt aktiv am",
+  "lastAppointment": "Letzter Termin",
+  "lastName": "Nachname",
+  "lastNameAdministrator": "Nachname Administrator*in",
+  "lastOnlineAt": "Zuletzt online am {date} um {time} Uhr",
+  "@lastOnlineAt": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "01.01.2021"
+      },
+      "time": {
+        "type": "String",
+        "example": "15:30"
+      }
+    }
+  },
+  "lastOnlineTodayAt": "Zuletzt online heute um {time} Uhr",
+  "@lastOnlineTodayAt": {
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "15:30"
+      }
+    }
+  },
+  "lastOnlineYesterdayAt": "Zuletzt online gestern um {time} Uhr",
+  "@lastOnlineYesterdayAt": {
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "15:30"
+      }
+    }
+  },
+  "legalNoticeCompanyContactAddress": "Lindhofstr. 22, 5020 Salzburg, Österreich",
+  "legalNoticeCompanyContactPhone": "Tel.: <phone number='+435725582701'>+43 (0) 5 7255 82701</phone>",
+  "legalNoticeCompanyContactMail": "E-Mail: <mail target='office@dhp.lbg.ac.at'>office@dhp.lbg.ac.at</mail>",
+  "legalNoticeCompanyDescription": "Rechtlich unselbstständige Einrichtung der Ludwig Boltzmann Gesellschaft GmbH",
+  "legalNoticeCompanyName": "Ludwig Boltzmann Institut für digitale Gesundheit und Prävention",
+  "legalNoticeDataProtection": "Datenschutz",
+  "legalNoticeMoreInformation": "<a href='https://dhp.lbg.ac.at/impressum'>Weitere Infos &gt;</a>",
+  "legalNoticePrivacyPolicy": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/Datenschutzerklarung_v2.html'>Datenschutzerklärung &gt;</a>",
+  "legalNoticeTermsAndConditions": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/AGB_v1.pdf'>Allgemeine Geschäftsbedingungen &gt;</a>",
+  "legalNoticeTermsAndConditionsMenu": "Impressum & Datenschutz",
+  "less": "weniger",
+  "letsGo": "Los geht's!",
+  "literature": "Literatur",
+  "location": "Ort",
+  "login": "Anmelden",
+  "logout": "Abmelden",
+  "maximumBloodPressure": "Maximaler Blutdruck",
+  "maximumBloodPressureShort": "Max. Blutdruck",
+  "maximumBloodPressureWithUnit": "Maximaler Blutdruck (100/50 - 300/200 mmHg)",
+  "maximumHeartRate": "Maximale Herzfrequenz",
+  "maximumHeartRateShort": "Max. Herzfrequenz",
+  "maximumHeartRateWithUnit": "Maximale Herzfrequenz (60 - 220 bpm)",
+  "maximumOxygen": "Maximale Sauerstoffaufnahme",
+  "maximumOxygenShort": "Max. Sauerstoffaufnahme",
+  "maximumOxygenWithUnit": "Maximale Sauerstoffaufnahme (10 - 100 ml/kg/min)",
+  "maximumPerformance": "Maximale Leistung",
+  "maximumPerformanceShort": "Max. Leistung",
+  "maximumPerformanceWithUnit": "Maximale Leistung (0,1 - 8 Watt/kg)",
+  "medication": "Medikamente",
+  "message": "Nachricht",
+  "messageHistoryHint": "Diese Funktion ist nur für Nachrichten an mehrere Personen gedacht. Nachrichten an einzelne Personen können über das Nutzerprofil versendet werden.",
+  "messageHistoryHintPatient": "Über den Menüpunkt \"Nachrichten\" können Nachrichten an mehrere Personen gesendet werden.",
+  "messageRestriction": "Einschränkung",
+  "messageRestriction_AFTER_SURGERY": "Nach der Operation",
+  "messageRestriction_BEFORE_SURGERY": "Vor der Operation",
+  "messageRestriction_NO_RESTRICTION": "Keine Einschränkung",
+  "messages": "Nachrichten",
+  "messagesHint": "Nachrichten in dieser Liste sollten informativ oder motivierend sein. Vor dem Hinzufügen einer neuen Nachricht bitte beachten, dass diese an alle Nutzer*innen gesendet wird (zu unterschiedlichen, zufälligen Zeitpunkten) und daher alle Nutzer*innen ansprechen sollte.",
+  "messagesScheduledFor": "Nachrichten geplant für {name}",
+  "@messagesScheduledFor": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Max Mustermann"
+      }
+    }
+  },
+  "messageSendToType_ALL": "Alle Nutzer*innen",
+  "messageSendToType_SOME": "Ausgewählte Empfänger*innen",
+  "minimumDaysBetweenInformationMessages": "Mindestabstand Tage zwischen Informationsnachrichten",
+  "minutes": "Minuten",
+  "minutesKlimafit": "Aktivitätspunkten",
+  "mobilityPreference": "Mobilitätspräferenz",
+  "mobilityPreference_BIKE": "Fahrrad",
+  "mobilityPreference_CAR": "Auto",
+  "mobilityPreference_FOOT": "Zu Fuß",
+  "mobilityPreference_PUBLIC_TRANSPORT": "Öffentliche Verkehrsmittel",
+  "month": "Monat",
+  "more": "mehr",
+  "muscleGroup_ABDOMINAL": "Bauch",
+  "muscleGroup_ARMS": "Arme",
+  "muscleGroup_BACK": "Rücken",
+  "muscleGroup_CHEST": "Brust",
+  "muscleGroup_LEGS": "Beine",
+  "muscleGroup_SHOULDERS": "Schultern",
+  "muscleGroups": "Muskelgruppen",
+  "myCode": "Mein Code",
+  "myContacts": "Meine Kontakte",
+  "myHealthData": "Meine Daten",
+  "myProfile": "Mein Profil",
+  "name": "Name",
+  "nameEnglish": "Name (englische Übersetzung)",
+  "newEmptyWeek": "Neue leere Woche",
+  "newPassword": "Neues Passwort",
+  "newValue": "Neu",
+  "newVersionAvailable": "Neue Version verfügbar",
+  "newVersionAvailableText": "Eine neue Version ({version}) der aktivplan-App ist verfügbar. Bitte aktualisiere die App.",
+  "@newVersionAvailableText": {
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "1.0.0"
+      }
+    }
+  },
+  "next": "Weiter",
+  "nextExercise": "Nächste Übung: {name}",
+  "@nextExercise": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Kniebeugen"
+      }
+    }
+  },
+  "nextPlannedActivity": "Nächste geplante Aktivität",
+  "no": "Nein",
+  "noApps": "Noch keine Apps erfasst.",
+  "none": "keine",
+  "noExercises": "Noch keine Trainings erfasst.",
+  "noImagesSelected": "Keine Bilder ausgewählt",
+  "noInstitutions": "Noch keine Institute hinzugefügt.",
+  "noMessages": "Noch keine Nachrichten erfasst.",
+  "noNewNotifications": "Keine neuen Benachrichtigungen.",
+  "noNextPlannedActivity": "Kein geplanten Aktivitäten in nächster Zeit.",
+  "noPatientNotes": "Noch keine Notizen erfasst",
+  "noPatients": "Noch keine Nutzer erfasst.",
+  "noPersonalGoals": "Noch keine Ziele gesetzt",
+  "noPlannedActivities": "Keine Aktivitäten geplant",
+  "noTasks": "Noch keine Aufgaben erfasst.",
+  "noTrainingPlans": "Noch keine Trainingspläne erfasst.",
+  "notExecuted": "Noch nicht ausgeführt",
+  "notifications": "Benachrichtigungen",
+  "noVideos": "Noch keine Videos erfasst.",
+  "now": "Jetzt",
+  "noWorkoutExercise": "Noch keine Übungen erfasst.",
+  "noWorkouts": "Noch kein Workout erfasst.",
+  "note": "Notiz",
+  "notes": "Anmerkungen",
+  "notesEnglish": "Anmerkungen (englische Übersetzung)",
+  "notesHealthExpert": "Notizen Gesundheitsexpert*in",
+  "older": "Älter",
+  "oldPassword": "Altes Passwort",
+  "onboardingText1": "<h1>Willkommen!</h1>\n\nWir freuen uns, dass Du Dich dafür entschieden hast die <b>aktiv</b>plan App zu verwenden.\n\nMöchtest Du einen kurzen Überblick über die wichtigsten Funktionalitäten der App erhalten?",
+  "onboardingText2": "<h1>Dein Trainingsplan</h1>\n\nBehalte den Überblick über Deine geplanten Aktivitäten und dokumentiere Details zur Ausführung.\n\nUm zusätzliche Informationen zu einer Aktivität zu erhalten, klicke auf diese Aktivität. Wenn Du eine Aktivität ausgeführt hast, klicke auf den Kreis, um sie abzuhaken.",
+  "onboardingText3": "<h1>Aktive Minuten</h1>\n\nErreiche jede Woche Dein Ziel und beobachte Deine Fortschritte.\n\nAktive Minuten sammelst Du, indem Du Aktivitäten ausführst und abhakst.\n\nUm mehr Details über den zeitlichen Verlauf zu erfahren, klicke auf die Grafik.",
+  "onboardingText3Klimafit": "<h1>Aktivitätspunkte</h1>\n\nErreiche jede Woche Dein Ziel und beobachte Deine Fortschritte.\n\nAktivitätspunkte sammelst Du, indem Du Aktivitäten ausführst und abhakst.\n\nUm mehr Details über den zeitlichen Verlauf zu erfahren, klicke auf die Grafik.",
+  "onboardingText4": "<h1>Einhaltung Trainingsplan</h1>\n\nVersuche stets, Dich an den mit den Gesundheitsexpert*innen ausgearbeiteten Trainingsplan zu halten und die Aktivitäten wie geplant durchzuführen.\n\nDiese Grafik zeigt Dir auf einen Blick, wie gut Dir das gelingt.",
+  "onboardingText5": "<h1>Persönliche Ziele</h1>\n\nDeine persönlichen Ziele werden im Kalender am jeweiligen Tag und unten auf der Trainingsplanseite angezeigt.\n\nUm mehr Details zu einem Ziel anzuzeigen, klicke auf dieses Ziel. Um ein Ziel als erreicht zu markieren, klicke auf den Kreis.",
+  "onboardingText6": "<h1>Dein Benutzerprofil</h1>\n\nÜber Dein Benutzerprofil kannst Du Deine Daten einsehen und Änderungen anfragen.\n\nAußerdem kannst Du einen &quot;Besonderen Status&quot; einstellen, der deinem/deiner Gesunheitsexpert*in angezeigt wird.",
+  "onboardingText7": "<h1>Viel Spaß beim Aktivsein!</h1>\n\nEntdecke weitere Funktionen über das Menü.\n\nSollte noch etwas unklar sein, kannst Du unter dem Menüpunkt &quot;Hilfe&quot; ein umfassendes Benutzerhandbuch abrufen.",
+  "or": "oder",
+  "orSendLater": "oder später senden",
+  "overwriteDataIrreversibly": "Daten unwiderruflich überschreiben",
+  "overwriteDatabase": "Datenbank überschreiben",
+  "overwriteDatabaseText": "Durch die Übertragung der Datenbank werden sämtliche Änderungen (Anpassungen/Löschungen/Ergänzungen), die ein Institut möglicherweise vorgenommen hat, unwiderruflich überschrieben. Bitte wähle aus, welche Daten du überschreiben möchtest:",
+  "password": "Passwort",
+  "participantId": "Teilnehmer*in ID",
+  "patient": "Nutzer*in",
+  "patientHandover": "Nutzer*innen übergeben",
+  "patientHandoverComplete": "Übergabe erfolgreich",
+  "patientHandoverCompleteMultipleText": "Patienten {patientNames} wurden erfolgreich an {healthcareProfessionalName} übergeben.",
+  "@patientHandoverCompleteMultipleText": {
+    "patientNames": {
+      "value": {
+        "type": "String",
+        "example": "Max Mustermann"
+      }
+    },
+    "healthcareProfessionalName": {
+      "value": {
+        "type": "String",
+        "example": "Max Mustermann"
+      }
+    }
+  },
+  "patientHandoverCompleteSingleText": "Patient {patientName} wurde erfolgreich an {healthcareProfessionalName} übergeben.",
+  "@patientHandoverCompleteSingleText": {
+    "patientName": {
+      "value": {
+        "type": "String",
+        "example": "Max Mustermann"
+      }
+    },
+    "healthcareProfessionalName": {
+      "value": {
+        "type": "String",
+        "example": "Max Mustermann"
+      }
+    }
+  },
+  "patientNotes": "Patientennotizen",
+  "patientMaximumHeartRate": "Maximale Herzfrequenz: {value} bpm",
+  "@patientMaximumHeartRate": {
+    "placeholders": {
+      "value": {
+        "type": "int",
+        "example": "50"
+      }
+    }
+  },
+  "patientsInfoActiveMinutes": "Hat in den letzten vier Wochen <trafficLight1/> <b>mindestens 80%</b> <trafficLight2/> <b>50% bis 79%</b> <trafficLight3/> <b>weniger als 50%</b> der geplanten aktiven Minuten absolviert.",
+  "patientsInfoActiveMinutesKlimafit": "Hat in den letzten vier Wochen <trafficLight1/> <b>mindestens 80%</b> <trafficLight2/> <b>50% bis 79%</b> <trafficLight3/> <b>weniger als 50%</b> der geplanten Aktivitätspunkte absolviert.",
+  "patientsInfoActiveMinutesThreeWeeks": "Hat in den letzten drei Wochen <trafficLight1/> <b>mindestens 80%</b> <trafficLight2/> <b>50% bis 79%</b> <trafficLight3/> <b>weniger als 50%</b> der aktiven Minuten absolviert.",
+  "patientState_INAPPROPRIATE_TRAINING_PLAN": "Plan unpassend",
+  "patientState_NO_STATE": "Plan passend",
+  "patientState_ON_VACATION": "Im Urlaub",
+  "patientState_SICK": "Krank",
+  "patientStateActiveMinutes": "Aktive Minuten Status",
+  "patientStateActiveMinutesPercentage": "{percentage}% ({percentagePlanned}% gepl. Akt.)",
+  "@patientStateActiveMinutesPercentage": {
+    "placeholders": {
+      "percentage": {
+        "type": "int",
+        "example": "50"
+      },
+      "percentagePlanned": {
+        "type": "int",
+        "example": "50"
+      }
+    }
+  },
+  "patientStateFourWeekState": "Vier-Wochen-Status",
+  "patientStateNotification": "Statusmitteilung",
+  "patientStatePlannedActiveMinutes": "Geplante aktive Minuten Status",
+  "patientStatePlannedActiveMinutesKlimafit": "Geplante Aktivitätspunkte Status",
+  "patientOverview": "Nutzer*innenübersicht",
+  "patients": "Nutzer*innen",
+  "performedOn": "Ausgeführt am",
+  "personalGoal": "Persönliches Ziel",
+  "personalGoalReachedPart1": "Du hast dein Ziel",
+  "personalGoalReachedPart2": "erreicht.",
+  "personalGoalReachedPart2earlier": "früher erreicht als geplant.",
+  "personalGoals": "Persönliche Ziele",
+  "perWeek": "pro Woche",
+  "pesiQuestion": "Wie warm hast du dich gefühlt?",
+  "pesiValue_1": "Angenehm",
+  "pesiValue_2": "Leicht warm",
+  "pesiValue_3": "Warm",
+  "pesiValue_4": "Heiß",
+  "pesiValue_5": "Sehr heiß",
+  "phone": "Telefon",
+  "picture": "Foto",
+  "plan": "Planen",
+  "plannedActivities": "Gemeinsam geplante Aktivitäten",
+  "plannedActivity": "Geplante Aktivität",
+  "plannedActivityPlural": "Geplante Aktivitäten",
+  "plannedMinutes": "{amount} min geplant",
+  "@plannedMinutes": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "plannedOn": "Geplant am",
+  "plannedOnDays": "An folgenden Tagen geplant",
+  "planOnDays": "An folgenden Tagen planen",
+  "pleaseAcceptTerms": "Bitte Datenschutzbestimmungen akzeptieren.",
+  "postImageTitle": "Bild(er) meiner Story hinzufügen",
+  "postImageText": "Wähle Bilder aus deiner Gallerie aus \noder mache ein neues Foto.",
+  "postStatus": "Status posten",
+  "postStatusTextHint": "Was möchtest du teilen?",
+  "postedStatusMessage": "Status erfolgreich gepostet",
+  "postedStatusMessageError": "Status konnte nicht gepostet werden",
+  "postedMinutesAgo": "min.",
+  "postedHoursAgo": "Std.",
+  "postedItemRemoved": "Element erfolgreich entfernt",
+  "postedItemRemovedError": "Element konnte nicht entfernt werden",
+  "predefinedActivityType_CAR_WALKING": "Auto & Gehen",
+  "predefinedActivityType_CYCLING": "Radfahren",
+  "predefinedActivityType_E_BIKING": "E-Bike",
+  "predefinedActivityType_FAST_WALKING": "Schnelles Gehen",
+  "predefinedActivityType_HIKING": "Wandern",
+  "predefinedActivityType_NORDIC_WALKING": "Nordic Walking",
+  "predefinedActivityType_OTHER": "Sonstige",
+  "predefinedActivityType_PUBLIC_TRANSPORT_WALKING": "Öffi & Gehen",
+  "predefinedActivityType_RUNNING": "Laufen",
+  "predefinedActivityType_STRENGTH_TRAINING": "Krafttraining",
+  "predefinedActivityType_SWIMMING": "Schwimmen",
+  "predefinedActivityType_WALKING": "Gehen",
+  "prehab2RehabFocus": "Prehab2Rehab-Fokus",
+  "privacySettings": "Privatsphäre-Einstellungen",
+  "qrCodeDescription": "Dein QR-Code ist privat. Wenn du ihn mit jemanden teilst, kann diese Person ihn über die aktivplan+ App scannen, um dich als Kontakt hinzuzufügen.",
+  "qrCodeUnsupported": "Scanne den QR-Code mit der <b>aktiv</b>plan+ App, um einen Kontakt hinzuzufügen. Lade dazu die <b>aktiv</b>plan+ App auf Dein Handy oder Tablet herunter:",
+  "rating": "Anstrengung",
+  "ratingQuestion": "Wie anstrengend war diese Aktivität für dich?",
+  "ratingValue_0_1": "sehr leicht",
+  "ratingValue_2_3": "leicht",
+  "ratingValue_4_5": "mäßig",
+  "ratingValue_6_7": "etwas anstrengend",
+  "ratingValue_8_9": "anstrengend",
+  "ratingValue_10": "sehr anstrengend",
+  "recipient": "Empfänger*in",
+  "recipients": "Empfänger*innen",
+  "recordedDuration": "Erfasster Zeitraum",
+  "register": "Erfassen",
+  "reminderActivity": "Erinnerung Aktivität",
+  "removeContact": "Kontakt entfernen",
+  "removeContactText": "Bist du sicher, dass du den Kontakt {name} entfernen möchtest?",
+  "@removeContactText": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Max Mustermann"
+      }
+    }
+  },
+  "removedContact": "Kontakt erfolgreich entfernt",
+  "removedContactError": "Kontakt konnte nicht entfernt werden",
+  "removeStoryItemConfirmTitle": "Element entfernen",
+  "removeStoryItemConfirmText": "Bist du sicher, dass du dieses Element aus deiner Story entfernen möchtest?",
+  "repeat": "Wiederholen",
+  "repeatOrDurationSets": "Wh. oder Dauer / Sätze",
+  "repeatShort": "Wh.",
+  "requestChange": "Änderung anfragen",
+  "requestedChange": "Änderung erfolgreich angefragt",
+  "requestChanges": "Änderungen anfragen",
+  "requestProfileDeletion": "Profil-Löschung anfragen",
+  "requestProfileDeletionButton": "Löschung anfragen",
+  "requestProfileDeletionText": "Bist du sicher, dass du dein Profil endgültig löschen willst? Wenn deine Anfrage akzeptiert wird, wird dein Profil und alle in aktivplan gespeicherten Daten unverzüglich gelöscht. Aktivplan ist damit nicht mehr nutzbar.",
+  "requestedProfileDeletion": "Anfrage erfolgreich an {name} übermittelt",
+  "@requestedProfileDeletion": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Franz Gruber"
+      }
+    }
+  },
+  "required": "erforderlich",
+  "resetPassword": "Passwort zurücksetzen",
+  "resetPasswordActivated": "Dein Account wurde erfolgreich aktiviert.\nUm mit Deinem persönlichen <b>aktiv</b>plan zu starten, lade die <b>aktiv</b>plan+ App auf Dein Handy oder Tablet herunter:",
+  "resetPasswordEnterPassword": "Bitte gib ein neues Passwort für Deinen <b>aktiv</b>plan Account ein.",
+  "resetPasswordFeedbackText": "Du hast Post! Folge der Anleitung in der E-Mail, um Dein Passwort zurückzusetzen. E-Mail wurde an {email} versendet.",
+  "@resetPasswordFeedbackText": {
+    "placeholders": {
+      "email": {
+        "type": "String",
+        "example": "Alphaport"
+      }
+    }
+  },
+  "resetPasswordLinkToWebpage": "Alternativ kann <b>aktiv</b>plan auch über den Webbrowser genutzt werden: <a>Auf der Website einloggen.</a>",
+  "resetPasswordRegister": "Registrieren",
+  "resetPasswordSet": "Dein Passwort wurde erfolgreich aktualisiert.\nUm mit Deinem persönlichen <b>aktiv</b>plan zu starten, lade die <b>aktiv</b>plan+ App auf Dein Handy oder Tablet herunter:",
+  "resetPasswordText": "E-Mail-Adresse eingeben mit der das aktivplan-Konto verknüpft ist. Wir senden einen Link an diese Adresse um das Passwort zurückzusetzen.",
+  "resetPasswordTokenExpired": "Ups, da ist etwas schiefgelaufen. Dieser Aktivierungslink ist ungültig.\n\nWenn Du Dein Konto bereits aktiviert hast, folge <a>diesem Link</a>, um Dich anzumelden. Wenn Du Dein Konto nicht innerhalb von 10 Tagen nach Erhalt der Einladungs-E-Mail aktiviert hast, ist dieser Link abgelaufen und Dein Konto wurde gelöscht. Um ein neues Konto zu beantragen, wende Dich bitte an Deine zuständigen Gesundheitsexperten.\n\nSolltest Du irgendwelche Fragen oder Bedenken haben, kontaktiere uns bitte unter <mail target='aktivplan@dhp.lbg.ac.at'>aktivplan@dhp.lbg.ac.at</mail>",
+  "resetPasswordTokenInvalid": "Ups, da ist etwas schiefgelaufen. Dieser Link ist ungültig.\n\nLinks zum Zurücksetzen des Passworts sind nur einmal gültig und verfallen, sobald ein neuer Link angefordert wird. Wenn Du bereits einen neuen Link angefordert hast, kannst Du diesen verwenden, um Dein Passwort zurückzusetzen. Ansonsten kannst du <a>hier</a> einen neuen Link anfordern, um dein Passwort zurückzusetzen.\n\nSolltest Du irgendwelche Fragen oder Bedenken haben, kontaktiere uns bitte unter <mail target='aktivplan@dhp.lbg.ac.at'>aktivplan@dhp.lbg.ac.at</mail>",
+  "resetPasswordWelcome": "Willkommen {name}!\nRegistriere Dich, um Deinen <b>aktiv</b>plan Account zu aktivieren.",
+  "@resetPasswordWelcome": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Franz Gruber"
+      }
+    }
+  },
+  "responsibleHealthExpert": "Zuständige*r Gesundheitsexpert*in",
+  "save": "Speichern",
+  "saveAndSend": "Speichern und senden",
+  "saveAndSendLater": "Speichern und später versenden",
+  "saveAndUpdate": "Speichern und aktualisieren",
+  "scanCode": "Code scannen",
+  "scanCodeDescription": "Scanne den QR-Code eines Kontakts, um ihn hinzuzufügen.",
+  "scheduledMessage": "Nachricht erfolgreich gespeichert",
+  "select": "Auswählen",
+  "selectAll": "Alle auswählen",
+  "selectLocationFromMap": "Standort aus Karte auswählen",
+  "send": "Senden",
+  "sendDate": "Sendedatum",
+  "sendInvitationMailAgain": "Einladungsmail",
+  "sendLater": "Später senden",
+  "sendLink": "Link senden",
+  "sendMessageHint": "Nachrichten werden über die aktivplan-App übermittelt. Der/die Empfänger*in hat keine Möglichkeit, darauf zu reagieren.\nDaher ist es notwendig, Kontaktdaten in der Nachricht zu vermerken, sofern eine Kontaktaufnahme gewünscht wird.",
+  "sendMessageTo": "Nachricht an {name}",
+  "@sendMessageTo": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Max Mustermann"
+      }
+    }
+  },
+  "sendMessageToAllHint": "Geplante Nachricht wird auch an zukünftig erstellte Nutzer*innen verschickt",
+  "sendTime": "Sendezeitpunkt",
+  "sent": "Gesendet",
+  "sentMessage": "Nachricht erfolgreich gesendet",
+  "sentMessageError": "Nachricht konnte nicht gesendet werden",
+  "set": "Satz",
+  "sets": "Sätze",
+  "share": "teilen",
+  "shareActivityData": "Meine Aktivitätsdaten mit meinen Kontakten teilen",
+  "signature": "Unterschrift",
+  "skip": "Überspringen",
+  "start": "Starten",
+  "startDate": "Startdatum",
+  "startLocation": "Startort",
+  "startTime": "Startzeit",
+  "startTour": "Rundgang starten",
+  "startTourAgain": "Rundgang erneut starten",
+  "state": "Status",
+  "statusMessage": "Statusmeldung (nur für Kontakte sichtbar)",
+  "subject": "Betreff",
+  "surgeryDate": "OP-Datum",
+  "surgeryTime": "OP-Zeit",
+  "switchLanguage": "Sprache zu Englisch ändern",
+  "taskNotes": "Notizen zur Aufgabe",
+  "till": "bis",
+  "time": "Zeit",
+  "tipsAndInfos": "Tipps & Infos",
+  "title": "Titel",
+  "titleEnglish": "Titel (englische Übersetzung)",
+  "themeVideo": "Themenvideo",
+  "themeVideos": "Themenvideos",
+  "thisWeek": "Diese Woche",
+  "today": "Heute",
+  "tomorrow": "Morgen",
+  "total": "Gesamt",
+  "training": "Training",
+  "trainingDescription": "Trainingsbeschreibung",
+  "trainingDuration": "Trainingsdauer",
+  "trainingFrequency": "Trainingshäufigkeit",
+  "trainingHeartFrequency": "Trainingsherzfrequenz",
+  "trainingHeartFrequencyBpm": "Trainingsherzfrequenz (bpm)",
+  "trainingPlan": "Trainingsplan",
+  "trainingPlanCopyOf": "{name} Kopie",
+  "@trainingPlanCopyOf": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alphaport"
+      }
+    }
+  },
+  "trainingState": "Trainingsstatus (nur für Gesundheitsexpert*in sichtbar)",
+  "trainingType": "Trainingsart",
+  "trainingValue_0": "Kein Training",
+  "trainingValue_1_3": "Gelegentliches Training, leichtes Training",
+  "trainingValue_4_7": "Regelmäßiges Training",
+  "trainingValue_8_10": "Tägliches Training",
+  "tryAgain": "Erneut versuchen",
+  "tryAgainLater": "Versuchen Sie es später nochmal.",
+  "undoExecution": "Ausführung rückgängig machen",
+  "undoMove": "Verschieben rückgängig machen",
+  "undoRatingText": "Bist du sicher, dass du die Ausführung dieser Aktivität rückgängig machen willst? Die Daten zur Ausführung gehen dabei verloren.",
+  "update": "Aktualisieren",
+  "updatedApp": "App aktualisiert",
+  "updatedExercise_ENDURANCE": "Ausdauertraining aktualisiert",
+  "updatedExercise_HYPERTROPHY": "Hypertrophietraining aktualisiert",
+  "updatedExercise_INTERVAL": "Intervall Ausdauertraining aktualisiert",
+  "updatedExercise_OTHER": "Übung aktualisiert",
+  "updatedExercise_STRENGTHENING": "Kraftausdauertraining aktualisiert",
+  "updatedExercise_TASK": "Aufgabe aktualisiert",
+  "updatedInstitution": "Institut aktualisiert",
+  "updatedHealthcareProfessional": "Gesundheitsexpert*in aktualisiert",
+  "updatedMessage": "Nachricht aktualisiert",
+  "updatedPassword": "Passwort wurde erfolgreich aktualisiert",
+  "updatedPatient": "Nutzer*in aktualisiert",
+  "updatedTrainingPlan": "Trainingsplan aktualisiert",
+  "updatedVideo": "Video aktualisiert",
+  "updatedWorkout": "Workout aktualisiert",
+  "uploadImage": "Bild hochladen",
+  "uploadImageErrorTooBig": "Bild ist zu groß, maximale Dateigröße: 10 MB",
+  "uploadProfilePicture": "Profilbild hochladen",
+  "uploadVideo": "Video hochladen",
+  "validationDefaultLength": "Eingabe muss zwischen 2 und 100 Zeichen lang sein.",
+  "validationDuplicateEmail": "Es existiert bereits ein Konto für diese E-Mail-Adresse.",
+  "validationEmail": "Bitte eine gültige E-Mail-Adresse eingeben.",
+  "validationInvalidValue": "Ungültiger Wert. Bitte kontrollieren Sie Ihre Eingabe.",
+  "validationMoveDateWithinAWeek": "Geplante Aktivitäten können nur innerhalb einer Woche verschoben werden",
+  "validationNotEmpty": "Erfordert eine Eingabe",
+  "validationPasswordLength": "Eingabe muss mindestens 8 Zeichen lang sein.",
+  "validationPasswordsNotEqual": "Passwörter stimmen nicht überein.",
+  "validationWrongCredentials": "Anmeldedaten nicht korrekt.",
+  "validationWrongPassword": "Passwort nicht korrekt.",
+  "video": "Video",
+  "videoWaitBetweenExercisesSeconds": "Wartezeit zwischen Übungen (Sekunden)",
+  "week": "Woche",
+  "weeks": "Wochen",
+  "weight": "Gewicht",
+  "weightKg": "Gewicht (kg)",
+  "wholeDay": "ganztägig",
+  "workLocation": "Arbeitsort",
+  "workout": "Workout",
+  "workoutDurationHint": "Workout-Dauer errechnet sich automatisch aus der Summe der Dauer der Einzelübungen.",
+  "workouts": "Workouts",
+  "importWorkout": "Workout importieren",
+  "year": "Jahr",
+  "yes": "Ja",
+  "yourWeeklyGoal": "Dein Wochenziel",
+  "youTubeUrl": "YouTube Link",
+  "youTubeUrlEnglish": "YouTube Link (englische Übersetzung)",
+  "morninig": "Morgen",
+  "afternoon": "Nachmittag",
+  "evening": "Abend",
+  "liveHealthData": "Live-Gesundheitsdaten",
+  "connectToGoogleHealthConnect": "Verbinden Sie sich mit Google Health Connect",
+  "disconnectFromGoogleHealthConnect": "Sie sind mit Google Health Connect verbunden",
+  "connectToAppleHealth": "Verbinden Sie sich mit Apple Health",
+  "disconnectFromAppleHealth": "Sie sind mit Apple Health verbunden",
+  "permissionRquest": "Um Aktivitätsdaten von Google Health Connect/Apple Health abzurufen, gehen Sie bitte zu App-Info -> Berechtigungen und erteilen Sie die folgende(n) Berechtigung(en):",
+  "physicalActivity": "Physische Aktivität",
+  "walking": "Gehen",
+  "running": "Laufen",
+  "running_Treadmill": "Laufen auf dem Laufband",
+  "walking_Treadmill": "Gehen auf dem Laufband",
+  "hiking": "Wandern",
+  "biking": "Radfahren",
+  "swimmming": "Schwimmen"
+}

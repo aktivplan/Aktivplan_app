@@ -1,0 +1,1177 @@
+{
+  "achievedActivityShort": "Congratulations, goal achieved!",
+  "achieveUntil": "Achieve until",
+  "active": "active",
+  "activeMinutes": "Active minutes",
+  "activeMinutesKlimafit": "Activity points",
+  "activeMinutesHide": "Hide active minutes",
+  "activeMinutesHideKlimafit": "Hide activity points",
+  "activeMinutesInCalendarWeek": "Active minutes in calendar week {calendarWeek}",
+  "@activeMinutesInCalendarWeek": {
+    "placeholders": {
+      "calendarWeek": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "activeMinutesInCalendarWeekKlimafit": "Activity points in calendar week {calendarWeek}",
+  "@activeMinutesInCalendarWeekKlimafit": {
+    "placeholders": {
+      "calendarWeek": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "activeMinutesPerWeek": "Active minutes per week",
+  "activeMinutesPerWeekKlimafit": "Activity points per week",
+  "activeMinutesPerWeekAmount": "{amount} active minutes per week",
+  "@activeMinutesPerWeekAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "activeMinutesPerWeekAmountKlimafit": "{amount} activity points per week",
+  "@activeMinutesPerWeekAmountKlimafit": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "activeMinutesShow": "Show active minutes",
+  "activeMinutesShowKlimafit": "Show activity points",
+  "activities": "Activities",
+  "activity": "Activity",
+  "activity_APPOINTMENT": "Appointment",
+  "activity_ENDURANCE": "Endurance",
+  "activity_EXTRA": "Extra",
+  "activity_HYPERTROPHY": "Hypertrophy training",
+  "activity_INTERVAL": "Interval endurance",
+  "activity_OTHER": "Other activity",
+  "activity_PREDEFINED_ACTIVE_MOBILITY": "Active mobility",
+  "activity_PREDEFINED_ACTIVITY": "Activity",
+  "activity_STRENGTHENING": "Strength endurance",
+  "activity_TASK": "Task",
+  "activity_WORKOUT": "Workout",
+  "activityClass": "Activity class",
+  "activityClass_0_description": "No exercise",
+  "activityClass_0_frequency": "-",
+  "activityClass_0_duration": "-",
+  "activityClass_1_description": "Occasional, light exercise",
+  "activityClass_1_frequency": "Biweekly",
+  "activityClass_1_duration": "Less than 15 minutes",
+  "activityClass_2_description": "Occasional, light exercise",
+  "activityClass_2_frequency": "Biweekly",
+  "activityClass_2_duration": "15 to 30 minutes",
+  "activityClass_3_description": "Occasional, light exercise",
+  "activityClass_3_frequency": "Once a week",
+  "activityClass_3_duration": "Approx. 30 minutes",
+  "activityClass_4_description": "Regular exercise",
+  "activityClass_4_frequency": "Two to three times a week",
+  "activityClass_4_duration": "Approx. 45 minutes",
+  "activityClass_5_description": "Regular exercise",
+  "activityClass_5_frequency": "Two to three times a week",
+  "activityClass_5_duration": "45 minutes to 1 hour",
+  "activityClass_6_description": "Regular exercise",
+  "activityClass_6_frequency": "Two to three times a week",
+  "activityClass_6_duration": "1 - 3 hours",
+  "activityClass_7_description": "Regular exercise",
+  "activityClass_7_frequency": "Two to three times a week",
+  "activityClass_7_duration": "3 - 7 hours",
+  "activityClass_8_description": "Daily exercise",
+  "activityClass_8_frequency": "Almost daily",
+  "activityClass_8_duration": "7 - 11 hours",
+  "activityClass_9_description": "Daily exercise",
+  "activityClass_9_frequency": "Daily",
+  "activityClass_9_duration": "11 - 15 hours",
+  "activityClass_10_description": "Daily exercise",
+  "activityClass_10_frequency": "Daily",
+  "activityClass_10_duration": "More than 15 hours",
+  "activityClasses": "Activity classes",
+  "activityDataCheckQuestion": "Are the following details correct?",
+  "activityMoveHint": "Long press on an activity to drag and drop it to another day.",
+  "activityMoveWarning": "Note: Due to moving this activity, it is no longer part of the appointment series.",
+  "activityPlanStep1": "Select type of activity",
+  "activityPlanStep1Short": "Select activity",
+  "activityPlanStep2": "Adapt activity",
+  "activityPlanStep2Appointment": "Adapt appointment",
+  "activityPlanStep3": "Plan activity",
+  "activityPlanStep3Appointment": "Plan appointment",
+  "activityPreference": "Activity preference",
+  "activityRepeat_BIWEEKLY": "Every 2 weeks",
+  "activityRepeat_NEVER": "No repetition",
+  "activityRepeat_WEEKLY": "Weekly repetition",
+  "activityRepeatShort_BIWEEKLY": "Every 2 weeks",
+  "activityRepeatShort_NEVER": "Never",
+  "activityRepeatShort_WEEKLY": "Weekly",
+  "activityScore": "Activity Score",
+  "actualHeartFrequency": "Actual heart rate",
+  "actualTotalDuration": "Actual duration",
+  "actualTotalDurationMin": "Actual duration (min)",
+  "add": "Add",
+  "addActivity": "Add activity",
+  "addApp": "Add app",
+  "addContact": "Add contact",
+  "addedApp": "App successfully added",
+  "addedAt": "Added on",
+  "addedContact": "Contact successfully added",
+  "addedContactError": "Error adding contact",
+  "addedExercise_ENDURANCE": "Endurance training successfully added",
+  "addedExercise_HYPERTROPHY": "Hypertrophy training successfully added",
+  "addedExercise_INTERVAL": "Interval endurance training successfully added",
+  "addedExercise_OTHER": "Exercise successfully added",
+  "addedExercise_STRENGTHENING": "Strength endurance training successfully added",
+  "addedExercise_TASK": "Task successfully added",
+  "addedHealthcareProfessional": "Health expert successfully added",
+  "addedInstitution": "Institute successfully added",
+  "addedMessage": "Message successfully added",
+  "addedPatient": "User successfully added",
+  "addedTrainingPlan": "Exercise plan successfully added",
+  "addedVideo": "Video successfully added",
+  "addedWorkout": "Workout successfully added",
+  "addExercise": "Add exercise",
+  "addHealthcareProfessional": "Add health expert",
+  "addInstitution": "Add institute",
+  "additionalApp": "Additional App",
+  "additionalApps": "Additional Apps",
+  "additionalAppsDescription": "Below is a list of freely available apps that you can install to provide additional support for your activities. Please note that we do not take any responsibility for the content of these apps.",
+  "addMessage": "Add message",
+  "addPatient": "Add user",
+  "addPersonalGoal": "Add goal",
+  "addProfilePicture": "Add profile picture",
+  "addRecipient": "Add recipient",
+  "addTask": "Add task",
+  "addTrainingPlan": "Add exercise plan",
+  "addVideo": "Add video",
+  "addWorkout": "Add workout",
+  "adherenceToTrainingPlan": "Adherence to training plan",
+  "adherenceToTrainingPlanInCalendarWeek": "Adherence to training plan in calendar week {calendarWeek}",
+  "@adherenceToTrainingPlanInCalendarWeek": {
+    "placeholders": {
+      "calendarWeek": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "adjust": "adapt",
+  "administrator": "Administrator",
+  "allPatients": "All patients",
+  "allowTrainingPlans": "Allow creation and application of predefined exercise plans",
+  "allowRescheduleActivities": "Allow users to reschedule a planned activity within a week",
+  "amount": "Number",
+  "amountRepeats": "Number of repetitions",
+  "appTitle": "aktivplan+",
+  "back": "Back",
+  "birthdate": "Date of birth",
+  "bodyHeight": "Height",
+  "bodyHeightWithUnit": "Height (cm)",
+  "bodyWeight": "Body weight",
+  "bodyWeightWithUnit": "Body weight (kg)",
+  "browseGallery": "Browse Gallery",
+  "calendarEntry": "Calendar entry",
+  "calendarInfoActiveMinutes": "Has completed <color>{percentage}%</color> of the planned active minutes in the last four weeks.",
+  "@calendarInfoActiveMinutes": {
+    "placeholders": {
+      "percentage": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "calendarInfoActiveMinutesKlimafit": "Has completed <color>{percentage}%</color> of the planned activity points in the last four weeks.",
+  "@calendarInfoActiveMinutesKlimafit": {
+    "placeholders": {
+      "percentage": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "calendarInfoActiveMinutesThreeWeeks": "Has completed <color>{percentage}%</color> of the active minutes in the last three weeks. Of these, {percentagePlanned}% were planned activities.",
+  "@calendarInfoActiveMinutesThreeWeeks": {
+    "placeholders": {
+      "percentage": {
+        "type": "int",
+        "example": "30"
+      },
+      "percentagePlanned": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "calendarInfoActiveMinutesNoTraining": "Four-week status not available as no training was scheduled for the past 4 weeks.",
+  "calendarInfoActiveMinutesNoTrainingThreeWeeks": "Three-week status not available as no training was scheduled for the past 3 weeks.",
+  "calendarWeek": "Calendar week",
+  "calendarWeekShort": "CW",
+  "cancel": "Cancel",
+  "cancelText": "Are you sure that you want to cancel? Your changes will be lost.",
+  "cancelYes": "Yes, cancel",
+  "captureImageWithCamera": "Capture image with Camera",
+  "changeOfMyHealthData": "Change of my data",
+  "changePassword": "Change password",
+  "choose": "Select",
+  "close": "Close",
+  "comorbidities": "Comorbidities",
+  "confirmNewPassword": "Confirm new password",
+  "confirmPassword": "Confirm password",
+  "copy": "Copy",
+  "consentTextCreatePatient": "I hereby confirm that I have informed the future user and obtained their consent to process their data for the purpose of registration.",
+  "consentTextCreatePatientDetail": "<b>Objective</b>\n• <b>Support for Activity Planning:</b> The aktivplan app aims to assist you and your healthcare professional in planning individual training activities and adjusting them optimally to your health condition.\n• <b>Visualization and Tracking of Activities:</b> The app allows you to view and track activities planned with your healthcare professional on your smartphone, as well as enter additional activities.\n\n<b>Procedure</b>\n• <b>Explicit Consent to Use:</b> If you explicitly agree to use the aktivplan app, the data collected in the performance test will be entered into the application by your healthcare professional.\n• <b>Performance Data - Basis for Training Plan:</b>DThe data collected in the performance test provides the basis for an individually tailored training plan. (For example, training in the optimal heart rate zone.)\n• <b>Installation via Email Link:</b> After entering your data, you will receive an email with a link. You can install the aktivplan app on your mobile phone and log in through this link. If you do not log in within the next 10 days, your data will be deleted from the application.\n\n<b>Data Protection and Data Utilization</b>\n• <b>Confidentiality:</b> All information will be treated confidentially.\n• <b>Secure Data Storage:</b> Your personal data will be pseudonymized and stored on secure servers, in accordance with the GDPR.\n• <b>Purpose of Data Utilization:</b> The recorded data is used to create a training plan tailored to you and optimally adapted to your health condition. (For example, training in the optimal heart rate zone.)\n\n<b>Voluntary Participation and Right to Withdraw</b>\n• <b>Voluntariness:</b> Use of the aktivplan app is completely voluntary.\n• <b>Automatic Data Deletion after 10 Days:</b> If you do not log in within the next 10 days using the link provided in the email, your data will be deleted from the application.\n• <b>Termination at Any Time:</b> After registration, you can, of course, terminate the use of the aktivplan app at any time, which also entails the deletion of all your data.\n\n<b>Questions</b>\n• <b>Contact Anytime:</b> If you have any questions, please feel free to get in touch at any time.",
+  "consentText_PRIVACY_POLICY": "I have read and agree to the <a>Privacy Policy</a>.",
+  "consentText_TERMS_AND_CONDITIONS": "I have read and agree to the <a>Terms and Conditions</a>.",
+  "contact": "Contact",
+  "content": "Content",
+  "contentEnglish": "Content (english translation)",
+  "conversationGuide": "Conversation Guide",
+  "conversationGuideStep0Question1": "What is this conversation about?",
+  "conversationGuideStep0Question1Answer": "The aim of this conversation is to jointly come up with a weekly training plan for you, that you can continue with on your own after you have completed your cardiac rehabilitation programme.",
+  "conversationGuideStep0Question1AnswerHealthyLifeStyle": "The aim of this conversation is to jointly come up with a weekly physical activity training plan that you can continue with on your own.",
+  "conversationGuideStep0Question2": "Why should you be involved in the decision-making process?",
+  "conversationGuideStep0Question2Answer": "There are different ways to design such a training plan, and it is important to include your preferences in the decision.",
+  "conversationGuideStep1": "Discuss state of knowledge\nand inform",
+  "conversationGuideStep1Headline": "What do you already know about your cardiovascular condition?",
+  "conversationGuideStep1Short": "Knowledge",
+  "conversationGuideStep1Question1": "What is a cardiovascular condition? / Are you familiar with your cardiovascular condition?",
+  "conversationGuideStep1Question1Answer": "<b>Cardiovascular conditions are diseases of the heart and blood vessels.</b>\nThere are many different cardiovascular conditions, but a few account for the majority.\nThe most common cardiovascular conditions are:\n\n• High blood pressure\n• Atherosclerosis (\"calcification\" of the arteries)\n• Coronary heart disease\n• Chronic heart failure\n\nCardiovascular conditions are the most common cause of death in Austria.\n<b>The most serious consequences of cardiovascular conditions include:</b>\n\n• Heart attack (caused by occlusion of the coronary arteries)\n• Stroke (caused by occusion of the arteries in the brain)\n• Cardiac arrhythmias",
+  "conversationGuideStep1Question2": "What causes cardiovascular disease? / What are the risk factors for cardiovascular disease?",
+  "conversationGuideStep1Question2Answer": "Some cardiovascular conditions have specific and individual causes.\nHowever, in general, it can be said <b>that certain unhealthy behaviours promote cardiovascular disease:</b>\n\n• A diet that is very high in calories, sugar and fat\n• Physical inactivity\n• Alcohol consumption\n• Nicotine use",
+  "conversationGuideStep1Question3": "Can cardiovascular conditions be prevented?",
+  "conversationGuideStep1Question3Answer": "Cardiovascular conditions can be prevented by making heart-healthy lifestyle choices.\nPeople who have already had a serious event such as a heart attack can prevent further events.\n<b>The most important preventive measures are:</b>\n\n• Regular heart-healthy physical activity and exercise\n• Non-smoking\n• Normal blood pressure\n• Normal blood glucose level\n• Normal blood cholesterol level (through healthy diet and medication)\n• Taking your cardiovascular medication regularly\n• Normal weight\n• Healthy diet",
+  "conversationGuideStep1Question4": "What are the effects of heart-healthy physical activity and exercise?",
+  "conversationGuideStep1Question4Answer": "Regular heart-healthy physical activity and exercise is one of the most important preventive measures for people with cardiovascular conditions and <more1>in general for everybody</more1>. <more2>Positive effects</more2> are seen up to the highest age - there is no \"age limit\".\n\nPhysical activity is particularly heart-healthy if you exercise at a moderate level of exertion (intensity). Moderate exertion means that you get a little out of breath and can still chat, but you can no longer sing.\n\nFor people who are completely „inaktiv“, already the change to become „a little active“ brings considerable health benefit. \"A little physical activity\" means, for example, walking briskly for 5 minutes several times a day.\n\nA possible disadvantage of physical activity and exercise is a certain risk of injury. However, this is low if done correctly.",
+  "conversationGuideStep1Question4AnswerHealthyLifeStyle": "Regular heart-healthy physical activity and exercise is one of the most important preventive measures <more1>for everybody</more1>. <more2>Positive effects</more2> are seen up to the highest age - there is no \"age limit\".\n\nPhysical activity is particularly heart-healthy if you exercise at a moderate level of exertion (intensity). Moderate exertion means that you get a little out of breath and can still chat, but you can no longer sing.\n\nFor people who are completely „inaktiv“, already the change to become „a little active“ brings considerable health benefit. \"A little physical activity\" means, for example, walking briskly for 5 minutes several times a day.\n\nA possible disadvantage of physical activity and exercise is a certain risk of injury. However, this is low if done correctly.",
+  "conversationGuideStep1Question4AnswerMore1": "<b>Adults who exercise regularly:</b>\n\n• are fitter and healthier\n• feel better\n• are less likely to get chronic diseases, e.g. cardiovascular conditions, diabetes or different types of cancer\n• have less anxiety and the brain works better after exercise\n• sleep better\n• do not get tired so quickly in day-to-day life, e.g. when climbing stairs or when carrying something heavy\n• are less likely to get overweight",
+  "conversationGuideStep1Question4AnswerMore2": "<b>Positive effects of regular heart-healthy physical activity and exercise for people with cardiovascular conditions:</b>\n\n• Improvement in fat metabolism\n• Reduction in overweight and blood pressure\n• Reduction in inflammation\n• Improvement in insulin sensitivity and thereby treatment and prevention of type 2 diabetes\n• Normalisation of the blood glucose level",
+  "conversationGuideStep2": "Asking for preferences\nand offering options",
+  "conversationGuideStep2Headline": "What kind of physical activity, exercise or sport do you like?",
+  "conversationGuideStep2Short": "Preferences",
+  "conversationGuideStep2Question1": "What kind of physical activity, exercise or sport do you currently do, or did you enjoy in the past?",
+  "conversationGuideStep2Question1Answer": "The idea is not only to think about classic sports and targeted exercise training, but also about social opportunities (e.g. dance, group hikes) and everyday exercise and activities (e.g. walking the dog, housework, gardening, climbing stairs).\n\n• What kind of physical activity, exercise or sport have you already had positive experiences with?\n• What kind of physical activity, exercise or sport have you had negative experiences with?\n• Are there types of physical activity, exercise or sports that you have no experience with, but that would interest you?\n\n<b>Optional (possibly helpful if the person is rather inactive):</b>\n\n• In your usual daily routine, what activities cause you to sweat or breathe hard?\n• Are you or did you used to be in a sports club?\n• In your school days, what did you enjoy in PE (physical education, sports class)?",
+  "conversationGuideStep2Question2": "Did you know that everyday activities also count as heart-healthy exercise?",
+  "conversationGuideStep2Question2Answer": "<b>Not only classic sports and targeted exercise training are considered heart-healthy exercise, but also everyday movements and activities contribute to a heart-healthy lifestyle.</b>\n\nExamples include walking the dog, housework, gardening, climbing stairs or going up a hill.\n\nThese activities are particularly heart-healthy when they are moderate or vigorous, i.e. when they make your heart beat faster, they make you breathe harder, make you feel warm and cause you to sweat a little.",
+  "conversationGuideStep2Question3": "What are the different training methods and what are their advantages?",
+  "conversationGuideStep2Question3Answer": "<b>It is recommended to do both endurance-oriented exercise and muscle-strengthening exercise every week.</b>\n\n<more1>Endurance-oriented exercise</more1> generally benefits more the cardiovascular system (your heart and blood vessels), respiratory system (your lungs) and metabolism.\n\n<more2>Muscle-strengthening exercise</more2> is generally more beneficial for posture, bone density, falls prevention and when lifting and moving heavy objects in everyday life.",
+  "conversationGuideStep2Question3AnswerMore1": "<b>Endurance-oriented exercise</b>\n\n• You move the whole body rhythmically over a longer period of time.\n• Examples are brisk walking, running, cycling, dancing, basketball, swimming.\n• The heart beats faster, you have to breathe harder, you feel warm and you start to sweat.\n• For adults with chronic diseases it is recommended to do alltogether 150 minutes (2 ½ hours) of endurance-oriented exercise with moderate exertion (intensity) every week.\n• Moderate exertion (intensity) means that the heart beats faster and you have to breathe a little harder - but not too hard (you should still be able to talk, but no longer be able to sing).",
+  "conversationGuideStep2Question3AnswerMore2": "<b>Muscle-strengthening exercise</b>\n\n• You specifically exercise your large muscle groups (leg, hip, chest, back, belly, shoulder and arm muscles).\n• Examples are exercises with weights or elastic bands, squats, push-ups.\n• When training to build up strength (hypertrophy training), choose a weight with which you can manage just about 8 to 12 repetitions.\n• In strength endurance training you do 20 to 40 repetitions.\n• For adults with chronic diseases it is recommended to do muscle-strengthening exercise for all large muscle groups twice a week.",
+  "conversationGuideStep2Question4": "How often can you imagine incorporating physical activity and exercise into your daily routine?",
+  "conversationGuideStep2Question4Answer": "Both <b>longer and structured exercise sessions</b> (e.g. one hour of group exercise every week, half an hour of jogging twice a week) and <b>shorter exercise sessions built into your daily routine</b> (e.g. walking for 10 minutes every day, climbing the stairs once a day instead of taking the lift) are helpful.\n\n<b>If possible, both should be incorporated into your training plan:</b>\n\n• How often could you imagine doing a longer and structured training session?\n• How often could you imagine doing a shorter exercise session that is built into your daily routine?",
+  "conversationGuideStep3": "Set meaningful goals",
+  "conversationGuideStep3Short": "Goals",
+  "conversationGuideStep3Headline": "As you want to increase your physical activity, let's make this goal a little more concrete.",
+  "conversationGuideStep3Question1": "What would you personally hope to gain from regular heart-healthy physical activity?",
+  "conversationGuideStep3Question1Answer": "This question is deliberately open-ended in order to hear the person's thoughts.\nThe person's thoughts should be recorded without influencing, filtering or judging.\n<more1>Various statements</more1> can be possible here, for example indicating a health or social motivation.\nIt should also be recorded if a person cannot express a concrete expectation.\n\nThese statements can provide starting points for the formulation of concrete physical activity goals in the next step.",
+  "conversationGuideStep3Question1AnswerMore1": "<b>Possible goal statements:</b>\n\n• „That I will not have another heart attack“\n• „That I live long enough and stay fit to dance at my grandchild's wedding“\n• „That it keeps my body weight in the healthy range\"\n• \"That it balances out my unhealthy lifestyle“",
+  "conversationGuideStep3Question2": "Let's now try to formulate concrete physical activity goals. Something that you want to work towards and that can be checked off when you have achieved it. Is there something that comes to mind?",
+  "conversationGuideStep3Question2Answer": "<b>Collect ideas:</b> „It should be something that presents a bit of a challenge for you, and it should also be meaningful to you personally.“\n\n<b>Concrete example:</b> „Other people have set themselves a physical activity goal of hiking a certain route or cycling a certain distance.“\n\n<b>Break down big goals into small steps:</b> „That is a good goal, let's write it down - but it also sounds quite challenging. Shall we formulate an additional goal that represents an interim step on the way there - and what would this interim goal look like?“\n\n<b>Add an \"Achieve by\" date to physical activity goals:</b> \"When would you say you would like to have achieved this goal by?\"\n\nIdeally, physical activity goals should be formulated in such a concrete way that one can clearly judge when a goal has been achieved and it can be <more1>\"ticked off\"</more1>. If a person finds it difficult to think of a concrete \"tickable\" goal, a <more2>vague goal formulation</more2> can also be recorded (e.g. \"move more\" or \"live a little healthier\").",
+  "conversationGuideStep3Question2AnswerMore1": "<b>„Formulate a \"tickable\" goal</b>\n\nTypically, so-called <b>\"performance goals\"</b> are formulated. This means that the goal is reached when a certain new physical performance has been achieved, for example \"walking 10,000 steps without a break\".\n\nBut also so-called <b>\"learning goals\" or \"process goals\"</b> can be formulated.\n\n<b>Learning goals</b> are about <b>acquiring new knowledge</b> (e.g. \"Finding a walking path near my home where I can then regularly exercise my walking distance\") or <b>new skills</b> (e.g. \"Learning how to exercise my walking distance on the treadmill at the fitness centre\").\n\n<b>Process goals</b> are about <b>implementing or maintaining existing strategies</b> (e.g. \"always walk at a brisk pace\" or \"continue to walk regularly once a day for 10 minutes\").",
+  "conversationGuideStep3Question2AnswerMore2": "<b>Vague formulation of goals</b>\n\nVaguely formulated goals should also be given an \"achieve by\" date.\n\nAt a follow-up meeting, an attempt should then be made again to formulate a concrete \"tickable\" goal. An initial vague goal formulation can be helpful in formulating a concrete goal later on.",
+  "copyWeek": "Copy week",
+  "create": "Create",
+  "createdBy": "Created by",
+  "databaseOverwritten": "Database successfully overwritten",
+  "date": "Date",
+  "day": "Day",
+  "delete": "Delete",
+  "deleteActivity": "Delete activity",
+  "deleteAll": "Delete all",
+  "deleteImage": "Delete image",
+  "deleteVideo": "Delete video",
+  "deletedApp": "App successfully deleted",
+  "deletedExercise_ENDURANCE": "Endurance training successfully deleted",
+  "deletedExercise_HYPERTROPHY": "Hypertrophy training successfully deleted",
+  "deletedExercise_INTERVAL": "Interval endurance training successfully deleted",
+  "deletedExercise_OTHER": "Exercise successfully deleted",
+  "deletedExercise_STRENGTHENING": "Strength endurance training successfully deleted",
+  "deletedExercise_TASK": "Task successfully deleted",
+  "deletedHealthcareProfessional": "Health expert successfully deleted",
+  "deletedInstitution": "Institute successfully deleted",
+  "deletedMessage": "Message successfully deleted",
+  "deletedPatient": "User successfully deleted",
+  "deletedTrainingPlan": "Exercise plan successfully deleted",
+  "deletedVideo": "Video successfully deleted",
+  "deletedWorkout": "Workout successfully deleted",
+  "deleteForAllRecipients": "Yes, delete for all recipients",
+  "deleteForThisRecipient": "Yes, delete for this recipient",
+  "deleteLastWeek": "Delete last week",
+  "deleteMessageActivity": "Are you sure you want to delete the planned activity {name}?",
+  "@deleteMessageActivity": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alphaport"
+      }
+    }
+  },
+  "deleteMessageAdditionalApp": "Are you sure you want to delete this App? It will be deleted for all members of the institute.",
+  "deleteMessageAdditionalAppTitle": "Delete App",
+  "deleteMessageAllActivities": "Are you sure that you want to delete all future instances of this activity?\n\n*Activities that have already been completed will not be deleted.",
+  "deleteMessageAllActivitiesTrainingPlan": "Are you sure that you want to delete all instances of this activity?",
+  "deleteMessageAllAppointments": "Are you sure that you want to delete all future instances of this appointment?",
+  "deleteMessageExerciseType": "Are you sure you want to delete this {typeName}? It will be deleted for all members of the institute.",
+  "@deleteMessageExerciseType": {
+    "placeholders": {
+      "typeName": {
+        "type": "String",
+        "example": "Training"
+      }
+    }
+  },
+  "deleteMessageExerciseTypeEndurance": "Are you sure you want to delete this continuous endurance training? It will be deleted for all members of the institute.",
+  "deleteMessageExerciseTypeOther": "Are you sure you want to delete this Other Exercise? It will be deleted for all members of the institute.",
+  "deleteMessageExerciseTypeTitle": "Delete {typeName}",
+  "@deleteMessageExerciseTypeTitle": {
+    "placeholders": {
+      "typeName": {
+        "type": "String",
+        "example": "Training"
+      }
+    }
+  },
+  "deleteMessageExerciseTypeTrainingPlan": "Are you sure you want to delete this Training Plan? It will be deleted for all members of the institute.",
+  "deleteMessageHealthcareProfessionals": "Are you sure you want to delete the account of the health expert {name}? All related accounts of {patientCount} users will also be deleted irreversibly and with immediate effect.",
+  "@deleteMessageHealthcareProfessionals": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alphaport"
+      },
+      "patientCount": {
+        "type": "int",
+        "example": "0"
+      }
+    }
+  },
+  "deleteMessageHealthcareProfessionalsTitle": "Delete health expert",
+  "deleteMessageInstitutions": "Are you sure you want to delete institute {name}? All associated accounts of {healthcareProfessionalCount} health experts and {patientCount} users will also be irreversibly deleted with immediate effect.",
+  "@deleteMessageInstitutions": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alphaport"
+      },
+      "healthcareProfessionalCount": {
+        "type": "int",
+        "example": "0"
+      },
+      "patientCount": {
+        "type": "int",
+        "example": "0"
+      }
+    }
+  },
+  "deleteMessageInstitutionsTitle": "Delete institute",
+  "deleteMessageMessagePersonal": "Are you sure you want to delete this message?",
+  "deleteMessageMessageTemplate": "Are you sure you want to delete this message? It will be deleted for all members of the institute.",
+  "deleteMessageMessageTemplateTitle": "Delete message",
+  "deleteMessageNotes": "Are you sure you want to delete these notes?",
+  "deleteMessageNotesTitle": "Delete notes",
+  "deleteMessagePatientActivity": "Are you sure you want to delete the planned activity {name}? All entered repetitions will also be deleted.",
+  "@deleteMessagePatientActivity": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alphaport"
+      }
+    }
+  },
+  "deleteMessagePatients": "Are you sure you want to delete the account of the user {name} irreversibly and with immediate effect?",
+  "@deleteMessagePatients": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alphaport"
+      }
+    }
+  },
+  "deleteMessagePatientsTitle": "Delete user",
+  "deleteMessagePersonalGoal": "Are you sure you want to delete this goal?",
+  "deleteMessagePersonalGoalTitle": "Delete goal",
+  "deleteMessageThisActivity": "Are you sure you want to delete this activity?",
+  "deleteMessageThisActivityTitle": "Delete activity",
+  "deleteMessageThisActivityTooltip": "Activities that have already been completed cannot be deleted.",
+  "deleteMessageThisAppointment": "Are you sure that you want to delete this appointment?",
+  "deleteMessageThisAppointmentTitle": "Delete appointment",
+  "deleteMessageVideoTemplate": "Are you sure you want to delete this video? It will be deleted for all members of the institute.",
+  "deleteMessageVideoTemplateTitle": "Delete theme video",
+  "deleteMessageWorkout": "Are you sure you want to delete the workout {name}? This will delete the workout for all members of the institute.",
+  "@deleteMessageWorkout": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alphaport"
+      }
+    }
+  },
+  "deleteObject": "Delete object",
+  "deleteProfilePicture": "Delete profile picture",
+  "deleteProfilePictureText": "Are you sure you want to delete your profile picture?",
+  "deleteNo": "No, do not delete",
+  "deleteThis": "Delete this",
+  "deleteYes": "Yes, delete irreversibly",
+  "description": "Description",
+  "descriptionShort": "Short description",
+  "details": "Details",
+  "detailsToMessage": "Details to message",
+  "dislikedActivityPreference": "Disliked activity",
+  "dislikedMobilityPreference": "Disliked mobility",
+  "documentation": "Documentation",
+  "documentTitle": "Title of document",
+  "csvExport": "CSV Export",
+  "duplicate": "Duplicate",
+  "duration": "Duration",
+  "durationValueMinutes": "min",
+  "durationValuePoints": "points",
+  "durationValueSeconds": "sec",
+  "edit": "Edit",
+  "editActivity": "Edit activity",
+  "editAll": "Edit all",
+  "editThis": "Edit this",
+  "editThisActivityTooltip": "Activities that have already been completed cannot be edited.",
+  "editHealthcareProfessional": "Edit health expert",
+  "editInstitution": "Edit institute",
+  "editPatient": "Edit user",
+  "editProfilePicture": "Edit profile picture",
+  "email": "E-Mail",
+  "emailAdministrator": "E-Mail administrator",
+  "emailBeingSent": "E-Mail is sent...",
+  "emailSent": "E-Mail sent",
+  "emailSentError": "E-mail could not be sent.",
+  "enableSocialFeatures": "Enable social features",
+  "endLocation": "End location",
+  "endTime": "End time",
+  "englishTranslationNote": "(english translation)",
+  "englishTranslationOptional": "English translation (optional)",
+  "error": "Unfortunately, something went wrong. Try again later.",
+  "errorNoInternet": "The request could not be processed, please check your internet connection.",
+  "errorPageNotFound": "Unfortunately we have not found this page...",
+  "equipment": "Equipment",
+  "exercise": "Exercise",
+  "exercise_ENDURANCE": "Continuous endurance training",
+  "exercise_HYPERTROPHY": "Hypertrophy training",
+  "exercise_INTERVAL": "Interval endurance training",
+  "exercise_OTHER": "Other exercise",
+  "exercise_STRENGTHENING": "Strength endurance training",
+  "exercise_TASK": "Task",
+  "exerciseBreakBetweenSets": "Break between sets (sec)",
+  "exerciseDurationMinutes": "Duration (min)",
+  "exerciseDurationSeconds": "Duration (sec)",
+  "exerciseIntensity": "Load intensity (% max. HF)",
+  "exerciseIntensityPhase": "Load phase",
+  "exerciseNeedsEquipment": "Equipment required",
+  "exerciseNumberOfIntervals": "Number of intervals",
+  "exerciseNumberOfSets": "Number of sets",
+  "exerciseRecoveryPhase": "Recovery phase",
+  "exerciseRepeats": "Repetitions",
+  "exerciseTrainingHeartRateLowerLimit": "Training heart rate (lower limit)",
+  "exerciseTrainingHeartRateUpperLimit": "Training heart rate (upper limit)",
+  "exercises": "Exercises",
+  "exerciseWorkoutStrength": "Strength training",
+  "executeActivity": "Enter activity",
+  "executed": "Executed",
+  "executeTask": "Enter task",
+  "execution": "Execution",
+  "executionWithSetRepeats": "1 set {setRepeats} rep. each",
+  "@executionWithSetRepeats": {
+    "placeholders": {
+      "setRepeats": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "executionWithSetsRepeats": "{numberSets} sets {setRepeats} rep. each",
+  "@executionWithSetsRepeats": {
+    "placeholders": {
+      "numberSets": {
+        "type": "int",
+        "example": "3"
+      },
+      "setRepeats": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "executionWithSetRepeatsAndBreak": "1 set {setRepeats} rep. each / {breakDuration} sec. break between sets",
+  "@executionWithSetRepeatsAndBreak": {
+    "placeholders": {
+      "setRepeats": {
+        "type": "int",
+        "example": "10"
+      },
+      "breakDuration": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "executionWithSetsRepeatsAndBreak": "{numberSets} sets {setRepeats} rep. each / {breakDuration} sec. break between sets",
+  "@executionWithSetsRepeatsAndBreak": {
+    "placeholders": {
+      "numberSets": {
+        "type": "int",
+        "example": "3"
+      },
+      "setRepeats": {
+        "type": "int",
+        "example": "10"
+      },
+      "breakDuration": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "executionWithSetSeconds": "1 set {setDuration} sec. each",
+  "@executionWithSetSeconds": {
+    "placeholders": {
+      "setDuration": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "executionWithSetsSeconds": "{amountSets} sets {setDuration} sec. each",
+  "@executionWithSetsSeconds": {
+    "placeholders": {
+      "amountSets": {
+        "type": "int",
+        "example": "3"
+      },
+      "setDuration": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "executionWithSetSecondsAndBreak": "1 set {setDuration} sec. each / {breakDuration} sec. break between sets",
+  "@executionWithSetSecondsAndBreak": {
+    "placeholders": {
+      "setDuration": {
+        "type": "int",
+        "example": "30"
+      },
+      "breakDuration": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "executionWithSetsSecondsAndBreak": "{numberSets} sets {setDuration} sec. each / {breakDuration} sec. break between sets",
+  "@executionWithSetsSecondsAndBreak": {
+    "placeholders": {
+      "numberSets": {
+        "type": "int",
+        "example": "3"
+      },
+      "setDuration": {
+        "type": "int",
+        "example": "30"
+      },
+      "breakDuration": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "export_END_OF_DOCUMENT": "At the end of the document",
+  "export_WEEKLY": "Weekly",
+  "export_NO_IDENTIFICATOR": "No identifier",
+  "export_ID": "Alphanumerical ID",
+  "export_NAME": "Name",
+  "export": "Export",
+  "exportDocumentation": "Export documentation",
+  "exportEndDate": "Time period (until)",
+  "exportHint": "To download the documentation, make sure that pop-ups are allowed in your browser.",
+  "exportStartDate": "Time period (from)",
+  "extraActivity": "Extra activity",
+  "extraActivityPlural": "Extra activity",
+  "filename": "File name",
+  "finalCheck": "Final check",
+  "finalCheck1": "at least one meaningful goal was set",
+  "finalCheck2": "a training plan was worked out together",
+  "finalCheck3": "open questions/concerns/fears were discussed",
+  "finalCheck4": "sufficient information material (in the desired form) was provided",
+  "finalCheck5": "it was pointed out that the goals and the training plan can still be adjusted in follow-up appointments",
+  "finalCheckText": "With <u>a focus on the patient, taking into account his/her preferences and previous experiences</u> ...",
+  "firstAppointment": "First appointment",
+  "firstName": "First name",
+  "firstNameAdministrator": "First name administrator",
+  "german": "German",
+  "goal": "Goal",
+  "handOver": "Hand over",
+  "heatTolerance": " Subjective heat tolerance",
+  "heatTolerance_AVERAGE": "Average",
+  "heatTolerance_GOOD": "Good",
+  "heatTolerance_POOR": "Poor",
+  "healthcareProfessional": "Health expert",
+  "healthcareProfessionals": "Health experts",
+  "help": "Help",
+  "helpOnboardingGuide": "<a>Onboarding Guide &gt;</a>",
+  "helpTextProblems": "In case of questions or problems with aktivplan, please contact us.",
+  "helpUserGuideExperts": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/userguide_experts.pdf'>User guide &gt;</a>",
+  "helpUserGuidePatients": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/userguide_patients.pdf'>User guide &gt;</a>",
+  "hintRequiredFields": "* Mandatory fields",
+  "homeLocation": "Home location",
+  "id": "ID",
+  "identificator": "Identificator",
+  "inactive": "inactive",
+  "institution": "Institute",
+  "institutionAdministrator": "Institute administrator",
+  "institutionAvailabilityPhone": "Availability by phone (e.g. Montag - Freitag, 9.00 - 15.00 Uhr)",
+  "institutionAvailabilityPhoneEnglish": "Availability by phone (e.g. Monday - Friday, 9.00 - 15.00 o'clock)",
+  "institutionEmailUserQueries": "E-Mail for user queries",
+  "institutionFocus": "Institute focus",
+  "institutionFocus_CARDIOVASCULAR_REHABILITATION": "Cardiovascular rehabilitation",
+  "institutionFocus_KLIMAFIT": "Klimafit",
+  "institutionFocus_KLIMAFIT_LIGHT": "Klimafit Light",
+  "institutionFocus_PREHAB_TO_REHAB": "Prehab2Rehab",
+  "institutionFocus_PROMOTING_A_HEALTHY_LIFESTYLE": "Promoting a healthy lifestyle",
+  "institutionFocusP2RFocus_GENERAL": "General",
+  "institutionGetInTouchNotes": "Notes on how to get in touch (e.g. Wir bemühen uns, alle Anfragen innerhalb von 24 Stunden zu bearbeiten.)",
+  "institutionGetInTouchNotesEnglish": "Notes on how to get in touch (e.g. We strive to process all requests within 24 hours.)",
+  "institutionOverview": "Overview of institutes",
+  "institutionPhoneNumberUserQueries": "Phone number for user queries",
+  "institutionUrl": "Institute Website",
+  "intensity": "Load intensity",
+  "intensityDuration": "Load intensity / duration",
+  "intensityLineBreak": "Load-\nintensity",
+  "intervalCount": "Number of intervals",
+  "intervals": "Intervals",
+  "jobName": "Job title",
+  "kg": "kg",
+  "lastActiveAt": "Last active on",
+  "lastAppointment": "Last appointment",
+  "lastName": "Last name",
+  "lastNameAdministrator": "Last name administrator",
+  "lastOnlineAt": "Last seen on {date} at {time}",
+  "@lastOnlineAt": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "01.01.2021"
+      },
+      "time": {
+        "type": "String",
+        "example": "15:30"
+      }
+    }
+  },
+  "lastOnlineTodayAt": "Last seen today at {time}",
+  "@lastOnlineTodayAt": {
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "15:30"
+      }
+    }
+  },
+  "lastOnlineYesterdayAt": "Last seen yesterday at {time}",
+  "@lastOnlineYesterdayAt": {
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "15:30"
+      }
+    }
+  },
+  "legalNoticeCompanyContactAddress": "Lindhofstr. 22, 5020 Salzburg, Österreich",
+  "legalNoticeCompanyContactPhone": "Tel.: <phone number='+435725582701'>+43 (0) 5 7255 82701</phone>",
+  "legalNoticeCompanyContactMail": "E-Mail: <mail target='office@dhp.lbg.ac.at'>office@dhp.lbg.ac.at</mail>",
+  "legalNoticeCompanyDescription": "Legally dependent institution of the Ludwig Boltzmann Gesellschaft GmbH",
+  "legalNoticeCompanyName": "Ludwig Boltzmann Institute for Digital Health and Prevention",
+  "legalNoticeDataProtection": "Data Protection",
+  "legalNoticeMoreInformation": "<a href='https://dhp.lbg.ac.at/imprint/?lang=en'>Further information &gt;</a>",
+  "legalNoticePrivacyPolicy": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/Privacy_Policy_v2.html'>Privacy Policy &gt;</a>",
+  "legalNoticeTermsAndConditions": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/Terms_and_Conditions_v2.pdf'>Terms and Conditions &gt;</a>",
+  "legalNoticeTermsAndConditionsMenu": "Imprint & data protection",
+  "less": "less",
+  "letsGo": "Let's go!",
+  "literature": "Literature",
+  "location": "Location",
+  "login": "Log in",
+  "logout": "Log out",
+  "maximumBloodPressure": "Maximum blood pressure",
+  "maximumBloodPressureShort": "Max. blood pressure",
+  "maximumBloodPressureWithUnit": "Maximum blood pressure (100/50 - 300/200 mmHg)",
+  "maximumHeartRate": "Maximum heart rate",
+  "maximumHeartRateShort": "Max. heart rate",
+  "maximumHeartRateWithUnit": "Maximum heart rate (60 - 220 bpm)",
+  "maximumOxygen": "Maximum oxygen uptake",
+  "maximumOxygenShort": "Max. oxygen uptake",
+  "maximumOxygenWithUnit": "Maximum oxygen uptake (10 - 100 ml/kg/min)",
+  "maximumPerformance": "Maximum power",
+  "maximumPerformanceShort": "Max. power",
+  "maximumPerformanceWithUnit": "Maximum power (0.1 - 8 Watt/kg)",
+  "medication": "Medication",
+  "message": "Message",
+  "messageHistoryHint": "This function is intended for messages to multiple people. Messages to individual people can be sent through the user profile.",
+  "messageHistoryHintPatient": "Messages can be sent to multiple people via the \"Messages\" menu.",
+  "messageRestriction": "Restriction",
+  "messageRestriction_AFTER_SURGERY": "After surgery",
+  "messageRestriction_BEFORE_SURGERY": "Before surgery",
+  "messageRestriction_NO_RESTRICTION": "No restriction",
+  "messages": "Messages",
+  "messagesHint": "Messages on this list should be informative or motivational. Before adding a new message, please note that it will be sent to all users (at different, random times) and should therefore address all users.",
+  "messagesScheduledFor": "Messages scheduled for {name}",
+  "@messagesScheduledFor": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Max Mustermann"
+      }
+    }
+  },
+  "messageSendToType_ALL": "All users",
+  "messageSendToType_SOME": "Selected recipients",
+  "minimumDaysBetweenInformationMessages": "Minimum days between information messages",
+  "minutes": "minutes",
+  "minutesKlimafit": "Activity points",
+  "mobilityPreference": "Mobility preference",
+  "mobilityPreference_BIKE": "Bike",
+  "mobilityPreference_CAR": "Car",
+  "mobilityPreference_FOOT": "Foot",
+  "mobilityPreference_PUBLIC_TRANSPORT": "Public transport",
+  "month": "Month",
+  "more": "more",
+  "muscleGroup_ABDOMINAL": "Abdomen",
+  "muscleGroup_ARMS": "Arms",
+  "muscleGroup_BACK": "Back",
+  "muscleGroup_CHEST": "Chest",
+  "muscleGroup_LEGS": "Legs",
+  "muscleGroup_SHOULDERS": "Shoulders",
+  "muscleGroups": "Muscle groups",
+  "myCode": "My code",
+  "myContacts": "My contacts",
+  "myHealthData": "My data",
+  "myProfile": "My profile",
+  "name": "Name",
+  "nameEnglish": "Name (english translation)",
+  "newEmptyWeek": "New empty week",
+  "newPassword": "New password",
+  "newValue": "New",
+  "newVersionAvailable": "New version available",
+  "newVersionAvailableText": "A new version ({version}) of the aktivplan App is available. Please update the App.",
+  "@newVersionAvailableText": {
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "1.0.0"
+      }
+    }
+  },
+  "next": "Next",
+  "nextExercise": "Next exercise: {name}",
+  "@nextExercise": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Squats"
+      }
+    }
+  },
+  "nextPlannedActivity": "Next planned activity",
+  "no": "No",
+  "noApps": "No apps added yet.",
+  "none": "none",
+  "noExercises": "No trainings recorded yet.",
+  "noImagesSelected": "No images selected yet",
+  "noInstitutions": "No institutes added yet.",
+  "noMessages": "No messages written yet.",
+  "noNewNotifications": "No new notifications.",
+  "noNextPlannedActivity": "No planned activities in the near term.",
+  "noPatientNotes": "No notes set yet",
+  "noPatients": "No users recorded yet.",
+  "noPersonalGoals": "No goals set yet",
+  "noPlannedActivities": "No activities planned",
+  "noTasks": "No tasks created yet",
+  "noTrainingPlans": "No exercise plans created yet.",
+  "notExecuted": "Not executed yet",
+  "notifications": "Notifications",
+  "noVideos": "No videos added yet.",
+  "now": "Now",
+  "noWorkouts": "No workout recorded yet.",
+  "noWorkoutExercise": "No exercises recorded yet.",
+  "note": "Note",
+  "notes": "Notes",
+  "notesEnglish": "Notes (english translation)",
+  "notesHealthExpert": "Notes health expert",
+  "older": "Older",
+  "oldPassword": "Old password",
+  "onboardingText1": "<h1>Welcome!</h1>\n\nWe are delighted that you decided to use the <b>aktiv</b>plan App.\n\nWould you like to get a short overview of the most important functionalities of the app?",
+  "onboardingText2": "<h1>Your training plan</h1>\n\nKeep track of your planned activities and document execution details.\n\nTo get additional information about an activity, click on it. When you have completed an activity, click on the circle to check it off.",
+  "onboardingText3": "<h1>Active minutes</h1>\n\nMeet your goal each week and monitor your progress.\n\nYou collect active minutes by performing activities and checking them off.\n\nTo see more details about your progress over time, click on the graph.",
+  "onboardingText3Klimafit": "<h1>Activity points</h1>\n\nMeet your goal each week and monitor your progress.\n\nYou collect activity points by performing activities and checking them off.\n\nTo see more details about your progress over time, click on the graph.",
+  "onboardingText4": "<h1>Adherence to training plan</h1>\n\nAlways try to stick to the training plan developed with your health care professional and perform the activities as planned.\n\nThis graph shows you at a glance how well you are doing.",
+  "onboardingText5": "<h1>Personal goals</h1>\n\nYour personal goals are displayed in the calendar for the respective day and at the bottom of the training plan page.\n\nTo see more details about a goal, click on it. To mark a goal as achieved, click on the circle.",
+  "onboardingText6": "<h1>Your user profile</h1>\n\nIn your user profile you can view your data and request changes.\n\nYou can also set a &quot;Special Status&quot; which will be shown to your health care professional.",
+  "onboardingText7": "<h1>Have fun being active!</h1>\n\nDiscover more functions via the menu.\n\nIf something is still unclear, you can find a comprehensive user manual under the menu item &quot;Help&quot;.",
+  "or": "or",
+  "orSendLater": "or send later",
+  "overwriteDataIrreversibly": "Overwrite data irreversibly",
+  "overwriteDatabase": "Overwrite database",
+  "overwriteDatabaseText": "By transferring the database, any changes (adjustments/deletions/additions) that an institution may have made will be irreversibly overwritten. Please select which data you would like to overwrite:",
+  "password": "Password",
+  "participantId": "Participant ID",
+  "patient": "User",
+  "patientHandover": "User handover",
+  "patientHandoverComplete": "Handover complete",
+  "patientHandoverCompleteMultipleText": "Patients {patientNames} were successfully handed over to {healthcareProfessionalName}.",
+  "@patientHandoverCompleteMultipleText": {
+    "patientNames": {
+      "value": {
+        "type": "String",
+        "example": "Max Mustermann"
+      }
+    },
+    "healthcareProfessionalName": {
+      "value": {
+        "type": "String",
+        "example": "Max Mustermann"
+      }
+    }
+  },
+  "patientHandoverCompleteSingleText": "Patient {patientName} was successfully handed over to {healthcareProfessionalName}.",
+  "@patientHandoverCompleteSingleText": {
+    "patientName": {
+      "value": {
+        "type": "String",
+        "example": "Max Mustermann"
+      }
+    },
+    "healthcareProfessionalName": {
+      "value": {
+        "type": "String",
+        "example": "Max Mustermann"
+      }
+    }
+  },
+  "patientNotes": "Patient notes",
+  "patientMaximumHeartRate": "Maximum heart rate: {value} bpm",
+  "@patientMaximumHeartRate": {
+    "placeholders": {
+      "value": {
+        "type": "int",
+        "example": "50"
+      }
+    }
+  },
+  "patientsInfoActiveMinutes": "Has completed <trafficLight1/> <b>at least 80%</b> <trafficLight2/> <b>50% to 79%</b> <trafficLight3/> <b>less than 50%</b> of the planned active minutes in the last four weeks.",
+  "patientsInfoActiveMinutesKlimafit": "Has completed <trafficLight1/> <b>at least 80%</b> <trafficLight2/> <b>50% to 79%</b> <trafficLight3/> <b>less than 50%</b> of the planned activity points in the last four weeks.",
+  "patientsInfoActiveMinutesThreeWeeks": "Has completed <trafficLight1/> <b>at least 80%</b> <trafficLight2/> <b>50% to 79%</b> <trafficLight3/> <b>less than 50%</b> of the active minutes in the last three weeks.",
+  "patientState_INAPPROPRIATE_TRAINING_PLAN": "Inappropriate plan",
+  "patientState_NO_STATE": "Plan suitable",
+  "patientState_ON_VACATION": "On vacation",
+  "patientState_SICK": "Sick",
+  "patientStateActiveMinutes": "Active minutes state",
+  "patientStateActiveMinutesPercentage": "{percentage}% ({percentagePlanned}% pl. act.)",
+  "@patientStateActiveMinutesPercentage": {
+    "placeholders": {
+      "percentage": {
+        "type": "int",
+        "example": "50"
+      },
+      "percentagePlanned": {
+        "type": "int",
+        "example": "50"
+      }
+    }
+  },
+  "patientStateFourWeekState": "Four-week-state",
+  "patientStateNotification": "State notification",
+  "patientStatePlannedActiveMinutes": "Planned active minutes state",
+  "patientStatePlannedActiveMinutesKlimafit": "Planned activity points state",
+  "patientOverview": "User overview",
+  "patients": "Users",
+  "performedOn": "Performed on",
+  "personalGoal": "Personal Goal",
+  "personalGoalReachedPart1": "You have your goal",
+  "personalGoalReachedPart2": "achieved.",
+  "personalGoalReachedPart2earlier": "achieved ahead of schedule.",
+  "personalGoals": "Personal goals",
+  "perWeek": "per week",
+  "pesiQuestion": "How warm did you feel?",
+  "pesiValue_1": "Comfortable",
+  "pesiValue_2": "Slightly warm",
+  "pesiValue_3": "Warm",
+  "pesiValue_4": "Hot",
+  "pesiValue_5": "Very hot",
+  "phone": "Phone",
+  "picture": "Picture",
+  "plan": "Plan",
+  "plannedActivities": "Jointly planned activities",
+  "plannedActivity": "Planned activity",
+  "plannedActivityPlural": "Planned activities",
+  "plannedMinutes": "{amount} min planned",
+  "@plannedMinutes": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "plannedOn": "Planned on",
+  "plannedOnDays": "Planned for the following days",
+  "planOnDays": "Plan on the following days",
+  "pleaseAcceptTerms": "Please accept privacy policy.",
+  "postImageTitle": "Add images to your story",
+  "postImageText": "Choose an image file from your gallery\nor capture a photo using the camera",
+  "postStatus": "Post Status",
+  "postStatusTextHint": "Type your message here...",
+  "postedStatusMessage": "Status succesfully updated",
+  "postedStatusMessageError": "Status could not be updated",
+  "postedMinutesAgo": "min.",
+  "postedHoursAgo": "hrs.",
+  "postedItemRemoved": "Story Item successfully removed",
+  "postedItemRemovedError": "Story Item could not be removed",
+  "predefinedActivityType_CAR_WALKING": "Car & walking",
+  "predefinedActivityType_CYCLING": "Cycling",
+  "predefinedActivityType_E_BIKING": "E-bike",
+  "predefinedActivityType_FAST_WALKING": "Fast walking",
+  "predefinedActivityType_HIKING": "Hiking",
+  "predefinedActivityType_NORDIC_WALKING": "Nordic walking",
+  "predefinedActivityType_OTHER": "Other",
+  "predefinedActivityType_PUBLIC_TRANSPORT_WALKING": "Public transport & walking",
+  "predefinedActivityType_RUNNING": "Running",
+  "predefinedActivityType_STRENGTH_TRAINING": "Strength training",
+  "predefinedActivityType_SWIMMING": "Swimming",
+  "predefinedActivityType_WALKING": "Walking",
+  "prehab2RehabFocus": "Prehab2Rehab Focus",
+  "privacySettings": "Privacy settings",
+  "qrCodeDescription": "Your QR code is private. If you share it with someone, they can scan it using the aktivplan+ App to add you as a contact.",
+  "qrCodeUnsupported": "Scan the QR code with the <b>aktiv</b>plan+ App to add a contact. To do this, download the <b>aktiv</b>plan+ App to your phone or tablet:",
+  "rating": "Exertion",
+  "ratingQuestion": "How strenuous was this activity for you?",
+  "ratingValue_0_1": "extremely easy",
+  "ratingValue_2_3": "easy",
+  "ratingValue_4_5": "somewhat easy",
+  "ratingValue_6_7": "somewhat hard",
+  "ratingValue_8_9": "hard",
+  "ratingValue_10": "extremely hard",
+  "recipient": "Recipient",
+  "recipients": "Recipients",
+  "recordedDuration": "Recorded duration",
+  "register": "Register",
+  "reminderActivity": "Reminder activity",
+  "removeContact": "Remove contact",
+  "removeContactText": "Are you sure you want to remove the contact {name}?",
+  "@removeContactText": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Max Mustermann"
+      }
+    }
+  },
+  "removedContact": "Contact successfully removed",
+  "removedContactError": "Error removing contact",
+  "removeStoryItemConfirmTitle": "Delete Story Item",
+  "removeStoryItemConfirmText": "Are you sure you want to delete this story item?",
+  "repeat": "Repeat",
+  "repeatOrDurationSets": "Repetitions or duration / sets",
+  "repeatShort": "Rep.",
+  "requestChange": "Request change",
+  "requestedChange": "Requested change successfully",
+  "requestChanges": "Request changes",
+  "requestProfileDeletion": "Request profile deletion",
+  "requestProfileDeletionButton": "Request deletion",
+  "requestProfileDeletionText": "Are you sure you want to delete your profile permanently? If your request is accepted, your profile and all data stored in aktivplan will be deleted immediately. Aktivplan will be no longer usable then.",
+  "requestedProfileDeletion": "Request successfully submitted to {name}",
+  "@requestedProfileDeletion": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Franz Gruber"
+      }
+    }
+  },
+  "required": "required",
+  "resetPassword": "Reset password",
+  "resetPasswordActivated": "Your account has been successfully activated.\nTo get started with your personal <b>aktiv</b>plan, download the <b>aktiv</b>plan+ app to your mobile phone or tablet:",
+  "resetPasswordEnterPassword": "Please enter a new password for your <b>aktiv</b>plan account.",
+  "resetPasswordFeedbackText": "You have mail! Follow the instructions in the email to reset your password. Email was sent to {email}.",
+  "@resetPasswordFeedbackText": {
+    "placeholders": {
+      "email": {
+        "type": "String",
+        "example": "Alphaport"
+      }
+    }
+  },
+  "resetPasswordLinkToWebpage": "Alternatively, <b>aktiv</b>plan can also be used via the web browser: <a>login to the website.</a>",
+  "resetPasswordRegister": "Register",
+  "resetPasswordSet": "Your password has been successfully updated.\nTo get started with your personal <b>aktiv</b>plan, download the <b>aktiv</b>plan+ app to your mobile phone or tablet:",
+  "resetPasswordText": "Enter the email address to which the aktivplan account is linked. We will send a link to this address to reset the password.",
+  "resetPasswordTokenExpired": "Oops, something went wrong. This activation link is invalid.\n\nIf you have already activated your account, follow <a>this link</a> to log in. If you have not activated your account within 10 days of receiving the invitation email, this link has expired and your account has been deleted. To apply for a new account, please contact your healthcare professional.\n\nIf you have any questions or concerns, please contact us at <mail target='aktivplan@dhp.lbg.ac.at'>aktivplan@dhp.lbg.ac.at</mail>",
+  "resetPasswordTokenInvalid": "Oops, something went wrong. This link is invalid.\n\nPassword reset links are only valid once and expire once a new link has been requested. If you have already requested a new link, you can use this link to reset your password. Otherwise, you can request a new link <a>here</a> to reset your password.\n\nIf you have any questions or concerns, please contact us at <mail target='aktivplan@dhp.lbg.ac.at'>aktivplan@dhp.lbg.ac.at</mail>",
+  "resetPasswordWelcome": "Welcome {name}!\nRegister to activate your <b>aktiv</b>plan account.",
+  "@resetPasswordWelcome": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Franz Gruber"
+      }
+    }
+  },
+  "responsibleHealthExpert": "Responsible health expert",
+  "save": "Save",
+  "saveAndSend": "Save and send",
+  "saveAndSendLater": "Save and send later",
+  "saveAndUpdate": "Save and update",
+  "scanCode": "Scan code",
+  "scanCodeDescription": "Scan the QR code to add a new contact.",
+  "scheduledMessage": "Message saved successfully",
+  "select": "Select",
+  "selectAll": "Select all",
+  "selectLocationFromMap": "Select location from map",
+  "send": "Send",
+  "sendDate": "Send date",
+  "sendInvitationMailAgain": "Resend invitation",
+  "sendLater": "Send later",
+  "sendLink": "Send Link",
+  "sendMessageHint": "Messages are transmitted via the aktivplan app. The recipient has no possibility to react to the message.\nTherefore, it is necessary to note contact details in the message if contact is desired.",
+  "sendMessageTo": "Message to {name}",
+  "@sendMessageTo": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Max Mustermann"
+      }
+    }
+  },
+  "sendMessageToAllHint": "Planned message will also be sent to users created in the future",
+  "sendTime": "Send time",
+  "sent": "Sent",
+  "sentMessage": "Message sent successfully",
+  "sentMessageError": "Error sending message",
+  "set": "Set",
+  "sets": "Sets",
+  "share": "share",
+  "shareActivityData": "Share my activity data with my contacts",
+  "signature": "Signature",
+  "skip": "Skip",
+  "start": "Start",
+  "startDate": "Start date",
+  "startLocation": "Start location",
+  "startTime": "Start time",
+  "startTour": "Start tour",
+  "startTourAgain": "Start tour again",
+  "state": "State",
+  "statusMessage": "Status message (only visible to contacts)",
+  "subject": "Subject",
+  "surgeryDate": "Surgery date",
+  "surgeryTime": "Surgery time",
+  "switchLanguage": "Change language to German",
+  "taskNotes": "Task notes",
+  "till": "until",
+  "time": "Time",
+  "tipsAndInfos": "Tips & Infos",
+  "title": "Title",
+  "titleEnglish": "Title (english translation)",
+  "themeVideo": "Theme video",
+  "themeVideos": "Theme videos",
+  "thisWeek": "This week",
+  "today": "Today",
+  "tomorrow": "Tommorrow",
+  "total": "Total",
+  "training": "Training",
+  "trainingDescription": "Training description",
+  "trainingDuration": "Training duration",
+  "trainingFrequency": "Training frequency",
+  "trainingHeartFrequency": "Training heart rate",
+  "trainingHeartFrequencyBpm": "Training heart rate (bpm)",
+  "trainingPlan": "Exercise plan",
+  "trainingPlanCopyOf": "{name} Copy",
+  "@trainingPlanCopyOf": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alphaport"
+      }
+    }
+  },
+  "trainingState": "Training status (only visible to health experts)",
+  "trainingType": "Exercise type",
+  "trainingValue_0": "No training",
+  "trainingValue_1_3": "Occasional training, light training",
+  "trainingValue_4_7": "Regular training",
+  "trainingValue_8_10": "Daily training",
+  "tryAgain": "Try again",
+  "tryAgainLater": "Try again later.",
+  "undoExecution": "Undo execution",
+  "undoMove": "Undo move",
+  "undoRatingText": "Are you sure you want to undo the execution of this activity? The data on the execution will be lost.",
+  "update": "Update",
+  "updatedApp": "App updated",
+  "updatedExercise_ENDURANCE": "Endurance training updated",
+  "updatedExercise_HYPERTROPHY": "Hypertrophy training updated",
+  "updatedExercise_INTERVAL": "Interval endurance training updated",
+  "updatedExercise_OTHER": "Exercise updated",
+  "updatedExercise_STRENGTHENING": "Strength endurance training updated",
+  "updatedExercise_TASK": "Task updated",
+  "updatedInstitution": "Institute updated",
+  "updatedHealthcareProfessional": "Health expert updated",
+  "updatedMessage": "Message updated",
+  "updatedPassword": "Password updated successfully",
+  "updatedPatient": "User updated",
+  "updatedTrainingPlan": "Exercise plan updated",
+  "updatedVideo": "Video updated",
+  "updatedWorkout": "Workout updated",
+  "uploadImage": "Upload image",
+  "uploadImageErrorTooBig": "Image is too big, maximum file size: 10 MB",
+  "uploadProfilePicture": "Upload profile picture",
+  "uploadVideo": "Upload video",
+  "validationDefaultLength": "Input must be between 2 and 100 characters long.",
+  "validationDuplicateEmail": "An account already exists for this email address.",
+  "validationEmail": "Please enter a valid email address.",
+  "validationInvalidValue": "Invalid value. Please check your entry.",
+  "validationMoveDateWithinAWeek": "Planned activities can only be rescheduled within a week",
+  "validationNotEmpty": "Requires an input",
+  "validationPasswordLength": "Input must be at least 8 characters long.",
+  "validationPasswordsNotEqual": "Passwords do not match.",
+  "validationWrongCredentials": "Login data not correct.",
+  "validationWrongPassword": "Password not correct.",
+  "video": "Video",
+  "videoWaitBetweenExercisesSeconds": "Wait time between exercises (seconds)",
+  "week": "Week",
+  "weeks": "Weeks",
+  "weight": "Weight",
+  "weightKg": "Weight (kg)",
+  "wholeDay": "Whole day",
+  "workLocation": "Work location",
+  "workout": "Workout",
+  "workoutDurationHint": "Workout duration is automatically calculated from the sum of the durations of the individual exercises.",
+  "workouts": "Workouts",
+  "importWorkout": "Import Workout",
+  "year": "Year",
+  "yes": "Yes",
+  "yourWeeklyGoal": "Your weekly goal",
+  "youTubeUrl": "YouTube Link",
+  "youTubeUrlEnglish": "YouTube Link (english translation)",
+  "morninig": "Morninig",
+  "afternoon": "Afternoon",
+  "evening": "Evening",
+  "liveHealthData": "Live Health Data",
+  "connectToGoogleHealthConnect": "Connect to Google Health Connect",
+  "disconnectFromGoogleHealthConnect": "You are connected to Google Health Connect",
+  "connectToAppleHealth": "Connect to Apple Health",
+  "disconnectFromAppleHealth": "You are connected to Apple Health",
+  "permissionRquest": "To retrieve activity data from Google Health Connect/Apple Health, please go to App Info -> Permissions and grant the following permission(s):",
+  "physicalActivity": "Physical Activity",
+  "walking": "Walking",
+  "running": "Running",
+  "running_Treadmill": "Running on treadmill",
+  "walking_Treadmill": "Walking on treadmill",
+  "hiking": "Hiking",
+  "biking": "Biking",
+  "swimmming": "Swimming"
+}

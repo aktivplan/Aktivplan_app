@@ -1,0 +1,127 @@
+plugins {
+    id "com.android.application"
+    id "com.google.gms.google-services"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+// Also exclude xmlpull/kxml2 at app-level to avoid test-runner transitive packaging
+configurations.all {
+    exclude group: 'net.sf.kxml', module: 'kxml2'
+    exclude group: 'org.xmlpull', module: 'xmlpull'
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+
+android {
+    namespace "at.lbidhp.aktivplan"
+    compileSdk 36
+    ndkVersion "29.0.14206865"
+  
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    lint {
+        disable 'InvalidPackage'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
+
+    defaultConfig {
+        applicationId "at.lbidhp.aktivplan"
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion 35
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+        multiDexEnabled true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+                cmake {
+                    arguments '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'
+                }
+            }
+    }
+
+    buildTypes {
+        release {
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+            minifyEnabled true
+        }
+        profile {
+            minifyEnabled true
+        }
+        debug {
+            // Re-enable R8/minification to verify whether exclusions removed the duplicate-class issue
+            minifyEnabled true
+        }
+    }
+
+    packagingOptions {
+        pickFirst '**/libbarhopper_v3.so'
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    testImplementation 'junit:junit:4.12'
+
+    // https://developer.android.com/jetpack/androidx/releases/test/#1.2.0
+    androidTestImplementation('androidx.test:runner:1.2.0') {
+        exclude group: 'net.sf.kxml', module: 'kxml2'
+        exclude group: 'org.xmlpull', module: 'xmlpull'
+    }
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.2.0') {
+        exclude group: 'net.sf.kxml', module: 'kxml2'
+        exclude group: 'org.xmlpull', module: 'xmlpull'
+    }
+}
