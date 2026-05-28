@@ -93,7 +93,7 @@ class _PatientCalendarWebState extends State<PatientCalendarWeb> {
       if (widget.state.patient.institution?.institutionFocus?.isKlimafit() ?? false) {
         widget.addActivityByType(day, null);
       } else {
-        widget.addActivityByType(day, ActivityType.EXTRA);
+        widget.addActivityByType(day, null);
       }
     }
   }

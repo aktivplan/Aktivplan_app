@@ -62,7 +62,7 @@ class _PatientActivityListState extends State<PatientActivityList> {
             child: ElevatedButton.icon(
               style:
                   getElevatedButtonStyle(context, backgroundColor: userRepository.userRole == UserRole.PATIENT ? extraActivityColor : primaryColor),
-              onPressed: () => widget.onAddActivity!(ActivityType.EXTRA),
+              onPressed: () => widget.onAddActivity!(null),
               icon: Icon(Icons.add),
               label: Text(
                 isPatient ? context.i18n.extraActivity.toUpperCase() : context.i18n.activityPlanStep3,

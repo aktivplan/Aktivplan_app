@@ -141,6 +141,7 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
   }
 
   void _showAddActivityDialog(DateTime day) {
+    final isKlimafit = lastFetchedState?.patient.institution?.institutionFocus?.isKlimafit() ?? false;
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -152,20 +153,34 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ...[ActivityType.PREDEFINED_ACTIVITY, ActivityType.PREDEFINED_ACTIVE_MOBILITY, ActivityType.APPOINTMENT].map((activityType) {
-                return Padding(
+              if (isKlimafit)
+                ...[ActivityType.PREDEFINED_ACTIVITY, ActivityType.PREDEFINED_ACTIVE_MOBILITY, ActivityType.APPOINTMENT].map((activityType) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 6),
+                    child: ElevatedButton.icon(
+                      style: getElevatedButtonStyle(dialogContext, backgroundColor: activityType.backgroundColor),
+                      onPressed: () {
+                        Navigator.of(dialogContext).pop();
+                        createActivityByType(day, activityType);
+                      },
+                      icon: Icon(activityType.iconData, color: Colors.white),
+                      label: Text(activityType.getTranslatedText(dialogContext).toUpperCase()),
+                    ),
+                  );
+                })
+              else
+                Padding(
                   padding: EdgeInsets.symmetric(vertical: 6),
                   child: ElevatedButton.icon(
-                    style: getElevatedButtonStyle(dialogContext, backgroundColor: activityType.backgroundColor),
+                    style: getElevatedButtonStyle(dialogContext, backgroundColor: extraActivityColor),
                     onPressed: () {
                       Navigator.of(dialogContext).pop();
-                      createActivityByType(day, activityType);
+                      createActivityByType(day, ActivityType.EXTRA);
                     },
-                    icon: Icon(activityType.iconData, color: Colors.white),
-                    label: Text(activityType.getTranslatedText(dialogContext).toUpperCase()),
+                    icon: Icon(Icons.add, color: Colors.white),
+                    label: Text(dialogContext.i18n.extraActivity.toUpperCase()),
                   ),
-                );
-              }),
+                ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 6),
                 child: ElevatedButton.icon(
