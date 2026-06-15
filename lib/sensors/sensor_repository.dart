@@ -131,7 +131,8 @@ class SensorRepository {
             }) /
             heartRateDataPointList.length
         : 0.0;
-    var activityType = (workout.value as WorkoutHealthValue).workoutActivityType.getTranslatedActivity(context);
+    final hkitType = (workout.value as WorkoutHealthValue).workoutActivityType;
+    var activityType = hkitType.getTranslatedActivity(context);
     final isRelated = _isWorkoutRelatedToActivity(activityName, workout);
     var dayPeriod = workout.dateFrom.hour < 12
         ? context.i18n.morninig
@@ -140,7 +141,17 @@ class SensorRepository {
             : context.i18n.evening;
     var timeFrom = timeFormat.format(workout.dateFrom);
     var duration = workout.dateTo.difference(workout.dateFrom).inMinutes;
-    return ActivityData(id++, activityType, dayPeriod, timeFrom, avg.toInt(), duration, isRelated, workout.uuid);
+    return ActivityData(id++, activityType, dayPeriod, timeFrom, avg.toInt(), duration, isRelated, workout.uuid, hkitType);
+  }
+
+  bool doesWorkoutMatchActivity(ActivityData workout, String activityName) {
+    final nameWords = activityName.toLowerCase().split(RegExp(r'\s+'));
+    for (final entry in _mapGermanActivityWithHealthWorkoutActivityType.entries) {
+      if (nameWords.contains(entry.key) && entry.value.contains(workout.workoutActivityType)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   Future<void> _setAuthorizationKey(bool isAuthorize) async {
@@ -289,5 +300,6 @@ class ActivityData {
   final int duration;
   final bool isRelatedWorkout;
   final String uuid;
-  ActivityData(this.id, this.activityType, this.dayPeriod, this.timeFrom, this.value, this.duration, this.isRelatedWorkout, this.uuid);
+  final HealthWorkoutActivityType workoutActivityType;
+  ActivityData(this.id, this.activityType, this.dayPeriod, this.timeFrom, this.value, this.duration, this.isRelatedWorkout, this.uuid, this.workoutActivityType);
 }

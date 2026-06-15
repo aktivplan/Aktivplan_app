@@ -226,6 +226,7 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
       final allActivities = await _sensorRepository!.fetchWorkoutsForImport(date, context);
       final activities = allActivities.where((a) => !importedUuids.contains(a.uuid)).toList();
       if (!mounted) return;
+      final matches = {for (final a in activities) a: _findMatchingPlannedActivity(a, date)};
       showModalBottomSheet(
         context: context,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
@@ -242,38 +243,51 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
             children: [
               Text(context.i18n.workouts, style: Theme.of(context).textTheme.titleSmall?.copyWith(color: lightTextColor)),
               SizedBox(height: 8),
-              ...activities.map((data) => Padding(
-                padding: EdgeInsets.only(bottom: 6),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(sheetContext).pop();
-                    _openWorkoutActivity(date, data);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: data.isRelatedWorkout ? primaryColor : datatableBorderColor, width: data.isRelatedWorkout ? 2 : 1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(data.activityType, style: Theme.of(context).textTheme.bodyMedium),
-                            Text('${data.timeFrom} · ${data.duration} ${context.i18n.durationValueMinutes}',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: lightTextColor)),
-                          ],
-                        ),
-                        if (data.value > 0)
-                          Text('${data.value} bpm', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: lightTextColor)),
-                      ],
+              ...activities.map((data) {
+                final matchedActivity = matches[data];
+                final isMatched = matchedActivity != null;
+                return Padding(
+                  padding: EdgeInsets.only(bottom: 6),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      if (isMatched) {
+                        _openPlannedActivityWithHealthKit(matchedActivity, data);
+                      } else {
+                        _openWorkoutActivity(date, data);
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: isMatched ? primaryColor : datatableBorderColor, width: isMatched ? 2 : 1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(data.activityType, style: Theme.of(context).textTheme.bodyMedium),
+                              Text('${data.timeFrom} · ${data.duration} ${context.i18n.durationValueMinutes}',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: lightTextColor)),
+                              if (isMatched)
+                                Text(
+                                  '→ ${getTranslatedText(matchedActivity.name, context)}',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: primaryColor),
+                                ),
+                            ],
+                          ),
+                          if (data.value > 0)
+                            Text('${data.value} bpm', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: lightTextColor)),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              )).toList(),
+                );
+              }).toList(),
             ],
           );
         },
@@ -331,6 +345,60 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
       await prefs.setStringList(_healthKitMappingKey, remaining);
       await _removeImportedUuid(uuid);
     }
+  }
+
+  ActivityOverviewDTO? _findMatchingPlannedActivity(ActivityData workout, DateTime date) {
+    if (lastFetchedState == null || _sensorRepository == null) return null;
+    final dateStr = englishDateFormat.format(date);
+    for (final planned in lastFetchedState!.activities) {
+      if (planned.date != dateStr) continue;
+      if (planned.rating?.done == true) continue;
+      final name = planned.name['DE'] ?? planned.name['EN'] ?? '';
+      if (name.isNotEmpty && _sensorRepository!.doesWorkoutMatchActivity(workout, name)) {
+        return planned;
+      }
+    }
+    return null;
+  }
+
+  void _openPlannedActivityWithHealthKit(ActivityOverviewDTO planned, ActivityData hkitData) {
+    final prefilled = ActivityOverviewDTO(
+      activityId: planned.activityId,
+      date: planned.date,
+      time: planned.time,
+      endTime: planned.endTime,
+      name: planned.name,
+      durationMinutes: planned.durationMinutes,
+      plannedDurationMinutes: planned.plannedDurationMinutes,
+      type: planned.type,
+      repeats: planned.repeats,
+      healthcareProfessionalName: planned.healthcareProfessionalName,
+      plannedBy: planned.plannedBy,
+      activity: planned.activity,
+      rating: ActivityPatientRatingPostDTO(
+        done: false,
+        heartrate: hkitData.value > 0 ? hkitData.value : null,
+        durationMinutes: hkitData.duration,
+        time: hkitData.timeFrom,
+      ),
+    );
+    showDialog(
+      context: context,
+      builder: (context) => ActivityDialog(
+        patient: lastFetchedState!.patient.user!,
+        activity: prefilled,
+        activeMinutes: lastFetchedState!.activeMinutes,
+        rateActivity: true,
+        deleteActivity: deleteActivity,
+        institution: lastFetchedState!.patient.institution!,
+        onSaved: () {
+          _saveImportedUuid(hkitData.uuid);
+          if (planned.activityId != null) {
+            _storeActivityIdMapping(planned.activityId!, hkitData.uuid);
+          }
+        },
+      ),
+    );
   }
 
   void _openWorkoutActivity(DateTime date, ActivityData data) {
