@@ -567,15 +567,17 @@ class _PatientDataPageState extends State<PatientDataPage> with TraceablePageMix
                                   size: 56,
                                 ),
                           SizedBox(width: 15),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SelectableText(
-                                "${patient.firstName} ${patient.lastName}",
-                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
-                              ),
-                              SelectableText(patient.email ?? "")
-                            ],
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SelectableText(
+                                  "${patient.firstName} ${patient.lastName}",
+                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
+                                ),
+                                SelectableText(patient.email ?? "")
+                              ],
+                            ),
                           )
                         ],
                       ),

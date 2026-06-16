@@ -10,6 +10,7 @@ import 'package:aptapp/language_cubit.dart';
 import 'package:aptapp/mixins/logout_aware.dart';
 import 'package:aptapp/utils/constants.dart';
 import 'package:aptapp/utils/enums.dart';
+import 'package:aptapp/polar/heart_rate_button.dart';
 import 'package:aptapp/utils/keys.dart';
 import 'package:aptapp/widget/message_button.dart';
 import 'package:beamer/beamer.dart';
@@ -276,7 +277,7 @@ class __MobileAppBarState extends State<_MobileAppBar> with SingleTickerProvider
             ),
             title: widget.titleWidget,
             centerTitle: true,
-            actions: userRepository.userRole == UserRole.PATIENT ? [MessageButton()] : [],
+            actions: userRepository.userRole == UserRole.PATIENT ? [HeartRateButton(), MessageButton()] : [],
           ),
         ),
         if (widget.appContentWidget != null) PreferredSize(preferredSize: Size.fromHeight(kToolbarHeight), child: widget.appContentWidget!)

@@ -2581,4 +2581,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get swimmming => 'Swimming';
+
+  @override
+  String get connect => 'Connect';
+
+  @override
+  String get connectToDevice => 'Connecting a device';
+
+  @override
+  String get connectToDeviceDescription =>
+      'Find your device and connect it to aktivplan';
+
+  @override
+  String get viewPossibleDevices => 'View possible devices';
+
+  @override
+  String get connectPolarDevice => 'Connect Polar Device';
+
+  @override
+  String get polarVeritySenseTitle => 'Polar Verity Sense';
+
+  @override
+  String get polarVeritySenseDescription =>
+      'Connect your Polar device and view your data here';
+
+  @override
+  String get interruptingDevice => 'Disconnect device';
+
+  @override
+  String get connecting => 'Connecting';
+
+  @override
+  String get searchingForDevices => 'Searching For Devices';
+
+  @override
+  String get connectedDevice => 'You are connected to';
+
+  @override
+  String get batteryLevel => 'Battery Level';
+
+  @override
+  String get bluetoothTurnOnTitle => 'Turn on bluetooth';
+
+  @override
+  String get bluetoothTurnOnText =>
+      'Please turn on Bluetooth to connect to your device.';
+
+  @override
+  String get bluetoothPermissionTitle => 'Bluetooth permission';
+
+  @override
+  String get bluetoothPermissionText =>
+      'Please allow the app to use Bluetooth to connect to your device.';
 }

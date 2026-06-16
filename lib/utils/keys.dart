@@ -90,3 +90,8 @@ const String KEY_WORKOUT_EXERCISE_SCROLL_VIEW = "workout-exercise-scroll-view";
 const String KEY_MESSAGE_OVERVIEW_SCROLL_VIEW = "message-overview-scroll-view";
 const String KEY_VIDEO_TEMPLATE_OVERVIEW_SCROLL_VIEW = "video-template-overview-scroll-view";
 const String KEY_EXTERNAL_APP_OVERVIEW_SCROLL_VIEW = "external-app-overview-scroll-view";
+
+const String KEY_BUTTON_BACK = "button-back";
+const String KEY_BUTTON_CONNECT_DEVICE = "button-connect-device";
+const String KEY_BUTTON_VIEW_POSSIBLE_DEVICES = "button-view-possible-devices";
+const String KEY_BUTTON_INTERRUPTING_DEVICE = "button-interrupting_device";

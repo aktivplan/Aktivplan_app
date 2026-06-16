@@ -20,6 +20,7 @@ import 'package:aptapp/social/user_story_page.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:kiwi/kiwi.dart';
+import '../polar/device_search_page.dart';
 
 ///
 /// Patient
@@ -242,6 +243,24 @@ class HealthcareProfessionalLocation extends BeamLocation<BeamState> {
       ];
 }
 
+class PolarSearchLocation extends BeamLocation<BeamState> {
+  @override
+  List<String> get pathPatterns => [
+        '/polar-search',
+      ];
+
+  @override
+  List<BeamPage> buildPages(BuildContext context, BeamState state) {
+    return [
+      AptBeamPage(
+        context: context,
+        key: ValueKey('polar-search'),
+        child: DeviceSearchPage(),
+      ),
+    ];
+  }
+}
+
 class GoalSettingLocation extends BeamLocation<BeamState> {
   @override
   List<String> get pathPatterns => ['/calendar/goal-setting'];
@@ -271,5 +290,6 @@ List<BeamLocation> patientLocations = [
   HealthcareProfessionalLocation(),
   DataLocation(),
   ContactsLocation(),
+  PolarSearchLocation(),
   GoalSettingLocation(),
 ];

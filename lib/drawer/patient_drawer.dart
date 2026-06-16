@@ -19,6 +19,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../sensors/bloc/sensor_bloc.dart';
+import '../polar/bloc/polar_bloc.dart';
+import '../polar/bloc/polar_event.dart';
 
 class PatientDrawer extends StatefulWidget {
   final Widget drawerHeader;
@@ -190,6 +192,23 @@ class _PatientDrawerState extends State<PatientDrawer> with LogoutAware {
               context.beamToNamed("/imprint");
             },
           ),
+          if (!kIsWeb)
+            ListTile(
+              tileColor: RouterService.isActive(context, "/polar-search") ? primarySwatch[50] : Colors.transparent,
+              leading: Icon(Icons.favorite, color: primaryColor),
+              title: Text(
+                context.i18n.connectPolarDevice,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: RouterService.isActive(context, "/polar-search") ? Theme.of(context).primaryColor : lightTextColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              onTap: () {
+                BlocProvider.of<PolarBloc>(context).add(PolarInitEvent());
+                Navigator.pop(context);
+                context.beamToNamed("/polar-search");
+              },
+            ),
           if (!kIsWeb)
             BlocBuilder<SensorBloc, SensorState>(builder: (context, state) {
               String title = "";

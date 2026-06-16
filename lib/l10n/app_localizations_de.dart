@@ -2593,4 +2593,56 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get swimmming => 'Schwimmen';
+
+  @override
+  String get connect => 'Verbinden';
+
+  @override
+  String get connectToDevice => 'Ein Gerät verbinden';
+
+  @override
+  String get connectToDeviceDescription =>
+      'Finden Sie Ihr Gerät und verbinden Sie es mit aktivplan';
+
+  @override
+  String get viewPossibleDevices => 'Mögliche geräte ansehen';
+
+  @override
+  String get connectPolarDevice => 'Polar Gerät verbinden';
+
+  @override
+  String get polarVeritySenseTitle => 'Polar Verity Sense';
+
+  @override
+  String get polarVeritySenseDescription =>
+      'Schließen Sie Ihr Polar Gerät an und sehen Sie sich Ihre Daten hier an';
+
+  @override
+  String get interruptingDevice => 'Gerät trennen';
+
+  @override
+  String get connecting => 'Verbinden';
+
+  @override
+  String get searchingForDevices => 'Suche nach Geräten';
+
+  @override
+  String get connectedDevice => 'Sie sind verbunden mit';
+
+  @override
+  String get batteryLevel => 'Batteriestand';
+
+  @override
+  String get bluetoothTurnOnTitle => 'Bluetooth einschalten';
+
+  @override
+  String get bluetoothTurnOnText =>
+      'Bitte schalten Sie Bluetooth ein, um eine Verbindung zu Ihrem Gerät herzustellen.';
+
+  @override
+  String get bluetoothPermissionTitle => 'Bluetooth-Erlaubnis';
+
+  @override
+  String get bluetoothPermissionText =>
+      'Bitte erlauben Sie der App, sich über Bluetooth mit Ihrem Gerät zu verbinden.';
 }

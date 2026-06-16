@@ -1173,5 +1173,21 @@
   "walking_Treadmill": "Gehen auf dem Laufband",
   "hiking": "Wandern",
   "biking": "Radfahren",
-  "swimmming": "Schwimmen"
+  "swimmming": "Schwimmen",
+  "connect": "Verbinden",
+  "connectToDevice": "Ein Gerät verbinden",
+  "connectToDeviceDescription": "Finden Sie Ihr Gerät und verbinden Sie es mit aktivplan",
+  "viewPossibleDevices": "Mögliche geräte ansehen",
+  "connectPolarDevice": "Polar Gerät verbinden",
+  "polarVeritySenseTitle": "Polar Verity Sense",
+  "polarVeritySenseDescription": "Schließen Sie Ihr Polar Gerät an und sehen Sie sich Ihre Daten hier an",
+  "interruptingDevice": "Gerät trennen",
+  "connecting": "Verbinden",
+  "searchingForDevices": "Suche nach Geräten",
+  "connectedDevice": "Sie sind verbunden mit",
+  "batteryLevel": "Batteriestand",
+  "bluetoothTurnOnTitle": "Bluetooth einschalten",
+  "bluetoothTurnOnText": "Bitte schalten Sie Bluetooth ein, um eine Verbindung zu Ihrem Gerät herzustellen.",
+  "bluetoothPermissionTitle": "Bluetooth-Erlaubnis",
+  "bluetoothPermissionText": "Bitte erlauben Sie der App, sich über Bluetooth mit Ihrem Gerät zu verbinden."
 }

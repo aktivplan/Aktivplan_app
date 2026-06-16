@@ -1,44 +1,64 @@
 {
   "project_info": {
-    "project_number": "717638915284",
-    "project_id": "aktivplanplus",
-    "storage_bucket": "aktivplanplus.appspot.com"
+    "project_number": "975821112421",
+    "project_id": "activcoach-28133",
+    "storage_bucket": "activcoach-28133.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:717638915284:android:ba968065d132e9deb41741",
+        "mobilesdk_app_id": "1:975821112421:android:4327276b7b4b6c3e03328c",
         "android_client_info": {
           "package_name": "at.lbidhp.aktivplan"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "717638915284-jb83lrft1hrmdg9uddqvoaa005rmd36o.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCcuG5UqWNte0sUlyuQwsMgmQw_IiysAWQ"
+          "current_key": "AIzaSyCiKH8z5pvxm5j8Yd73Dujhkv2gnLKUgns"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "717638915284-jb83lrft1hrmdg9uddqvoaa005rmd36o.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "717638915284-n4t7nslr15ccv5pgrvd4erf61kih3ps7.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "at.lbidhp.aktivplan",
-                "app_store_id": "6484315372"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:975821112421:android:65729a5dde5c042a03328c",
+        "android_client_info": {
+          "package_name": "com.example.activecoach"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiKH8z5pvxm5j8Yd73Dujhkv2gnLKUgns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:975821112421:android:22afd34721339ae103328c",
+        "android_client_info": {
+          "package_name": "com.example.firebase_testing"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiKH8z5pvxm5j8Yd73Dujhkv2gnLKUgns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
         }
       }
     }

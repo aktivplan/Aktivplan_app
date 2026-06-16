@@ -26,6 +26,8 @@ import 'package:aptapp/institution/bloc/institution_repository.dart';
 import 'package:aptapp/message/bloc/message_bloc.dart';
 import 'package:aptapp/message/bloc/message_repository.dart';
 import 'package:aptapp/patient/bloc/mailrepository.dart';
+import 'package:aptapp/polar/bloc/polar_bloc.dart';
+import 'package:aptapp/polar/bloc/polar_repository.dart';
 import 'package:aptapp/push_notifications_manager.dart';
 import 'package:aptapp/sensors/bloc/sensor_bloc.dart';
 import 'package:aptapp/sensors/sensor_repository.dart';
@@ -40,7 +42,6 @@ import 'package:aptapp/video/bloc/video_bloc.dart';
 import 'package:aptapp/widget/save_button.dart';
 import 'package:beamer/beamer.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -64,11 +65,12 @@ import 'beamer/root_locations.dart';
 import 'user/user_controller_repository.dart';
 import 'video/bloc/video_repository.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  SharedPreferences preferences = await SharedPreferences.getInstance();
-  preferences.setBool("receivedNotification", true);
-  PushNotificationsManager().setReceivedNotification(true);
-}
+// TODO: Polar BLE streaming conflicts with Firebase background isolate — keep disabled while Polar is active
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   SharedPreferences preferences = await SharedPreferences.getInstance();
+//   preferences.setBool("receivedNotification", true);
+//   PushNotificationsManager().setReceivedNotification(true);
+// }
 
 void main() async {
   runZonedGuarded(() {
@@ -95,7 +97,8 @@ void launchApp() async {
     ..registerSingleton((c) => VideoRepository())
     ..registerSingleton((c) => InstitutionRepository())
     ..registerSingleton((c) => ActivityRepository())
-    ..registerSingleton((c) => SocialControllerRepository());
+    ..registerSingleton((c) => SocialControllerRepository())
+    ..registerSingleton((c) => PolarRepository());
   final userRepository = KiwiContainer().resolve<UserRepository>();
 
   // TODO handle caats token here
@@ -114,7 +117,8 @@ void launchApp() async {
   );
   Intl.defaultLocale = "de";
   SharedPreferences preferences = await SharedPreferences.getInstance();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // TODO: Polar BLE streaming conflicts with Firebase background isolate — keep disabled while Polar is active
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   if (!PushNotificationsManager().hasReceivedNotification()) {
     PushNotificationsManager().setReceivedNotification(preferences.getBool("receivedNotification") == true);
   }
@@ -297,6 +301,9 @@ class _APTAppState extends State<APTApp> with WidgetsBindingObserver {
                 create: (context) => SensorBloc(
                   sensorRepository: SensorRepository(),
                 ),
+              ),
+              BlocProvider<PolarBloc>(
+                create: (context) => PolarBloc(polarRepository: PolarRepository()),
               ),
             ],
             child: BlocBuilder<LanguageCubit, Locale>(

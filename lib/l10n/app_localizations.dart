@@ -4778,6 +4778,102 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Schwimmen'**
   String get swimmming;
+
+  /// No description provided for @connect.
+  ///
+  /// In de, this message translates to:
+  /// **'Verbinden'**
+  String get connect;
+
+  /// No description provided for @connectToDevice.
+  ///
+  /// In de, this message translates to:
+  /// **'Ein Gerät verbinden'**
+  String get connectToDevice;
+
+  /// No description provided for @connectToDeviceDescription.
+  ///
+  /// In de, this message translates to:
+  /// **'Finden Sie Ihr Gerät und verbinden Sie es mit aktivplan'**
+  String get connectToDeviceDescription;
+
+  /// No description provided for @viewPossibleDevices.
+  ///
+  /// In de, this message translates to:
+  /// **'Mögliche geräte ansehen'**
+  String get viewPossibleDevices;
+
+  /// No description provided for @connectPolarDevice.
+  ///
+  /// In de, this message translates to:
+  /// **'Polar Gerät verbinden'**
+  String get connectPolarDevice;
+
+  /// No description provided for @polarVeritySenseTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Polar Verity Sense'**
+  String get polarVeritySenseTitle;
+
+  /// No description provided for @polarVeritySenseDescription.
+  ///
+  /// In de, this message translates to:
+  /// **'Schließen Sie Ihr Polar Gerät an und sehen Sie sich Ihre Daten hier an'**
+  String get polarVeritySenseDescription;
+
+  /// No description provided for @interruptingDevice.
+  ///
+  /// In de, this message translates to:
+  /// **'Gerät trennen'**
+  String get interruptingDevice;
+
+  /// No description provided for @connecting.
+  ///
+  /// In de, this message translates to:
+  /// **'Verbinden'**
+  String get connecting;
+
+  /// No description provided for @searchingForDevices.
+  ///
+  /// In de, this message translates to:
+  /// **'Suche nach Geräten'**
+  String get searchingForDevices;
+
+  /// No description provided for @connectedDevice.
+  ///
+  /// In de, this message translates to:
+  /// **'Sie sind verbunden mit'**
+  String get connectedDevice;
+
+  /// No description provided for @batteryLevel.
+  ///
+  /// In de, this message translates to:
+  /// **'Batteriestand'**
+  String get batteryLevel;
+
+  /// No description provided for @bluetoothTurnOnTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Bluetooth einschalten'**
+  String get bluetoothTurnOnTitle;
+
+  /// No description provided for @bluetoothTurnOnText.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte schalten Sie Bluetooth ein, um eine Verbindung zu Ihrem Gerät herzustellen.'**
+  String get bluetoothTurnOnText;
+
+  /// No description provided for @bluetoothPermissionTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Bluetooth-Erlaubnis'**
+  String get bluetoothPermissionTitle;
+
+  /// No description provided for @bluetoothPermissionText.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte erlauben Sie der App, sich über Bluetooth mit Ihrem Gerät zu verbinden.'**
+  String get bluetoothPermissionText;
 }
 
 class _AppLocalizationsDelegate

@@ -1173,5 +1173,21 @@
   "walking_Treadmill": "Walking on treadmill",
   "hiking": "Hiking",
   "biking": "Biking",
-  "swimmming": "Swimming"
+  "swimmming": "Swimming",
+  "connect": "Connect",
+  "connectToDevice": "Connecting a device",
+  "connectToDeviceDescription": "Find your device and connect it to aktivplan",
+  "viewPossibleDevices": "View possible devices",
+  "connectPolarDevice": "Connect Polar Device",
+  "polarVeritySenseTitle": "Polar Verity Sense",
+  "polarVeritySenseDescription": "Connect your Polar device and view your data here",
+  "interruptingDevice": "Disconnect device",
+  "connecting": "Connecting",
+  "searchingForDevices": "Searching For Devices",
+  "connectedDevice": "You are connected to",
+  "batteryLevel": "Battery Level",
+  "bluetoothTurnOnTitle": "Turn on bluetooth",
+  "bluetoothTurnOnText": "Please turn on Bluetooth to connect to your device.",
+  "bluetoothPermissionTitle": "Bluetooth permission",
+  "bluetoothPermissionText": "Please allow the app to use Bluetooth to connect to your device."
 }
