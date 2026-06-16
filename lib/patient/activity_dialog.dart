@@ -39,6 +39,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:week_of_year/week_of_year.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'dart:math' as math;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../activity/bloc/activity_bloc.dart';
 
@@ -69,8 +70,9 @@ class ActivityDialog extends StatefulWidget {
     ActiveMinutesOverviewDTO activeMinutes,
     bool rateActivity,
     InstitutionDTO institution,
-    Function(String, ActivityType) deleteActivity,
-  ) {
+    Function(String, ActivityType) deleteActivity, {
+    VoidCallback? onUndoRating,
+  }) {
     final AlertDialog alert = AlertDialog(
       content: SelectableText(context.i18n.undoRatingText),
       actions: [
@@ -113,6 +115,7 @@ class ActivityDialog extends StatefulWidget {
               var rating = ActivityPatientRatingPostDTO()..done = false;
               activityBloc.add(UpdateActivityRatingEvent(
                   activityType: activity.type!, rating: rating, id: activity.activityId!, date: activity.date!, patientId: patient.id!));
+              onUndoRating?.call();
               Navigator.of(context, rootNavigator: true).pop();
             }),
         SizedBox(
@@ -265,6 +268,9 @@ class _ActivityDialogState extends State<ActivityDialog> {
   PredefinedActivityType? predefinedActivityType;
 
   List<ActivityData> _healthKitActivities = [];
+  String? _selectedHealthKitUuid;
+  static const _importedWorkoutsKey = 'healthkit_imported_workout_uuids';
+  static const _healthKitMappingKey = 'healthkit_activityid_to_uuid';
 
   // so we can also enable time entry when institution focus changed over time
   get isKlimafitEntry =>
@@ -471,15 +477,34 @@ class _ActivityDialogState extends State<ActivityDialog> {
   Future<void> _fetchHealthKitActivities() async {
     if (kIsWeb) return;
     final sensorRepository = KiwiContainer().resolve<SensorRepository>();
-    if (!await sensorRepository.isAuthorizedToFetchData()) return;
+    if (!await sensorRepository.isAuthorizedToGoogleHealthConnectAppleHealth()) return;
     if (!mounted) return;
     final activityDate = DateTime.tryParse(widget.activity.date ?? '') ?? DateTime.now();
     final activityName = getTranslatedText(widget.activity.name, context);
     final activities = await sensorRepository.fetchActivityDataList(activityDate, activityName, context);
+    final prefs = await SharedPreferences.getInstance();
+    final importedUuids = (prefs.getStringList(_importedWorkoutsKey) ?? []).toSet();
     if (!mounted) return;
     setState(() {
-      _healthKitActivities = activities;
+      _healthKitActivities = activities.where((a) => !importedUuids.contains(a.uuid)).toList();
     });
+  }
+
+  Future<void> _saveSelectedHealthKitUuid() async {
+    final uuid = _selectedHealthKitUuid;
+    if (uuid == null || uuid.isEmpty) return;
+    final prefs = await SharedPreferences.getInstance();
+    final existing = (prefs.getStringList(_importedWorkoutsKey) ?? []).toSet();
+    existing.add(uuid);
+    await prefs.setStringList(_importedWorkoutsKey, existing.toList());
+    final activityId = widget.activity.activityId;
+    if (activityId != null && activityId.isNotEmpty) {
+      final entries = (prefs.getStringList(_healthKitMappingKey) ?? [])
+          .where((e) => !e.startsWith('$activityId|'))
+          .toList();
+      entries.add('$activityId|$uuid');
+      await prefs.setStringList(_healthKitMappingKey, entries);
+    }
   }
 
   Widget _buildHealthKitSection(BuildContext context) {
@@ -498,9 +523,20 @@ class _ActivityDialogState extends State<ActivityDialog> {
             child: InkWell(
               onTap: () {
                 setState(() {
+                  _selectedHealthKitUuid = data.uuid;
                   durationController.text = data.duration.toString();
                   if (data.value > 0) heartrateController.text = data.value.toString();
                   time = data.timeFrom;
+                  if (isKlimafitEntry && data.timeFrom.contains(':')) {
+                    try {
+                      final parts = data.timeFrom.split(':');
+                      final startTotalMinutes = int.parse(parts[0]) * 60 + int.parse(parts[1]);
+                      final endTotalMinutes = startTotalMinutes + data.duration;
+                      final endHour = (endTotalMinutes ~/ 60) % 24;
+                      final endMin = endTotalMinutes % 60;
+                      endTime = '${endHour.toString().padLeft(2, '0')}:${endMin.toString().padLeft(2, '0')}';
+                    } catch (_) {}
+                  }
                 });
               },
               child: Container(
@@ -756,6 +792,8 @@ class _ActivityDialogState extends State<ActivityDialog> {
         date: widget.activity.date!,
         patientId: widget.patient.id!,
         extraActivityName: nameController.text));
+    widget.onSaved?.call();
+    _saveSelectedHealthKitUuid();
     Navigator.pop(context);
 
     if (!hasInitialValue) {
@@ -808,6 +846,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
         patientId: widget.patient.id!,
       ));
       widget.onSaved?.call();
+      _saveSelectedHealthKitUuid();
       Navigator.pop(context);
       checkIfActiveMinutesAchieved(MediaQuery.of(context).size.height);
       return;
@@ -865,6 +904,8 @@ class _ActivityDialogState extends State<ActivityDialog> {
       } else {
         activityBloc!.add(AddActivityEvent(activity: activity, patientId: widget.patient.id!, type: widget.activity.type!));
       }
+      widget.onSaved?.call();
+      _saveSelectedHealthKitUuid();
       Navigator.pop(context);
       return;
     }
@@ -892,6 +933,8 @@ class _ActivityDialogState extends State<ActivityDialog> {
         date: widget.activity.date!,
         patientId: widget.patient.id!,
         extraActivityName: nameController.text));
+    widget.onSaved?.call();
+    _saveSelectedHealthKitUuid();
     Navigator.pop(context);
   }
 
@@ -1074,9 +1117,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
         children: [
           if (_healthKitActivities.isNotEmpty &&
               widget.activity.type != ActivityType.TASK &&
-              widget.activity.type != ActivityType.APPOINTMENT &&
-              widget.activity.type != ActivityType.PREDEFINED_ACTIVITY &&
-              widget.activity.type != ActivityType.PREDEFINED_ACTIVE_MOBILITY)
+              widget.activity.type != ActivityType.APPOINTMENT)
             _buildHealthKitSection(context),
           if (canEditPredefinedActivity)
             Padding(

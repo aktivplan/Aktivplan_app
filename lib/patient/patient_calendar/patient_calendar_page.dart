@@ -354,7 +354,8 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
       if (planned.date != dateStr) continue;
       if (planned.rating?.done == true) continue;
       final name = planned.name['DE'] ?? planned.name['EN'] ?? '';
-      if (name.isNotEmpty && _sensorRepository!.doesWorkoutMatchActivity(workout, name)) {
+      final predefinedType = planned.activity?.predefinedActivity?.predefinedActivityType;
+      if (_sensorRepository!.doesWorkoutMatchActivity(workout, name, predefinedType)) {
         return planned;
       }
     }
@@ -527,7 +528,10 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
       if (activity is ActivityOverviewDTO) {
         if (activity.rating!.done ?? false) {
           ActivityDialog.showUndoRatingDialog(context, lastFetchedState!.patient.user!, activity, lastFetchedState!.activeMinutes, true,
-              lastFetchedState!.patient.institution!, deleteActivity);
+              lastFetchedState!.patient.institution!, deleteActivity,
+              onUndoRating: () {
+                if (activity.activityId != null) _removeHealthKitUuidForActivity(activity.activityId!);
+              });
         } else {
           showDialog<void>(
             context: context,

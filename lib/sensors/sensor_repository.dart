@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:apt_api/api.dart';
 import 'package:aptapp/utils/constants.dart';
 import 'package:aptapp/utils/enums.dart';
 import 'package:flutter/widgets.dart';
@@ -27,8 +28,20 @@ class SensorRepository {
     "wandern": [HealthWorkoutActivityType.HIKING],
     "radfahren": [HealthWorkoutActivityType.BIKING],
     "radergometer": [HealthWorkoutActivityType.BIKING],
+    "e-bike": [HealthWorkoutActivityType.BIKING],
     "crosstrainer": [HealthWorkoutActivityType.CROSS_TRAINING],
     "schwimmen": [HealthWorkoutActivityType.SWIMMING, HealthWorkoutActivityType.SWIMMING_OPEN_WATER, HealthWorkoutActivityType.SWIMMING_POOL],
+  };
+
+  final _mapPredefinedTypeToHealthWorkoutActivityType = <PredefinedActivityType, List<HealthWorkoutActivityType>>{
+    PredefinedActivityType.CYCLING: [HealthWorkoutActivityType.BIKING],
+    PredefinedActivityType.E_BIKING: [HealthWorkoutActivityType.BIKING],
+    PredefinedActivityType.WALKING: [HealthWorkoutActivityType.WALKING, HealthWorkoutActivityType.WALKING_TREADMILL],
+    PredefinedActivityType.FAST_WALKING: [HealthWorkoutActivityType.WALKING, HealthWorkoutActivityType.WALKING_TREADMILL],
+    PredefinedActivityType.NORDIC_WALKING: [HealthWorkoutActivityType.WALKING, HealthWorkoutActivityType.WALKING_TREADMILL],
+    PredefinedActivityType.HIKING: [HealthWorkoutActivityType.HIKING],
+    PredefinedActivityType.RUNNING: [HealthWorkoutActivityType.RUNNING, HealthWorkoutActivityType.RUNNING_TREADMILL],
+    PredefinedActivityType.SWIMMING: [HealthWorkoutActivityType.SWIMMING, HealthWorkoutActivityType.SWIMMING_OPEN_WATER, HealthWorkoutActivityType.SWIMMING_POOL],
   };
 
   List<HealthDataType> get _allHealthDataTypeKeys {
@@ -144,7 +157,12 @@ class SensorRepository {
     return ActivityData(id++, activityType, dayPeriod, timeFrom, avg.toInt(), duration, isRelated, workout.uuid, hkitType);
   }
 
-  bool doesWorkoutMatchActivity(ActivityData workout, String activityName) {
+  bool doesWorkoutMatchActivity(ActivityData workout, String activityName, [PredefinedActivityType? predefinedType]) {
+    if (predefinedType != null) {
+      final types = _mapPredefinedTypeToHealthWorkoutActivityType[predefinedType];
+      if (types != null && types.contains(workout.workoutActivityType)) return true;
+    }
+    if (activityName.isEmpty) return false;
     final nameWords = activityName.toLowerCase().split(RegExp(r'\s+'));
     for (final entry in _mapGermanActivityWithHealthWorkoutActivityType.entries) {
       if (nameWords.contains(entry.key) && entry.value.contains(workout.workoutActivityType)) {
@@ -181,7 +199,7 @@ class SensorRepository {
     final startDate = DateTime(activityDate.year, activityDate.month, activityDate.day, 0, 0, 0);
     final endDate = DateTime(activityDate.year, activityDate.month, activityDate.day, 23, 59, 59);
     final List<ActivityData> result = [];
-    if (!await isAuthorizedToFetchData()) return result;
+    if (!await isAuthorizedToGoogleHealthConnectAppleHealth()) return result;
     final List<HealthDataPoint> workoutList = await fetchData(startDate, endDate, [HealthDataType.WORKOUT]);
     if (workoutList.length < 1) return result;
 
