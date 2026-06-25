@@ -248,6 +248,17 @@ class SensorRepository {
   }
 
   Future<bool> requestHealthKitAuthorization() async {
+    if (Platform.isAndroid) {
+      final sdkStatus = await Health().getHealthConnectSdkStatus();
+      if (sdkStatus == HealthConnectSdkStatus.sdkUnavailable) {
+        // Device/Android version too old — do nothing, caller shows a message.
+        return false;
+      }
+      if (sdkStatus == HealthConnectSdkStatus.sdkUnavailableProviderUpdateRequired) {
+        await Health().installHealthConnect();
+        return false;
+      }
+    }
     final types = [HealthDataType.HEART_RATE, HealthDataType.WORKOUT];
     final permissions = [HealthDataAccess.READ, HealthDataAccess.READ];
     bool isAuthorize = false;
@@ -256,9 +267,20 @@ class SensorRepository {
     } catch (error) {
       debugPrint("Exception in requestHealthKitAuthorization: $error");
     }
+    // Launcher may fail on older Health Connect versions — check if permissions
+    // were already granted through the Health Connect app directly.
+    if (!isAuthorize) {
+      try {
+        isAuthorize = await Health().hasPermissions(types, permissions: permissions) ?? false;
+      } catch (_) {}
+    }
     await _setAuthorizationKey(isAuthorize);
     if (isAuthorize) _setAuthorizationFirstDate();
     return isAuthorize;
+  }
+
+  Future<void> installHealthConnect() async {
+    await Health().installHealthConnect();
   }
 
   Future<List<ActivityData>> fetchWorkoutsForImport(DateTime date, BuildContext context) async {

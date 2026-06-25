@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:apt_api/api.dart';
 import 'package:aptapp/activity/bloc/activity_bloc.dart';
 import 'package:aptapp/authentication/user_repository.dart';
@@ -50,6 +52,7 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
   final userRepository = KiwiContainer().resolve<UserRepository>();
   SensorRepository? _sensorRepository;
   bool _healthKitLoading = false;
+  bool _healthKitAuthorized = false;
   String? _pendingHealthKitUuid;
 
   @override
@@ -57,6 +60,9 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
     super.initState();
     focusedDay = DateTime.now();
     _sensorRepository = KiwiContainer().resolve<SensorRepository>();
+    _sensorRepository!.isAuthorizedToGoogleHealthConnectAppleHealth().then((v) {
+      if (mounted) setState(() => _healthKitAuthorized = v);
+    });
     if (userRepository.user != null) {
       initActivityBloc();
     }
@@ -193,7 +199,7 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
                         },
                   icon: _healthKitLoading
                       ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : Icon(Icons.health_and_safety_outlined, color: Colors.white),
+                      : Icon(_healthKitAuthorized ? Icons.health_and_safety : Icons.health_and_safety_outlined, color: Colors.white),
                   label: Text(dialogContext.i18n.importWorkout.toUpperCase()),
                 ),
               ),
@@ -214,84 +220,82 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
       }
       if (!mounted) return;
       if (!authorized) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.i18n.connectToAppleHealth),
-            action: SnackBarAction(label: context.i18n.privacySettings, onPressed: () => openAppSettings()),
-          ),
-        );
+        if (Platform.isAndroid) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(context.i18n.connectToGoogleHealthConnect),
+              action: SnackBarAction(
+                label: context.i18n.privacySettings,
+                onPressed: () async {
+                  try { await _sensorRepository?.installHealthConnect(); } catch (_) {}
+                },
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(context.i18n.connectToAppleHealth),
+              action: SnackBarAction(label: context.i18n.privacySettings, onPressed: () => openAppSettings()),
+            ),
+          );
+        }
         return;
       }
+      setState(() => _healthKitAuthorized = true);
       final importedUuids = await _loadImportedUuids();
       final allActivities = await _sensorRepository!.fetchWorkoutsForImport(date, context);
       final activities = allActivities.where((a) => !importedUuids.contains(a.uuid)).toList();
       if (!mounted) return;
       final matches = {for (final a in activities) a: _findMatchingPlannedActivity(a, date)};
-      showModalBottomSheet(
+      final result = await showDialog<(ActivityData, ActivityOverviewDTO?)>(
         context: context,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
-        builder: (sheetContext) {
+        builder: (dialogContext) {
           if (activities.isEmpty) {
-            return Padding(
-              padding: EdgeInsets.all(24),
-              child: Text(context.i18n.noWorkouts, style: Theme.of(context).textTheme.bodyMedium),
+            return AlertDialog(
+              content: Text(context.i18n.noWorkouts),
+              actions: [TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(context.i18n.close))],
             );
           }
-          return ListView(
-            shrinkWrap: true,
-            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            children: [
-              Text(context.i18n.workouts, style: Theme.of(context).textTheme.titleSmall?.copyWith(color: lightTextColor)),
-              SizedBox(height: 8),
-              ...activities.map((data) {
-                final matchedActivity = matches[data];
-                final isMatched = matchedActivity != null;
-                return Padding(
-                  padding: EdgeInsets.only(bottom: 6),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.of(sheetContext).pop();
-                      if (isMatched) {
-                        _openPlannedActivityWithHealthKit(matchedActivity, data);
-                      } else {
-                        _openWorkoutActivity(date, data);
-                      }
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: isMatched ? primaryColor : datatableBorderColor, width: isMatched ? 2 : 1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(data.activityType, style: Theme.of(context).textTheme.bodyMedium),
-                              Text('${data.timeFrom} · ${data.duration} ${context.i18n.durationValueMinutes}',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: lightTextColor)),
-                              if (isMatched)
-                                Text(
-                                  '→ ${getTranslatedText(matchedActivity.name, context)}',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: primaryColor),
-                                ),
-                            ],
-                          ),
-                          if (data.value > 0)
-                            Text('${data.value} bpm', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: lightTextColor)),
-                        ],
-                      ),
+          return AlertDialog(
+            title: Text(context.i18n.workouts),
+            contentPadding: EdgeInsets.symmetric(vertical: 8),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: activities.map((data) {
+                  final matchedActivity = matches[data];
+                  final isMatched = matchedActivity != null;
+                  return ListTile(
+                    title: Text(data.activityType),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${data.timeFrom} · ${data.duration} ${context.i18n.durationValueMinutes}${data.value > 0 ? ' · ${data.value} bpm' : ''}'),
+                        if (isMatched)
+                          Text('→ ${getTranslatedText(matchedActivity.name, context)}',
+                              style: TextStyle(color: primaryColor, fontWeight: FontWeight.w500)),
+                      ],
                     ),
-                  ),
-                );
-              }).toList(),
+                    isThreeLine: isMatched,
+                    onTap: () => Navigator.of(dialogContext).pop((data, matchedActivity)),
+                  );
+                }).toList(),
+              ),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(context.i18n.cancel)),
             ],
           );
         },
       );
+      if (result == null || !mounted) return;
+      final (selectedData, matchedActivity) = result;
+      if (matchedActivity != null) {
+        _openPlannedActivityWithHealthKit(matchedActivity, selectedData);
+      } else {
+        _openWorkoutActivity(date, selectedData);
+      }
     } finally {
       if (mounted) setState(() => _healthKitLoading = false);
     }
@@ -305,6 +309,7 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
   }
 
   Future<void> _saveImportedUuid(String uuid) async {
+    if (uuid.isEmpty) return;
     final prefs = await SharedPreferences.getInstance();
     final existing = (prefs.getStringList(_importedWorkoutsKey) ?? []).toSet();
     existing.add(uuid);
@@ -362,44 +367,61 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
     return null;
   }
 
-  void _openPlannedActivityWithHealthKit(ActivityOverviewDTO planned, ActivityData hkitData) {
-    final prefilled = ActivityOverviewDTO(
-      activityId: planned.activityId,
-      date: planned.date,
-      time: planned.time,
-      endTime: planned.endTime,
-      name: planned.name,
-      durationMinutes: planned.durationMinutes,
-      plannedDurationMinutes: planned.plannedDurationMinutes,
-      type: planned.type,
-      repeats: planned.repeats,
-      healthcareProfessionalName: planned.healthcareProfessionalName,
-      plannedBy: planned.plannedBy,
-      activity: planned.activity,
-      rating: ActivityPatientRatingPostDTO(
-        done: false,
-        heartrate: hkitData.value > 0 ? hkitData.value : null,
-        durationMinutes: hkitData.duration,
-        time: hkitData.timeFrom,
-      ),
-    );
-    showDialog(
+  Future<void> _openPlannedActivityWithHealthKit(ActivityOverviewDTO planned, ActivityData hkitData) async {
+    final activityName = getTranslatedText(planned.name, context);
+    final bpmText = hkitData.value > 0 ? ' · ${hkitData.value} bpm' : '';
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => ActivityDialog(
-        patient: lastFetchedState!.patient.user!,
-        activity: prefilled,
-        activeMinutes: lastFetchedState!.activeMinutes,
-        rateActivity: true,
-        deleteActivity: deleteActivity,
-        institution: lastFetchedState!.patient.institution!,
-        onSaved: () {
-          _saveImportedUuid(hkitData.uuid);
-          if (planned.activityId != null) {
-            _storeActivityIdMapping(planned.activityId!, hkitData.uuid);
-          }
-        },
+      builder: (ctx) => AlertDialog(
+        title: Text(activityName),
+        content: Text('${hkitData.timeFrom} · ${hkitData.duration} min$bpmText'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(context.i18n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(context.i18n.importWorkout),
+          ),
+        ],
       ),
     );
+    if (confirmed != true || !mounted) return;
+
+    String? endTime;
+    if (hkitData.timeFrom.contains(':')) {
+      try {
+        final parts = hkitData.timeFrom.split(':');
+        final startTotal = int.parse(parts[0]) * 60 + int.parse(parts[1]);
+        final endTotal = startTotal + hkitData.duration;
+        endTime = '${((endTotal ~/ 60) % 24).toString().padLeft(2, '0')}:${(endTotal % 60).toString().padLeft(2, '0')}';
+      } catch (_) {}
+    }
+
+    final rating = ActivityPatientRatingPostDTO()
+      ..done = true
+      ..heartrate = hkitData.value > 0 ? hkitData.value : null
+      ..durationMinutes = hkitData.duration
+      ..date = planned.date!
+      ..time = hkitData.timeFrom
+      ..endTime = endTime
+      ..startLocation = planned.activity?.predefinedActivity?.startLocation
+      ..startLocationAddress = planned.activity?.predefinedActivity?.startLocationAddress ?? '';
+
+    activityBloc!.add(UpdateActivityRatingEvent(
+      activityType: planned.type!,
+      rating: rating,
+      id: planned.activityId!,
+      date: planned.date!,
+      patientId: lastFetchedState!.patient.user!.id!,
+      extraActivityName: activityName,
+    ));
+
+    _saveImportedUuid(hkitData.uuid);
+    if (planned.activityId != null) {
+      _storeActivityIdMapping(planned.activityId!, hkitData.uuid);
+    }
   }
 
   void _openWorkoutActivity(DateTime date, ActivityData data) {
@@ -410,7 +432,6 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
         activity: ActivityOverviewDTO(
           type: ActivityType.EXTRA,
           date: englishDateFormat.format(date),
-          name: getTranslationObjectFromText(data.activityType, data.activityType),
           durationMinutes: data.duration,
           rating: ActivityPatientRatingPostDTO(
             done: false,
@@ -419,6 +440,7 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
             time: data.timeFrom,
           ),
         ),
+        prefilledName: data.activityType,
         activeMinutes: lastFetchedState!.activeMinutes,
         rateActivity: true,
         deleteActivity: deleteActivity,

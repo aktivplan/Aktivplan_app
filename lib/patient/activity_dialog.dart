@@ -51,6 +51,8 @@ class ActivityDialog extends StatefulWidget {
   final InstitutionDTO institution;
   final Function(String, ActivityType) deleteActivity;
   final VoidCallback? onSaved;
+  final bool skipLocationValidation;
+  final String? prefilledName;
 
   const ActivityDialog(
       {Key? key,
@@ -60,7 +62,9 @@ class ActivityDialog extends StatefulWidget {
       required this.rateActivity,
       required this.deleteActivity,
       required this.institution,
-      this.onSaved})
+      this.onSaved,
+      this.skipLocationValidation = false,
+      this.prefilledName})
       : super(key: key);
 
   static Future<void> showUndoRatingDialog(
@@ -344,12 +348,16 @@ class _ActivityDialogState extends State<ActivityDialog> {
         endLocationAddress = widget.activity.activity?.predefinedActivity?.endLocationAddress ?? "";
       }
     }
+    if (widget.prefilledName != null) {
+      nameController.text = widget.prefilledName!;
+    }
     Future.delayed(Duration.zero, () {
       initYouTubePlayerControllers();
-      if (widget.activity.type == ActivityType.EXTRA ||
+      if (widget.prefilledName == null &&
+          (widget.activity.type == ActivityType.EXTRA ||
           widget.activity.type == ActivityType.APPOINTMENT ||
           widget.activity.type == ActivityType.PREDEFINED_ACTIVITY ||
-          widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY) {
+          widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY)) {
         nameController.text = getTranslatedText(widget.activity.name, context);
       }
       loadVideoSources();
@@ -480,10 +488,10 @@ class _ActivityDialogState extends State<ActivityDialog> {
     if (!await sensorRepository.isAuthorizedToGoogleHealthConnectAppleHealth()) return;
     if (!mounted) return;
     final activityDate = DateTime.tryParse(widget.activity.date ?? '') ?? DateTime.now();
-    final activityName = getTranslatedText(widget.activity.name, context);
-    final activities = await sensorRepository.fetchActivityDataList(activityDate, activityName, context);
+    final activityName = widget.prefilledName ?? getTranslatedText(widget.activity.name, context);
     final prefs = await SharedPreferences.getInstance();
     final importedUuids = (prefs.getStringList(_importedWorkoutsKey) ?? []).toSet();
+    final activities = await sensorRepository.fetchActivityDataList(activityDate, activityName, context);
     if (!mounted) return;
     setState(() {
       _healthKitActivities = activities.where((a) => !importedUuids.contains(a.uuid)).toList();
@@ -520,7 +528,8 @@ class _ActivityDialogState extends State<ActivityDialog> {
           SizedBox(height: 8),
           ..._healthKitActivities.map((data) => Padding(
             padding: EdgeInsets.only(bottom: 6),
-            child: InkWell(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () {
                 setState(() {
                   _selectedHealthKitUuid = data.uuid;
@@ -543,8 +552,8 @@ class _ActivityDialogState extends State<ActivityDialog> {
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: data.isRelatedWorkout ? primaryColor : datatableBorderColor,
-                    width: data.isRelatedWorkout ? 2 : 1,
+                    color: _selectedHealthKitUuid == data.uuid ? primaryColor : (data.isRelatedWorkout ? primaryColor : datatableBorderColor),
+                    width: (_selectedHealthKitUuid == data.uuid || data.isRelatedWorkout) ? 2 : 1,
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -803,6 +812,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
 
   bool validateForm() {
     final bool startLocationInvalid =
+        !widget.skipLocationValidation &&
         (widget.activity.type == ActivityType.PREDEFINED_ACTIVITY || widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY) &&
             location == null;
     final bool isValid = _activityFormKey.currentState!.validate();
