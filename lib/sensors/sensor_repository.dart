@@ -157,7 +157,57 @@ class SensorRepository {
     return ActivityData(id++, activityType, dayPeriod, timeFrom, avg.toInt(), duration, isRelated, workout.uuid, hkitType);
   }
 
-  bool doesWorkoutMatchActivity(ActivityData workout, String activityName, [PredefinedActivityType? predefinedType]) {
+  static final _strengthWorkoutTypes = {
+    HealthWorkoutActivityType.WEIGHTLIFTING,
+    HealthWorkoutActivityType.STRENGTH_TRAINING,
+    HealthWorkoutActivityType.TRADITIONAL_STRENGTH_TRAINING,
+    HealthWorkoutActivityType.FUNCTIONAL_STRENGTH_TRAINING,
+    HealthWorkoutActivityType.HIGH_INTENSITY_INTERVAL_TRAINING,
+    HealthWorkoutActivityType.CORE_TRAINING,
+    HealthWorkoutActivityType.BARRE,
+    HealthWorkoutActivityType.PILATES,
+    HealthWorkoutActivityType.YOGA,
+    HealthWorkoutActivityType.BOXING,
+    HealthWorkoutActivityType.KICKBOXING,
+    HealthWorkoutActivityType.MARTIAL_ARTS,
+    HealthWorkoutActivityType.GYMNASTICS,
+    HealthWorkoutActivityType.MIXED_CARDIO,
+  };
+
+  static final _cardioWorkoutTypes = {
+    HealthWorkoutActivityType.WALKING,
+    HealthWorkoutActivityType.WALKING_TREADMILL,
+    HealthWorkoutActivityType.RUNNING,
+    HealthWorkoutActivityType.RUNNING_TREADMILL,
+    HealthWorkoutActivityType.HIKING,
+    HealthWorkoutActivityType.BIKING,
+    HealthWorkoutActivityType.CROSS_TRAINING,
+    HealthWorkoutActivityType.SWIMMING,
+    HealthWorkoutActivityType.SWIMMING_OPEN_WATER,
+    HealthWorkoutActivityType.SWIMMING_POOL,
+    HealthWorkoutActivityType.ELLIPTICAL,
+    HealthWorkoutActivityType.ROWING,
+    HealthWorkoutActivityType.ROWING_MACHINE,
+    HealthWorkoutActivityType.STAIR_CLIMBING,
+    HealthWorkoutActivityType.STAIR_CLIMBING_MACHINE,
+    HealthWorkoutActivityType.STAIRS,
+    HealthWorkoutActivityType.JUMP_ROPE,
+    HealthWorkoutActivityType.CLIMBING,
+    HealthWorkoutActivityType.ROCK_CLIMBING,
+    HealthWorkoutActivityType.CROSS_COUNTRY_SKIING,
+    HealthWorkoutActivityType.HAND_CYCLING,
+    HealthWorkoutActivityType.CARDIO_DANCE,
+    HealthWorkoutActivityType.DANCING,
+    HealthWorkoutActivityType.SOCIAL_DANCE,
+  };
+
+  bool doesWorkoutMatchActivity(ActivityData workout, String activityName, [PredefinedActivityType? predefinedType, ActivityType? activityType]) {
+    if (activityType == ActivityType.ENDURANCE || activityType == ActivityType.INTERVAL) {
+      return _cardioWorkoutTypes.contains(workout.workoutActivityType);
+    }
+    if (activityType == ActivityType.STRENGTHENING || activityType == ActivityType.HYPERTROPHY) {
+      return _strengthWorkoutTypes.contains(workout.workoutActivityType);
+    }
     if (predefinedType != null) {
       final types = _mapPredefinedTypeToHealthWorkoutActivityType[predefinedType];
       if (types != null && types.contains(workout.workoutActivityType)) return true;

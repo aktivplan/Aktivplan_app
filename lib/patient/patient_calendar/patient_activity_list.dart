@@ -20,6 +20,7 @@ class PatientActivityList extends StatefulWidget {
   final Function(dynamic)? markAsDone;
   final Function(ActivityOverviewDTO)? onTapActivity;
   final Function(ActivityType?)? onAddActivity;
+  final Set<String>? autoMatchedActivityIds;
 
   PatientActivityList({
     Key? key,
@@ -29,6 +30,7 @@ class PatientActivityList extends StatefulWidget {
     this.markAsDone,
     this.onTapActivity,
     this.onAddActivity,
+    this.autoMatchedActivityIds,
   }) : super(key: key);
 
   @override
@@ -134,12 +136,27 @@ class _PatientActivityListState extends State<PatientActivityList> {
           subtitle += "$duration $durationUnit";
         }
 
+        final bool isAutoMatched = widget.autoMatchedActivityIds?.contains(item.activityId) == true;
+        final Widget leadingIcon = isAutoMatched
+            ? Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(item.type!.iconData, color: iconColor, weight: 1000),
+                  Positioned(
+                    right: -5,
+                    top: -5,
+                    child: Container(
+                      padding: EdgeInsets.all(1),
+                      decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                      child: Icon(Icons.health_and_safety, size: 14, color: primaryColor),
+                    ),
+                  ),
+                ],
+              )
+            : Icon(item.type!.iconData, color: iconColor, weight: 1000);
+
         return ActivityListTile(
-          icon: Icon(
-            item.type!.iconData,
-            color: iconColor,
-            weight: 1000,
-          ),
+          icon: leadingIcon,
           color: iconColor,
           title: getActivityName(item, context),
           subtitle: subtitle,
@@ -158,7 +175,7 @@ class ActivityListTile extends StatelessWidget {
   final String title;
   final String? subtitle;
   final bool? done;
-  final Icon? icon;
+  final Widget? icon;
   final Function()? markAsDone;
   final Function()? onTap;
   const ActivityListTile({

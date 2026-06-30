@@ -54,6 +54,7 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
   bool _healthKitLoading = false;
   bool _healthKitAuthorized = false;
   String? _pendingHealthKitUuid;
+  Map<String, ActivityData> _autoMatchedWorkouts = {};
 
   @override
   void initState() {
@@ -62,6 +63,7 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
     _sensorRepository = KiwiContainer().resolve<SensorRepository>();
     _sensorRepository!.isAuthorizedToGoogleHealthConnectAppleHealth().then((v) {
       if (mounted) setState(() => _healthKitAuthorized = v);
+      if (v && mounted) _tryAutoMatchWorkouts(focusedDay ?? DateTime.now());
     });
     if (userRepository.user != null) {
       initActivityBloc();
@@ -352,6 +354,43 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
     }
   }
 
+  Future<void> _tryAutoMatchWorkouts(DateTime date) async {
+    debugPrint('AUTO_MATCH: called, authorized=$_healthKitAuthorized lastFetchedState=${lastFetchedState != null}');
+    if (_sensorRepository == null || !_healthKitAuthorized) return;
+    final workouts = await _sensorRepository!.fetchWorkoutsForImport(date, context);
+    debugPrint('AUTO_MATCH: got ${workouts.length} workouts from health');
+    if (!mounted) return;
+    final importedUuids = await _loadImportedUuids();
+    final fresh = workouts.where((w) => !importedUuids.contains(w.uuid)).toList();
+    debugPrint('AUTO_MATCH: ${fresh.length} fresh (not yet imported)');
+    final dateStr = englishDateFormat.format(date);
+    final matched = <String, ActivityData>{};
+    if (lastFetchedState != null) {
+      final dayActivities = lastFetchedState!.activities.where((a) => a.date == dateStr).toList();
+      debugPrint('AUTO_MATCH: ${dayActivities.length} activities on $dateStr');
+      for (final activity in dayActivities) {
+        if (activity.activityId == null) continue;
+        if (activity.rating?.done == true) continue;
+        final name = activity.name['DE'] ?? activity.name['EN'] ?? '';
+        final predefinedType = activity.activity?.predefinedActivity?.predefinedActivityType;
+        final hint = activity.activity?.predefinedActivity?.name ?? '';
+        debugPrint('AUTO_MATCH: checking "${activity.activityId}" type=${activity.type} name="$name" predefined=$predefinedType hint=$hint');
+        for (final workout in fresh) {
+          final hit = _sensorRepository!.doesWorkoutMatchActivity(workout, name, predefinedType, activity.type);
+          debugPrint('AUTO_MATCH:   vs workout type=${workout.workoutActivityType} → hit=$hit');
+          if (hit) {
+            matched[activity.activityId!] = workout;
+            break;
+          }
+        }
+      }
+    } else {
+      debugPrint('AUTO_MATCH: lastFetchedState is null, no activities to match');
+    }
+    debugPrint('AUTO_MATCH: result ${matched.length} matches → ${matched.keys.toList()}');
+    if (mounted) setState(() => _autoMatchedWorkouts = matched);
+  }
+
   ActivityOverviewDTO? _findMatchingPlannedActivity(ActivityData workout, DateTime date) {
     if (lastFetchedState == null || _sensorRepository == null) return null;
     final dateStr = englishDateFormat.format(date);
@@ -445,9 +484,11 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
         rateActivity: true,
         deleteActivity: deleteActivity,
         institution: lastFetchedState!.patient.institution!,
-        onSaved: () {
+        onSaved: () async {
           _pendingHealthKitUuid = data.uuid;
-          _saveImportedUuid(data.uuid);
+          await _saveImportedUuid(data.uuid);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('healthkit_pending_extra_uuid', data.uuid);
         },
       ),
     );
@@ -482,10 +523,24 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
       child: ResponsiveBuilder(
         builder: (context, size) {
           return BlocConsumer<ActivityBloc, ActivityState>(
-            listener: (context, state) {
-              if (state is ExtraActivityCreatedState && _pendingHealthKitUuid != null) {
-                _storeActivityIdMapping(state.activityId, _pendingHealthKitUuid!);
-                _pendingHealthKitUuid = null;
+            listener: (context, state) async {
+              if (state is ExtraActivityCreatedState) {
+                String? uuid = _pendingHealthKitUuid;
+                if (uuid == null || uuid.isEmpty) {
+                  final prefs = await SharedPreferences.getInstance();
+                  uuid = prefs.getString('healthkit_pending_extra_uuid');
+                }
+                if (uuid != null && uuid.isNotEmpty) {
+                  await _storeActivityIdMapping(state.activityId, uuid);
+                  _pendingHealthKitUuid = null;
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.remove('healthkit_pending_extra_uuid');
+                }
+              }
+              if (state is FetchedPatientActivitiesState) {
+                lastFetchedState = state;
+                if (mounted) setState(() => _autoMatchedWorkouts = {});
+                _tryAutoMatchWorkouts(focusedDay ?? DateTime.now());
               }
             },
             builder: (context, state) {
@@ -519,10 +574,32 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
           addActivity: createActivity,
           deleteActivity: deleteActivity,
           changeMonth: changeMonth,
-          changeDay: (date) => setState(() => focusedDay = date),
+          changeDay: (date) {
+            setState(() {
+              focusedDay = date;
+              _autoMatchedWorkouts = {};
+            });
+            _tryAutoMatchWorkouts(date);
+          },
           focusedDay: focusedDay!,
           currentFormat: calendarFormat,
           changeFormat: (format) => setState(() => calendarFormat = format),
+          autoMatchedWorkouts: _autoMatchedWorkouts,
+          onTapMatchedActivity: (activity, workout) {
+            showDialog<void>(
+              context: context,
+              barrierDismissible: true,
+              builder: (BuildContext context) => ActivityDialog(
+                patient: lastFetchedState!.patient.user!,
+                activity: activity,
+                activeMinutes: lastFetchedState!.activeMinutes,
+                rateActivity: true,
+                deleteActivity: deleteActivity,
+                institution: lastFetchedState!.patient.institution!,
+                preselectedWorkout: workout,
+              ),
+            );
+          },
         );
       } else {
         return PatientCalendarWeb(
@@ -550,10 +627,7 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
       if (activity is ActivityOverviewDTO) {
         if (activity.rating!.done ?? false) {
           ActivityDialog.showUndoRatingDialog(context, lastFetchedState!.patient.user!, activity, lastFetchedState!.activeMinutes, true,
-              lastFetchedState!.patient.institution!, deleteActivity,
-              onUndoRating: () {
-                if (activity.activityId != null) _removeHealthKitUuidForActivity(activity.activityId!);
-              });
+              lastFetchedState!.patient.institution!, deleteActivity);
         } else {
           showDialog<void>(
             context: context,

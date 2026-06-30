@@ -35,6 +35,8 @@ class PatientCalendarMobile extends StatefulWidget {
   final Function(CalendarFormat) changeFormat;
   final DateTime focusedDay;
   final CalendarFormat currentFormat;
+  final Map<String, ActivityData> autoMatchedWorkouts;
+  final Function(ActivityOverviewDTO, ActivityData)? onTapMatchedActivity;
 
   PatientCalendarMobile(
       {Key? key,
@@ -47,7 +49,9 @@ class PatientCalendarMobile extends StatefulWidget {
       required this.changeDay,
       required this.focusedDay,
       required this.currentFormat,
-      required this.changeFormat})
+      required this.changeFormat,
+      this.autoMatchedWorkouts = const {},
+      this.onTapMatchedActivity})
       : super(key: key ?? Key(KEY_PATIENT_CALENDAR_SCROLL_VIEW));
 
   @override
@@ -262,19 +266,29 @@ class _PatientCalendarMobileState extends State<PatientCalendarMobile> {
                     currentDate: _currentDate,
                     markAsDone: (item) => widget.markAsDone(item),
                     isKlimafit: widget.state.patient.institution!.institutionFocus?.isKlimafit() ?? false,
-                    onTapActivity: (item) => showDialog<void>(
-                        context: context,
-                        barrierDismissible: true,
-                        builder: (BuildContext context) {
-                          return ActivityDialog(
-                            patient: widget.state.patient.user!,
-                            activity: item,
-                            activeMinutes: widget.state.activeMinutes,
-                            rateActivity: false,
-                            deleteActivity: widget.deleteActivity,
-                            institution: widget.state.patient.institution!,
-                          );
-                        }),
+                    autoMatchedActivityIds: widget.autoMatchedWorkouts.keys.toSet(),
+                    onTapActivity: (item) {
+                      final matched = item.activityId != null
+                          ? widget.autoMatchedWorkouts[item.activityId]
+                          : null;
+                      if (matched != null && widget.onTapMatchedActivity != null) {
+                        widget.onTapMatchedActivity!(item, matched);
+                        return;
+                      }
+                      showDialog<void>(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (BuildContext context) {
+                            return ActivityDialog(
+                              patient: widget.state.patient.user!,
+                              activity: item,
+                              activeMinutes: widget.state.activeMinutes,
+                              rateActivity: false,
+                              deleteActivity: widget.deleteActivity,
+                              institution: widget.state.patient.institution!,
+                            );
+                          });
+                    },
                     onAddActivity: this._addActivity,
                   ),
                 ),

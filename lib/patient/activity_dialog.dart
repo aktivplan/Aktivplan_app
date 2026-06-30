@@ -53,6 +53,7 @@ class ActivityDialog extends StatefulWidget {
   final VoidCallback? onSaved;
   final bool skipLocationValidation;
   final String? prefilledName;
+  final ActivityData? preselectedWorkout;
 
   const ActivityDialog(
       {Key? key,
@@ -64,7 +65,8 @@ class ActivityDialog extends StatefulWidget {
       required this.institution,
       this.onSaved,
       this.skipLocationValidation = false,
-      this.prefilledName})
+      this.prefilledName,
+      this.preselectedWorkout})
       : super(key: key);
 
   static Future<void> showUndoRatingDialog(
@@ -350,6 +352,13 @@ class _ActivityDialogState extends State<ActivityDialog> {
     }
     if (widget.prefilledName != null) {
       nameController.text = widget.prefilledName!;
+    }
+    if (widget.preselectedWorkout != null) {
+      final w = widget.preselectedWorkout!;
+      _selectedHealthKitUuid = w.uuid;
+      durationController.text = w.duration.toString();
+      if (w.value > 0) heartrateController.text = w.value.toString();
+      if (w.timeFrom.isNotEmpty) time = w.timeFrom;
     }
     Future.delayed(Duration.zero, () {
       initYouTubePlayerControllers();
