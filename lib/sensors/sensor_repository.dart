@@ -157,24 +157,14 @@ class SensorRepository {
     return ActivityData(id++, activityType, dayPeriod, timeFrom, avg.toInt(), duration, isRelated, workout.uuid, hkitType);
   }
 
-  static final _strengthWorkoutTypes = {
+  static final _hypertrophyWorkoutTypes = {
     HealthWorkoutActivityType.WEIGHTLIFTING,
-    HealthWorkoutActivityType.STRENGTH_TRAINING,
     HealthWorkoutActivityType.TRADITIONAL_STRENGTH_TRAINING,
     HealthWorkoutActivityType.FUNCTIONAL_STRENGTH_TRAINING,
-    HealthWorkoutActivityType.HIGH_INTENSITY_INTERVAL_TRAINING,
-    HealthWorkoutActivityType.CORE_TRAINING,
-    HealthWorkoutActivityType.BARRE,
-    HealthWorkoutActivityType.PILATES,
-    HealthWorkoutActivityType.YOGA,
-    HealthWorkoutActivityType.BOXING,
-    HealthWorkoutActivityType.KICKBOXING,
-    HealthWorkoutActivityType.MARTIAL_ARTS,
-    HealthWorkoutActivityType.GYMNASTICS,
-    HealthWorkoutActivityType.MIXED_CARDIO,
+    HealthWorkoutActivityType.STRENGTH_TRAINING,
   };
 
-  static final _cardioWorkoutTypes = {
+static final _cardioWorkoutTypes = {
     HealthWorkoutActivityType.WALKING,
     HealthWorkoutActivityType.WALKING_TREADMILL,
     HealthWorkoutActivityType.RUNNING,
@@ -209,7 +199,7 @@ class SensorRepository {
       return workout.workoutActivityType == HealthWorkoutActivityType.HIGH_INTENSITY_INTERVAL_TRAINING;
     }
     if (activityType == ActivityType.STRENGTHENING || activityType == ActivityType.HYPERTROPHY) {
-      return _strengthWorkoutTypes.contains(workout.workoutActivityType);
+      return _hypertrophyWorkoutTypes.contains(workout.workoutActivityType);
     }
     if (predefinedType != null) {
       final types = _mapPredefinedTypeToHealthWorkoutActivityType[predefinedType];

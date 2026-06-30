@@ -355,39 +355,27 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
   }
 
   Future<void> _tryAutoMatchWorkouts(DateTime date) async {
-    debugPrint('AUTO_MATCH: called, authorized=$_healthKitAuthorized lastFetchedState=${lastFetchedState != null}');
     if (_sensorRepository == null || !_healthKitAuthorized) return;
     final workouts = await _sensorRepository!.fetchWorkoutsForImport(date, context);
-    debugPrint('AUTO_MATCH: got ${workouts.length} workouts from health');
     if (!mounted) return;
     final importedUuids = await _loadImportedUuids();
     final fresh = workouts.where((w) => !importedUuids.contains(w.uuid)).toList();
-    debugPrint('AUTO_MATCH: ${fresh.length} fresh (not yet imported)');
     final dateStr = englishDateFormat.format(date);
     final matched = <String, ActivityData>{};
     if (lastFetchedState != null) {
-      final dayActivities = lastFetchedState!.activities.where((a) => a.date == dateStr).toList();
-      debugPrint('AUTO_MATCH: ${dayActivities.length} activities on $dateStr');
-      for (final activity in dayActivities) {
+      for (final activity in lastFetchedState!.activities.where((a) => a.date == dateStr)) {
         if (activity.activityId == null) continue;
         if (activity.rating?.done == true) continue;
         final name = activity.name['DE'] ?? activity.name['EN'] ?? '';
         final predefinedType = activity.activity?.predefinedActivity?.predefinedActivityType;
-        final hint = activity.activity?.predefinedActivity?.name ?? '';
-        debugPrint('AUTO_MATCH: checking "${activity.activityId}" type=${activity.type} name="$name" predefined=$predefinedType hint=$hint');
         for (final workout in fresh) {
-          final hit = _sensorRepository!.doesWorkoutMatchActivity(workout, name, predefinedType, activity.type);
-          debugPrint('AUTO_MATCH:   vs workout type=${workout.workoutActivityType} → hit=$hit');
-          if (hit) {
+          if (_sensorRepository!.doesWorkoutMatchActivity(workout, name, predefinedType, activity.type)) {
             matched[activity.activityId!] = workout;
             break;
           }
         }
       }
-    } else {
-      debugPrint('AUTO_MATCH: lastFetchedState is null, no activities to match');
     }
-    debugPrint('AUTO_MATCH: result ${matched.length} matches → ${matched.keys.toList()}');
     if (mounted) setState(() => _autoMatchedWorkouts = matched);
   }
 
