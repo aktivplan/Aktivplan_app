@@ -202,8 +202,11 @@ class SensorRepository {
   };
 
   bool doesWorkoutMatchActivity(ActivityData workout, String activityName, [PredefinedActivityType? predefinedType, ActivityType? activityType]) {
-    if (activityType == ActivityType.ENDURANCE || activityType == ActivityType.INTERVAL) {
+    if (activityType == ActivityType.ENDURANCE) {
       return _cardioWorkoutTypes.contains(workout.workoutActivityType);
+    }
+    if (activityType == ActivityType.INTERVAL) {
+      return workout.workoutActivityType == HealthWorkoutActivityType.HIGH_INTENSITY_INTERVAL_TRAINING;
     }
     if (activityType == ActivityType.STRENGTHENING || activityType == ActivityType.HYPERTROPHY) {
       return _strengthWorkoutTypes.contains(workout.workoutActivityType);
