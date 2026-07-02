@@ -1152,6 +1152,7 @@
   "workoutDurationHint": "Workout duration is automatically calculated from the sum of the durations of the individual exercises.",
   "workouts": "Workouts",
   "importWorkout": "Import Workout",
+  "selectWorkoutToImport": "Select a workout to import",
   "year": "Year",
   "yes": "Yes",
   "yourWeeklyGoal": "Your weekly goal",

@@ -326,6 +326,51 @@ static final _cardioWorkoutTypes = {
     await Health().installHealthConnect();
   }
 
+  /// DEBUG ONLY: writes a sample workout together with a few heart rate samples
+  /// to Apple Health / Google Health Connect so the import flow can be tested
+  /// without recording a real workout.
+  Future<bool> writeDebugWorkout({
+    required HealthWorkoutActivityType activityType,
+    required DateTime start,
+    required DateTime end,
+    int heartRate = 120,
+  }) async {
+    final types = [HealthDataType.WORKOUT, HealthDataType.HEART_RATE];
+    final permissions = [HealthDataAccess.READ_WRITE, HealthDataAccess.READ_WRITE];
+    bool authorized = false;
+    try {
+      authorized = await Health().requestAuthorization(types, permissions: permissions);
+    } catch (error) {
+      debugPrint("Exception in writeDebugWorkout authorization: $error");
+    }
+    if (!authorized) return false;
+
+    bool success = await Health().writeWorkoutData(
+      activityType: activityType,
+      start: start,
+      end: end,
+      totalEnergyBurned: 200,
+      title: 'Debug ${activityType.name}',
+    );
+
+    // Add heart rate samples inside the workout window so the import can
+    // compute an average heart rate.
+    final int minutes = end.difference(start).inMinutes;
+    for (int i = 0; i <= minutes; i += 5) {
+      final DateTime sampleTime = start.add(Duration(minutes: i));
+      if (sampleTime.isAfter(end)) break;
+      final bool written = await Health().writeHealthData(
+        value: heartRate.toDouble(),
+        type: HealthDataType.HEART_RATE,
+        startTime: sampleTime,
+        endTime: sampleTime,
+        recordingMethod: RecordingMethod.manual,
+      );
+      success = success && written;
+    }
+    return success;
+  }
+
   Future<List<ActivityData>> fetchWorkoutsForImport(DateTime date, BuildContext context) async {
     if (!await isAuthorizedToGoogleHealthConnectAppleHealth()) return [];
     final startDate = DateTime(date.year, date.month, date.day, 0, 0, 0);

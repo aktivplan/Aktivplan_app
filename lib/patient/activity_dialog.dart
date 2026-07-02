@@ -504,7 +504,37 @@ class _ActivityDialogState extends State<ActivityDialog> {
     if (!mounted) return;
     setState(() {
       _healthKitActivities = activities.where((a) => !importedUuids.contains(a.uuid)).toList();
+      // Only auto-select when there is a single related workout. When several
+      // match, leave them unselected so the user picks one explicitly.
+      if (_selectedHealthKitUuid == null) {
+        final related = _healthKitActivities.where((a) => a.isRelatedWorkout).toList();
+        if (related.length == 1) {
+          _applyWorkoutSelection(related.first);
+        }
+      }
     });
+  }
+
+  void _applyWorkoutSelection(ActivityData data) {
+    _selectedHealthKitUuid = data.uuid;
+    // For extra activities the name is entered by the user, so import the
+    // workout's type as the activity name.
+    if (widget.activity.type == ActivityType.EXTRA && data.activityType.isNotEmpty) {
+      nameController.text = data.activityType;
+    }
+    durationController.text = data.duration.toString();
+    if (data.value > 0) heartrateController.text = data.value.toString();
+    time = data.timeFrom;
+    if (isKlimafitEntry && data.timeFrom.contains(':')) {
+      try {
+        final parts = data.timeFrom.split(':');
+        final startTotalMinutes = int.parse(parts[0]) * 60 + int.parse(parts[1]);
+        final endTotalMinutes = startTotalMinutes + data.duration;
+        final endHour = (endTotalMinutes ~/ 60) % 24;
+        final endMin = endTotalMinutes % 60;
+        endTime = '${endHour.toString().padLeft(2, '0')}:${endMin.toString().padLeft(2, '0')}';
+      } catch (_) {}
+    }
   }
 
   Future<void> _saveSelectedHealthKitUuid() async {
@@ -525,69 +555,98 @@ class _ActivityDialogState extends State<ActivityDialog> {
   }
 
   Widget _buildHealthKitSection(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            context.i18n.workouts,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(color: lightTextColor),
-          ),
-          SizedBox(height: 8),
-          ..._healthKitActivities.map((data) => Padding(
-            padding: EdgeInsets.only(bottom: 6),
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                setState(() {
-                  _selectedHealthKitUuid = data.uuid;
-                  durationController.text = data.duration.toString();
-                  if (data.value > 0) heartrateController.text = data.value.toString();
-                  time = data.timeFrom;
-                  if (isKlimafitEntry && data.timeFrom.contains(':')) {
-                    try {
-                      final parts = data.timeFrom.split(':');
-                      final startTotalMinutes = int.parse(parts[0]) * 60 + int.parse(parts[1]);
-                      final endTotalMinutes = startTotalMinutes + data.duration;
-                      final endHour = (endTotalMinutes ~/ 60) % 24;
-                      final endMin = endTotalMinutes % 60;
-                      endTime = '${endHour.toString().padLeft(2, '0')}:${endMin.toString().padLeft(2, '0')}';
-                    } catch (_) {}
-                  }
-                });
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: _selectedHealthKitUuid == data.uuid ? primaryColor : (data.isRelatedWorkout ? primaryColor : datatableBorderColor),
-                    width: (_selectedHealthKitUuid == data.uuid || data.isRelatedWorkout) ? 2 : 1,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(data.activityType, style: Theme.of(context).textTheme.bodyMedium),
-                        Text(
-                          '${data.timeFrom} · ${data.duration} ${context.i18n.durationValueMinutes}',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: lightTextColor),
-                        ),
-                      ],
-                    ),
-                    if (data.value > 0)
-                      Text('${data.value} bpm',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: lightTextColor)),
-                  ],
-                ),
-              ),
+    // Show every recorded workout so the user can always see (and change) which
+    // one is being imported, including the one auto-selected on open.
+    final List<ActivityData> displayed = _healthKitActivities;
+    if (displayed.isEmpty) return SizedBox.shrink();
+
+    final cards = displayed.map((data) => _buildWorkoutCard(context, data)).toList();
+
+    // A single match is shown flat; multiple matches collapse into a drawer so
+    // the form stays compact and the user picks one explicitly.
+    if (displayed.length == 1) {
+      return Padding(
+        padding: EdgeInsets.only(bottom: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              context.i18n.workouts,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(color: lightTextColor),
             ),
-          )).toList(),
-        ],
+            SizedBox(height: 8),
+            ...cards,
+          ],
+        ),
+      );
+    }
+
+    return Padding(
+      padding: EdgeInsets.only(top: 12, bottom: 10),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: datatableBorderColor),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            initiallyExpanded: false,
+            tilePadding: EdgeInsets.symmetric(horizontal: 12),
+            childrenPadding: EdgeInsets.all(3),
+            title: Text(
+              context.i18n.selectWorkoutToImport,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(color: lightTextColor),
+            ),
+            subtitle: Text(
+              '${displayed.length} ${context.i18n.workouts}',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: lightTextColor),
+            ),
+            children: cards,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWorkoutCard(BuildContext context, ActivityData data) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 6),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          setState(() {
+            _applyWorkoutSelection(data);
+          });
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: _selectedHealthKitUuid == data.uuid ? primaryColor : datatableBorderColor,
+              width: _selectedHealthKitUuid == data.uuid ? 2 : 1,
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(data.activityType, style: Theme.of(context).textTheme.bodyMedium),
+                  Text(
+                    '${data.timeFrom} · ${data.duration} ${context.i18n.durationValueMinutes}',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: lightTextColor),
+                  ),
+                ],
+              ),
+              if (data.value > 0)
+                Text('${data.value} bpm',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: lightTextColor)),
+            ],
+          ),
+        ),
       ),
     );
   }

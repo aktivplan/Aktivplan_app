@@ -71,7 +71,8 @@
   </queries>
 
   <application android:name="${applicationName}" android:label="aktivplan+"
-    android:icon="@mipmap/launcher_icon">
+    android:icon="@mipmap/launcher_icon"
+    android:enableOnBackInvokedCallback="true">
     <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
       android:resource="@drawable/ic_notification" />
     <activity android:name=".MainActivity" android:launchMode="singleTop"

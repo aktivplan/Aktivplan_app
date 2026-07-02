@@ -1152,6 +1152,7 @@
   "workoutDurationHint": "Workout-Dauer errechnet sich automatisch aus der Summe der Dauer der Einzelübungen.",
   "workouts": "Workouts",
   "importWorkout": "Workout importieren",
+  "selectWorkoutToImport": "Workout zum Importieren auswählen",
   "year": "Jahr",
   "yes": "Ja",
   "yourWeeklyGoal": "Dein Wochenziel",

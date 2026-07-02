@@ -18,10 +18,12 @@ import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/trace_helpers.dart';
 import 'package:aptapp/widget/get_snackbar.dart';
 import 'package:beamer/beamer.dart';
+// import 'package:flutter/foundation.dart'; // only used by debug workout button (commented out)
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aptapp/colors.dart';
 import 'package:aptapp/sensors/sensor_repository.dart';
+// import 'package:health/health.dart' show HealthWorkoutActivityType; // only used by debug workout button (commented out)
 import 'package:aptapp/utils/translation_helper.dart';
 import 'package:kiwi/kiwi.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
@@ -205,12 +207,108 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
                   label: Text(dialogContext.i18n.importWorkout.toUpperCase()),
                 ),
               ),
+              // DEBUG ONLY: button to write sample workouts into Apple Health /
+              // Health Connect. Commented out to disable writing into HealthKit.
+              // if (kDebugMode)
+              //   Padding(
+              //     padding: EdgeInsets.symmetric(vertical: 6),
+              //     child: OutlinedButton.icon(
+              //       onPressed: () {
+              //         Navigator.of(dialogContext).pop();
+              //         _showDebugWorkoutPicker(day);
+              //       },
+              //       icon: Icon(Icons.bug_report),
+              //       label: Text('DEBUG: ADD WORKOUT TO HEALTH'),
+              //     ),
+              //   ),
             ],
           ),
         );
       },
     );
   }
+
+  // DEBUG ONLY: writes a sample workout into Apple Health / Health Connect for
+  // the given day so the "Import Workout" flow can be tested on device.
+  // Commented out to disable writing into HealthKit.
+  // static const _debugWorkoutTypes = <String, HealthWorkoutActivityType>{
+  //   'Running': HealthWorkoutActivityType.RUNNING,
+  //   'Walking': HealthWorkoutActivityType.WALKING,
+  //   'Cycling': HealthWorkoutActivityType.BIKING,
+  //   'HIIT': HealthWorkoutActivityType.HIGH_INTENSITY_INTERVAL_TRAINING,
+  //   'Strength': HealthWorkoutActivityType.TRADITIONAL_STRENGTH_TRAINING,
+  // };
+
+  // Future<void> _showDebugWorkoutPicker(DateTime day) async {
+  //   await showModalBottomSheet<void>(
+  //     context: context,
+  //     builder: (context) => SafeArea(
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           Padding(
+  //             padding: const EdgeInsets.all(16),
+  //             child: Text('Add debug workout', style: Theme.of(context).textTheme.titleMedium),
+  //           ),
+  //           ListTile(
+  //             leading: Icon(Icons.playlist_add),
+  //             title: Text('All types (staggered times)'),
+  //             onTap: () {
+  //               Navigator.of(context).pop();
+  //               _addAllDebugWorkouts(day);
+  //             },
+  //           ),
+  //           Divider(height: 1),
+  //           ..._debugWorkoutTypes.entries.map((e) => ListTile(
+  //                 leading: Icon(Icons.fitness_center),
+  //                 title: Text(e.key),
+  //                 onTap: () {
+  //                   Navigator.of(context).pop();
+  //                   _addDebugWorkout(day, e.value);
+  //                 },
+  //               )),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  // Future<void> _addDebugWorkout(DateTime day, HealthWorkoutActivityType type, {int startHour = 10}) async {
+  //   if (_sensorRepository == null) return;
+  //   final workoutStart = DateTime(day.year, day.month, day.day, startHour, 0);
+  //   final workoutEnd = workoutStart.add(Duration(minutes: 30));
+  //   final success = await _sensorRepository!.writeDebugWorkout(
+  //     activityType: type,
+  //     start: workoutStart,
+  //     end: workoutEnd,
+  //   );
+  //   if (!mounted) return;
+  //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //     content: Text(success ? 'Added ${type.name} workout to health data' : 'Failed to add workout (permission denied?)'),
+  //   ));
+  // }
+
+  // Writes one workout of every debug type, each at a different hour so they
+  // don't overwrite each other — lets us test the multi-workout drawer.
+  // Future<void> _addAllDebugWorkouts(DateTime day) async {
+  //   if (_sensorRepository == null) return;
+  //   final types = _debugWorkoutTypes.values.toList();
+  //   int added = 0;
+  //   for (int i = 0; i < types.length; i++) {
+  //     final workoutStart = DateTime(day.year, day.month, day.day, 5 + i, 0);
+  //     final workoutEnd = workoutStart.add(Duration(minutes: 30));
+  //     final success = await _sensorRepository!.writeDebugWorkout(
+  //       activityType: types[i],
+  //       start: workoutStart,
+  //       end: workoutEnd,
+  //     );
+  //     if (success) added++;
+  //   }
+  //   if (!mounted) return;
+  //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //     content: Text('Added $added/${types.length} workouts to health data'),
+  //   ));
+  // }
 
   Future<void> _importWorkoutFromHealthKit(DateTime date) async {
     if (_healthKitLoading || _sensorRepository == null) return;
@@ -468,6 +566,7 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
           ),
         ),
         prefilledName: data.activityType,
+        preselectedWorkout: data,
         activeMinutes: lastFetchedState!.activeMinutes,
         rateActivity: true,
         deleteActivity: deleteActivity,
@@ -615,7 +714,13 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
       if (activity is ActivityOverviewDTO) {
         if (activity.rating!.done ?? false) {
           ActivityDialog.showUndoRatingDialog(context, lastFetchedState!.patient.user!, activity, lastFetchedState!.activeMinutes, true,
-              lastFetchedState!.patient.institution!, deleteActivity);
+              lastFetchedState!.patient.institution!, deleteActivity, onUndoRating: () {
+            // Undoing execution must free the imported workout so it can be
+            // imported / auto-matched again.
+            if (activity.activityId != null) {
+              _removeHealthKitUuidForActivity(activity.activityId!);
+            }
+          });
         } else {
           showDialog<void>(
             context: context,

@@ -4647,6 +4647,12 @@ abstract class AppLocalizations {
   /// **'Workout importieren'**
   String get importWorkout;
 
+  /// No description provided for @selectWorkoutToImport.
+  ///
+  /// In de, this message translates to:
+  /// **'Workout zum Importieren auswählen'**
+  String get selectWorkoutToImport;
+
   /// No description provided for @year.
   ///
   /// In de, this message translates to:

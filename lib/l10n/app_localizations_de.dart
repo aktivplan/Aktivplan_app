@@ -2526,6 +2526,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get importWorkout => 'Workout importieren';
 
   @override
+  String get selectWorkoutToImport => 'Workout zum Importieren auswählen';
+
+  @override
   String get year => 'Jahr';
 
   @override
