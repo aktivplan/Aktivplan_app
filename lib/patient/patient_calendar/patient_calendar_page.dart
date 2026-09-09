@@ -14,16 +14,16 @@ import 'package:aptapp/patient/patient_calendar/personal_goals_card.dart';
 import 'package:aptapp/theme.dart';
 import 'package:aptapp/user/bloc/user_bloc.dart';
 import 'package:aptapp/utils/constants.dart';
+import 'package:aptapp/utils/debug_tools.dart';
 import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/trace_helpers.dart';
 import 'package:aptapp/widget/get_snackbar.dart';
 import 'package:beamer/beamer.dart';
-// import 'package:flutter/foundation.dart'; // only used by debug workout button (commented out)
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aptapp/colors.dart';
 import 'package:aptapp/sensors/sensor_repository.dart';
-// import 'package:health/health.dart' show HealthWorkoutActivityType; // only used by debug workout button (commented out)
+import 'package:health/health.dart' show HealthWorkoutActivityType;
 import 'package:aptapp/utils/translation_helper.dart';
 import 'package:kiwi/kiwi.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
@@ -207,20 +207,21 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
                   label: Text(dialogContext.i18n.importWorkout.toUpperCase()),
                 ),
               ),
-              // DEBUG ONLY: button to write sample workouts into Apple Health /
-              // Health Connect. Commented out to disable writing into HealthKit.
-              // if (kDebugMode)
-              //   Padding(
-              //     padding: EdgeInsets.symmetric(vertical: 6),
-              //     child: OutlinedButton.icon(
-              //       onPressed: () {
-              //         Navigator.of(dialogContext).pop();
-              //         _showDebugWorkoutPicker(day);
-              //       },
-              //       icon: Icon(Icons.bug_report),
-              //       label: Text('DEBUG: ADD WORKOUT TO HEALTH'),
-              //     ),
-              //   ),
+              // DEBUG ONLY: writes sample workouts into Apple Health / Health
+              // Connect so the import and matching flows can be exercised on a
+              // device. showDebugTools keeps it out of release builds entirely.
+              if (showDebugTools)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 6),
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                      _showDebugWorkoutPicker(day);
+                    },
+                    icon: Icon(Icons.bug_report),
+                    label: Text('DEBUG: ADD WORKOUT TO HEALTH'),
+                  ),
+                ),
             ],
           ),
         );
@@ -228,87 +229,166 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
     );
   }
 
-  // DEBUG ONLY: writes a sample workout into Apple Health / Health Connect for
-  // the given day so the "Import Workout" flow can be tested on device.
-  // Commented out to disable writing into HealthKit.
-  // static const _debugWorkoutTypes = <String, HealthWorkoutActivityType>{
-  //   'Running': HealthWorkoutActivityType.RUNNING,
-  //   'Walking': HealthWorkoutActivityType.WALKING,
-  //   'Cycling': HealthWorkoutActivityType.BIKING,
-  //   'HIIT': HealthWorkoutActivityType.HIGH_INTENSITY_INTERVAL_TRAINING,
-  //   'Strength': HealthWorkoutActivityType.TRADITIONAL_STRENGTH_TRAINING,
-  // };
+  // ---------------------------------------------------------------------------
+  // DEBUG ONLY - sample workouts
+  //
+  // Writes workouts into Apple Health / Health Connect for the selected day so
+  // the import and matching flows can be tested without recording anything for
+  // real. Reachable only from the showDebugTools button above.
+  // ---------------------------------------------------------------------------
 
-  // Future<void> _showDebugWorkoutPicker(DateTime day) async {
-  //   await showModalBottomSheet<void>(
-  //     context: context,
-  //     builder: (context) => SafeArea(
-  //       child: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           Padding(
-  //             padding: const EdgeInsets.all(16),
-  //             child: Text('Add debug workout', style: Theme.of(context).textTheme.titleMedium),
-  //           ),
-  //           ListTile(
-  //             leading: Icon(Icons.playlist_add),
-  //             title: Text('All types (staggered times)'),
-  //             onTap: () {
-  //               Navigator.of(context).pop();
-  //               _addAllDebugWorkouts(day);
-  //             },
-  //           ),
-  //           Divider(height: 1),
-  //           ..._debugWorkoutTypes.entries.map((e) => ListTile(
-  //                 leading: Icon(Icons.fitness_center),
-  //                 title: Text(e.key),
-  //                 onTap: () {
-  //                   Navigator.of(context).pop();
-  //                   _addDebugWorkout(day, e.value);
-  //                 },
-  //               )),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+  static const _debugWorkoutTypes = <String, HealthWorkoutActivityType>{
+    'Walking': HealthWorkoutActivityType.WALKING,
+    'Running': HealthWorkoutActivityType.RUNNING,
+    'Cycling (BIKING)': HealthWorkoutActivityType.BIKING,
+    'Swimming': HealthWorkoutActivityType.SWIMMING,
+    'HIIT': HealthWorkoutActivityType.HIGH_INTENSITY_INTERVAL_TRAINING,
+    'Strength': HealthWorkoutActivityType.TRADITIONAL_STRENGTH_TRAINING,
+    'Indoor bike - in no set': HealthWorkoutActivityType.BIKING_STATIONARY,
+    'Golf - matches nothing': HealthWorkoutActivityType.GOLF,
+  };
 
-  // Future<void> _addDebugWorkout(DateTime day, HealthWorkoutActivityType type, {int startHour = 10}) async {
-  //   if (_sensorRepository == null) return;
-  //   final workoutStart = DateTime(day.year, day.month, day.day, startHour, 0);
-  //   final workoutEnd = workoutStart.add(Duration(minutes: 30));
-  //   final success = await _sensorRepository!.writeDebugWorkout(
-  //     activityType: type,
-  //     start: workoutStart,
-  //     end: workoutEnd,
-  //   );
-  //   if (!mounted) return;
-  //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //     content: Text(success ? 'Added ${type.name} workout to health data' : 'Failed to add workout (permission denied?)'),
-  //   ));
-  // }
+  /// Three walks of very different lengths: whichever sits closest to the
+  /// activity's planned duration should win the tie-break.
+  static const _debugDurationSpread = <({HealthWorkoutActivityType type, int hour, int minutes})>[
+    (type: HealthWorkoutActivityType.WALKING, hour: 7, minutes: 15),
+    (type: HealthWorkoutActivityType.WALKING, hour: 12, minutes: 45),
+    (type: HealthWorkoutActivityType.WALKING, hour: 17, minutes: 90),
+  ];
 
-  // Writes one workout of every debug type, each at a different hour so they
-  // don't overwrite each other — lets us test the multi-workout drawer.
-  // Future<void> _addAllDebugWorkouts(DateTime day) async {
-  //   if (_sensorRepository == null) return;
-  //   final types = _debugWorkoutTypes.values.toList();
-  //   int added = 0;
-  //   for (int i = 0; i < types.length; i++) {
-  //     final workoutStart = DateTime(day.year, day.month, day.day, 5 + i, 0);
-  //     final workoutEnd = workoutStart.add(Duration(minutes: 30));
-  //     final success = await _sensorRepository!.writeDebugWorkout(
-  //       activityType: types[i],
-  //       start: workoutStart,
-  //       end: workoutEnd,
-  //     );
-  //     if (success) added++;
-  //   }
-  //   if (!mounted) return;
-  //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //     content: Text('Added $added/${types.length} workouts to health data'),
-  //   ));
-  // }
+  /// Three different cardio types, so one ENDURANCE activity has three
+  /// competing candidates and the name/duration ordering is visible in the log.
+  static const _debugCardioSpread = <({HealthWorkoutActivityType type, int hour, int minutes})>[
+    (type: HealthWorkoutActivityType.BIKING, hour: 8, minutes: 110),
+    (type: HealthWorkoutActivityType.RUNNING, hour: 13, minutes: 42),
+    (type: HealthWorkoutActivityType.SWIMMING, hour: 18, minutes: 25),
+  ];
+
+  Future<void> _showDebugWorkoutPicker(DateTime day) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                child: Text('Add debug workout', style: Theme.of(sheetContext).textTheme.titleMedium),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: Text('Written to ${germanDateFormat.format(day)}',
+                    style: Theme.of(sheetContext).textTheme.bodySmall?.copyWith(color: lightTextColor)),
+              ),
+              ListTile(
+                leading: Icon(Icons.playlist_add),
+                title: Text('One of each type'),
+                subtitle: Text('${_debugWorkoutTypes.length} workouts, hourly from 05:00, 30 min each'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  final types = _debugWorkoutTypes.values.toList();
+                  _addDebugScenario(day, [
+                    for (var i = 0; i < types.length; i++) (type: types[i], hour: 5 + i, minutes: 30),
+                  ]);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.timer_outlined),
+                title: Text('Duration spread - 3x Walking'),
+                subtitle: Text('15 / 45 / 90 min - checks the closest-duration tie-break'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  _addDebugScenario(day, _debugDurationSpread);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.compare_arrows),
+                title: Text('Cardio spread - Biking / Running / Swimming'),
+                subtitle: Text('110 / 42 / 25 min - three candidates for one endurance activity'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  _addDebugScenario(day, _debugCardioSpread);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.delete_outline),
+                title: Text('Remove workouts written for this day'),
+                subtitle: Text('Deletes only what this app wrote - your own workouts stay'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  _removeDebugWorkouts(day);
+                },
+              ),
+              Divider(height: 1),
+              ..._debugWorkoutTypes.entries.map((e) => ListTile(
+                    dense: true,
+                    leading: Icon(Icons.fitness_center),
+                    title: Text(e.key),
+                    subtitle: Text('${e.value.name} - 10:00, 30 min'),
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      _addDebugScenario(day, [(type: e.value, hour: 10, minutes: 30)]);
+                    },
+                  )),
+              SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _removeDebugWorkouts(DateTime day) async {
+    if (_sensorRepository == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('Remove written workouts?'),
+        content: Text('Deletes the workouts and heart rate samples this app wrote for '
+            '${germanDateFormat.format(day)}. Workouts recorded by your watch or other apps are not touched.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(dialogContext.i18n.cancel)),
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text('Remove')),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    final removed = await _sensorRepository!.deleteDebugWorkouts(day);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(removed ? 'Removed workouts written for this day' : 'Could not remove - check health write permission'),
+    ));
+    await _tryAutoMatchWorkouts(day);
+  }
+
+  Future<void> _addDebugScenario(
+    DateTime day,
+    List<({HealthWorkoutActivityType type, int hour, int minutes})> scenario,
+  ) async {
+    if (_sensorRepository == null) return;
+    var added = 0;
+    for (final step in scenario) {
+      final start = DateTime(day.year, day.month, day.day, step.hour, 0);
+      final written = await _sensorRepository!.writeDebugWorkout(
+        activityType: step.type,
+        start: start,
+        end: start.add(Duration(minutes: step.minutes)),
+      );
+      if (written) added++;
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(added == scenario.length
+          ? 'Wrote $added workout(s) to health data'
+          : 'Wrote $added of ${scenario.length} - check health write permission'),
+    ));
+    // Re-run matching straight away so the result (and the [hkit-match] log)
+    // reflects what was just written.
+    await _tryAutoMatchWorkouts(day);
+  }
 
   Future<void> _importWorkoutFromHealthKit(DateTime date) async {
     if (_healthKitLoading || _sensorRepository == null) return;
@@ -460,17 +540,33 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
     final fresh = workouts.where((w) => !importedUuids.contains(w.uuid)).toList();
     final dateStr = englishDateFormat.format(date);
     final matched = <String, ActivityData>{};
+    if (showDebugTools) {
+      debugPrint('[hkit-match] === auto-match $dateStr: ${fresh.length} fresh of ${workouts.length} workout(s), '
+          '${importedUuids.length} already imported ===');
+    }
     if (lastFetchedState != null) {
       for (final activity in lastFetchedState!.activities.where((a) => a.date == dateStr)) {
         if (activity.activityId == null) continue;
-        if (activity.rating?.done == true) continue;
-        final name = activity.name['DE'] ?? activity.name['EN'] ?? '';
-        final predefinedType = activity.activity?.predefinedActivity?.predefinedActivityType;
-        for (final workout in fresh) {
-          if (_sensorRepository!.doesWorkoutMatchActivity(workout, name, predefinedType, activity.type)) {
-            matched[activity.activityId!] = workout;
-            break;
+        if (activity.rating?.done == true) {
+          if (showDebugTools) {
+            debugPrint('[hkit-match] skip "${activity.name['DE'] ?? activity.name['EN'] ?? ''}" - already rated done');
           }
+          continue;
+        }
+        final name = activity.name['DE'] ?? activity.name['EN'] ?? '';
+        // Of everything that matches, take the closest name and then the closest
+        // duration, rather than whichever workout the health store listed first.
+        final best = _sensorRepository!.bestMatchingWorkout(
+          fresh,
+          name,
+          predefinedType: activity.activity?.predefinedActivity?.predefinedActivityType,
+          activityType: activity.type,
+          plannedDurationMinutes: SensorRepository.plannedMinutesOf(activity),
+        );
+        if (best != null) matched[activity.activityId!] = best;
+        if (showDebugTools && best == null) {
+          debugPrint('[hkit-match] "$name" left unmatched (type=${activity.type?.value ?? "-"}, '
+              'predefined=${activity.activity?.predefinedActivity?.predefinedActivityType?.value ?? "-"})');
         }
       }
     }
@@ -480,16 +576,35 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
   ActivityOverviewDTO? _findMatchingPlannedActivity(ActivityData workout, DateTime date) {
     if (lastFetchedState == null || _sensorRepository == null) return null;
     final dateStr = englishDateFormat.format(date);
+    // Same ordering as the auto-match, in the other direction: the planned
+    // activity whose name fits best, then whose length fits best.
+    final scored = <({ActivityOverviewDTO planned, int similarity, int durationDelta})>[];
     for (final planned in lastFetchedState!.activities) {
       if (planned.date != dateStr) continue;
       if (planned.rating?.done == true) continue;
       final name = planned.name['DE'] ?? planned.name['EN'] ?? '';
       final predefinedType = planned.activity?.predefinedActivity?.predefinedActivityType;
-      if (_sensorRepository!.doesWorkoutMatchActivity(workout, name, predefinedType)) {
-        return planned;
+      final matches = _sensorRepository!.doesWorkoutMatchActivity(workout, name, predefinedType);
+      if (showDebugTools) {
+        // Note: this path deliberately omits the activity type, so rules 1-3 never fire here.
+        debugPrint('[hkit-match] workout-first ${matches ? "PASS  " : "REJECT"} '
+            '${workout.workoutActivityType.name} vs "$name" (type=${planned.type?.value ?? "-"}, '
+            'predefined=${predefinedType?.value ?? "-"}) - '
+            '${_sensorRepository!.explainMatch(workout, name, predefinedType)}');
       }
+      if (!matches) continue;
+      scored.add((
+        planned: planned,
+        similarity: SensorRepository.similarityBucket(_sensorRepository!.workoutNameSimilarity(workout, name)),
+        durationDelta: SensorRepository.durationDelta(workout.duration, SensorRepository.plannedMinutesOf(planned)),
+      ));
     }
-    return null;
+    if (scored.isEmpty) return null;
+    scored.sort((a, b) {
+      final byName = b.similarity.compareTo(a.similarity);
+      return byName != 0 ? byName : a.durationDelta.compareTo(b.durationDelta);
+    });
+    return scored.first.planned;
   }
 
   Future<void> _openPlannedActivityWithHealthKit(ActivityOverviewDTO planned, ActivityData hkitData) async {
@@ -571,11 +686,15 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
         rateActivity: true,
         deleteActivity: deleteActivity,
         institution: lastFetchedState!.patient.institution!,
-        onSaved: () async {
-          _pendingHealthKitUuid = data.uuid;
-          await _saveImportedUuid(data.uuid);
+        onSaved: (selectedWorkoutUuid) async {
+          // Null when the workout was unpicked in the dialog: nothing was
+          // imported, so the workout must stay available. The uuid comes from the
+          // dialog rather than from `data` so switching workouts there is honoured.
+          if (selectedWorkoutUuid == null || selectedWorkoutUuid.isEmpty) return;
+          _pendingHealthKitUuid = selectedWorkoutUuid;
+          await _saveImportedUuid(selectedWorkoutUuid);
           final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('healthkit_pending_extra_uuid', data.uuid);
+          await prefs.setString('healthkit_pending_extra_uuid', selectedWorkoutUuid);
         },
       ),
     );

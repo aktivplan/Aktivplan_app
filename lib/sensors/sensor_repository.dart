@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'package:apt_api/api.dart';
 import 'package:aptapp/utils/constants.dart';
+import 'package:aptapp/utils/debug_tools.dart';
 import 'package:aptapp/utils/enums.dart';
 import 'package:flutter/widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -215,6 +217,190 @@ static final _cardioWorkoutTypes = {
     return false;
   }
 
+  /// Similarity between an activity's name and a workout's label, 0.0 - 1.0.
+  ///
+  /// An entry in the German keyword map is a deliberate mapping and scores 1.0;
+  /// everything else falls back to how much the two labels actually look alike,
+  /// so "Nordic Walking" prefers a WALKING workout over a RUNNING one even
+  /// though the existing rules accept both.
+  double workoutNameSimilarity(ActivityData workout, String activityName) {
+    if (activityName.isEmpty) return 0.0;
+
+    final nameWords = activityName.toLowerCase().split(RegExp(r'\s+'));
+    for (final entry in _mapGermanActivityWithHealthWorkoutActivityType.entries) {
+      if (nameWords.contains(entry.key) && entry.value.contains(workout.workoutActivityType)) return 1.0;
+    }
+
+    final name = _normalizeForSimilarity(activityName);
+    if (name.isEmpty) return 0.0;
+
+    var best = 0.0;
+    // The translated label is what the patient sees; the enum name catches
+    // English names typed into an extra activity.
+    for (final label in [workout.activityType, workout.workoutActivityType.name.replaceAll('_', ' ')]) {
+      final candidate = _normalizeForSimilarity(label);
+      if (candidate.isEmpty) continue;
+      // One label containing the other ("walking" inside "nordic walking") is a
+      // stronger signal than bigram overlap alone reflects.
+      if (name.contains(candidate) || candidate.contains(name)) best = max(best, 0.85);
+      best = max(best, _diceCoefficient(name, candidate));
+    }
+    return best;
+  }
+
+  /// Of the workouts that already satisfy the matching rules, the one whose name
+  /// resembles the activity most closely; ties on name are settled by whichever
+  /// duration sits nearest [plannedDurationMinutes]. Null when none match.
+  ActivityData? bestMatchingWorkout(
+    Iterable<ActivityData> workouts,
+    String activityName, {
+    PredefinedActivityType? predefinedType,
+    ActivityType? activityType,
+    int? plannedDurationMinutes,
+  }) {
+    if (showDebugTools) {
+      debugPrint('[hkit-match] activity="$activityName" type=${activityType?.value ?? "-"} '
+          'predefined=${predefinedType?.value ?? "-"} plannedMin=${plannedDurationMinutes ?? "-"} '
+          'against ${workouts.length} workout(s)');
+    }
+    final scored = <({ActivityData workout, int similarity, int durationDelta})>[];
+    for (final workout in workouts) {
+      final matched = doesWorkoutMatchActivity(workout, activityName, predefinedType, activityType);
+      if (showDebugTools) {
+        final detail = matched
+            ? 'similarity=${workoutNameSimilarity(workout, activityName).toStringAsFixed(2)} '
+                'durationDelta=${durationDelta(workout.duration, plannedDurationMinutes)}'
+            : '';
+        debugPrint('[hkit-match]   ${matched ? "PASS  " : "REJECT"} ${workout.workoutActivityType.name} '
+            '(${workout.duration}min) - ${explainMatch(workout, activityName, predefinedType, activityType)} $detail');
+      }
+      if (!matched) continue;
+      scored.add((
+        workout: workout,
+        similarity: similarityBucket(workoutNameSimilarity(workout, activityName)),
+        durationDelta: durationDelta(workout.duration, plannedDurationMinutes),
+      ));
+    }
+    if (scored.isEmpty) {
+      if (showDebugTools) debugPrint('[hkit-match]   => no match for "$activityName"');
+      return null;
+    }
+    scored.sort((a, b) {
+      final byName = b.similarity.compareTo(a.similarity);
+      return byName != 0 ? byName : a.durationDelta.compareTo(b.durationDelta);
+    });
+    if (showDebugTools) {
+      debugPrint('[hkit-match]   => chose ${scored.first.workout.workoutActivityType.name} '
+          '(${scored.first.workout.duration}min) for "$activityName"');
+    }
+    return scored.first.workout;
+  }
+
+  /// Debug aid: which rule of [doesWorkoutMatchActivity] decided this pair, and
+  /// why. Mirrors that function's order exactly - keep the two in step.
+  String explainMatch(
+    ActivityData workout,
+    String activityName, [
+    PredefinedActivityType? predefinedType,
+    ActivityType? activityType,
+  ]) {
+    final type = workout.workoutActivityType;
+    if (activityType == ActivityType.ENDURANCE) {
+      return _cardioWorkoutTypes.contains(type) ? 'rule1 cardio set' : 'rule1 cardio set has no ${type.name}';
+    }
+    if (activityType == ActivityType.INTERVAL) {
+      return type == HealthWorkoutActivityType.HIGH_INTENSITY_INTERVAL_TRAINING ? 'rule2 HIIT' : 'rule2 wants HIIT, got ${type.name}';
+    }
+    if (activityType == ActivityType.STRENGTHENING || activityType == ActivityType.HYPERTROPHY) {
+      return _hypertrophyWorkoutTypes.contains(type) ? 'rule3 strength set' : 'rule3 strength set has no ${type.name}';
+    }
+    final buffer = StringBuffer();
+    if (predefinedType != null) {
+      final allowed = _mapPredefinedTypeToHealthWorkoutActivityType[predefinedType];
+      if (allowed == null) {
+        buffer.write('rule4 no map entry for ${predefinedType.value}; ');
+      } else if (allowed.contains(type)) {
+        return 'rule4 predefined ${predefinedType.value}';
+      } else {
+        buffer.write('rule4 ${predefinedType.value} allows ${allowed.map((t) => t.name).join("/")}, got ${type.name}; ');
+      }
+    } else {
+      buffer.write('rule4 skipped (no predefined type); ');
+    }
+    if (activityName.isEmpty) return '${buffer}rule5 name is empty';
+    final words = activityName.toLowerCase().split(RegExp(r'\s+'));
+    final keywords = _mapGermanActivityWithHealthWorkoutActivityType.entries.where((e) => words.contains(e.key)).toList();
+    if (keywords.isEmpty) {
+      return '${buffer}rule5 no keyword among [${words.join(", ")}]';
+    }
+    final hit = keywords.where((e) => e.value.contains(type)).map((e) => e.key).toList();
+    if (hit.isNotEmpty) return '${buffer}rule5 keyword "${hit.first}"';
+    return '${buffer}rule5 keyword(s) ${keywords.map((e) => '"${e.key}"->${e.value.map((t) => t.name).join("/")}').join(", ")} do not cover ${type.name}';
+  }
+
+  /// Similarity rounded into 0.05-wide buckets. Comparing buckets rather than
+  /// raw doubles keeps the ordering a proper total order and stops
+  /// floating-point noise from deciding a match the duration should settle.
+  static int similarityBucket(double similarity) => (similarity * 20).round();
+
+  /// Absolute gap in minutes, or a value that sorts last when nothing is planned.
+  static int durationDelta(int workoutMinutes, int? plannedMinutes) =>
+      plannedMinutes == null || plannedMinutes <= 0 ? 1 << 30 : (workoutMinutes - plannedMinutes).abs();
+
+  /// The activity's intended length: an explicit planned duration, else the
+  /// entered duration, else the gap between start and end time (wrapping at
+  /// midnight). Null when the activity says nothing about its length.
+  static int? plannedMinutesOf(ActivityOverviewDTO activity) {
+    final planned = activity.plannedDurationMinutes ?? activity.durationMinutes;
+    if (planned != null && planned > 0) return planned;
+    final start = _minutesOfDay(activity.time);
+    final end = _minutesOfDay(activity.endTime);
+    if (start == null || end == null) return null;
+    final diff = end - start;
+    return diff >= 0 ? diff : diff + 1440;
+  }
+
+  static int? _minutesOfDay(String? time) {
+    if (time == null) return null;
+    final match = RegExp(r'^(\d{1,2}):(\d{2})').firstMatch(time.trim());
+    if (match == null) return null;
+    final hours = int.parse(match.group(1)!);
+    final minutes = int.parse(match.group(2)!);
+    if (hours > 23 || minutes > 59) return null;
+    return hours * 60 + minutes;
+  }
+
+  static String _normalizeForSimilarity(String value) => value
+      .toLowerCase()
+      .replaceAll('ä', 'a')
+      .replaceAll('ö', 'o')
+      .replaceAll('ü', 'u')
+      .replaceAll('ß', 'ss')
+      .replaceAll(RegExp(r'[^a-z0-9]+'), ' ')
+      .trim();
+
+  /// Sorensen-Dice coefficient over character bigrams: tolerant of the endings
+  /// and compounding German names pick up ("Schwimmen" vs "Schwimmtraining").
+  static double _diceCoefficient(String a, String b) {
+    if (a == b) return 1.0;
+    if (a.length < 2 || b.length < 2) return 0.0;
+    final bCounts = <String, int>{};
+    for (var i = 0; i < b.length - 1; i++) {
+      final gram = b.substring(i, i + 2);
+      bCounts[gram] = (bCounts[gram] ?? 0) + 1;
+    }
+    var hits = 0;
+    for (var i = 0; i < a.length - 1; i++) {
+      final gram = a.substring(i, i + 2);
+      final remaining = bCounts[gram] ?? 0;
+      if (remaining > 0) {
+        bCounts[gram] = remaining - 1;
+        hits++;
+      }
+    }
+    return (2 * hits) / ((a.length - 1) + (b.length - 1));
+  }
+
   Future<void> _setAuthorizationKey(bool isAuthorize) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool(_authorizationKey, isAuthorize);
@@ -371,6 +557,25 @@ static final _cardioWorkoutTypes = {
     return success;
   }
 
+  /// DEBUG ONLY: removes the workouts and heart rate samples written for [day].
+  ///
+  /// Both HealthKit and Health Connect scope deletion to records the calling app
+  /// authored, so a tester's own recorded workouts are not affected - but that is
+  /// a platform guarantee worth confirming on device before handing this to
+  /// anyone testing on a phone that holds real health data.
+  Future<bool> deleteDebugWorkouts(DateTime day) async {
+    final start = DateTime(day.year, day.month, day.day);
+    final end = DateTime(day.year, day.month, day.day, 23, 59, 59);
+    try {
+      final workoutsRemoved = await Health().delete(type: HealthDataType.WORKOUT, startTime: start, endTime: end);
+      final heartRateRemoved = await Health().delete(type: HealthDataType.HEART_RATE, startTime: start, endTime: end);
+      return workoutsRemoved && heartRateRemoved;
+    } catch (error) {
+      debugPrint("Exception in deleteDebugWorkouts: $error");
+      return false;
+    }
+  }
+
   Future<List<ActivityData>> fetchWorkoutsForImport(DateTime date, BuildContext context) async {
     if (!await isAuthorizedToGoogleHealthConnectAppleHealth()) return [];
     final startDate = DateTime(date.year, date.month, date.day, 0, 0, 0);
@@ -379,6 +584,12 @@ static final _cardioWorkoutTypes = {
     final List<ActivityData> result = [];
     for (var workout in workoutList) {
       result.add(await _getActivityData('', workout, context));
+    }
+    if (showDebugTools) {
+      debugPrint('[hkit-match] fetched ${result.length} workout(s) for ${englishDateFormat.format(date)}');
+      for (final r in result) {
+        debugPrint('[hkit-match]   type=${r.workoutActivityType.name} label="${r.activityType}" ${r.timeFrom} ${r.duration}min uuid=${r.uuid}');
+      }
     }
     return result;
   }

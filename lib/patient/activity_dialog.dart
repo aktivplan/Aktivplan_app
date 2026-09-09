@@ -50,7 +50,10 @@ class ActivityDialog extends StatefulWidget {
   final bool rateActivity;
   final InstitutionDTO institution;
   final Function(String, ActivityType) deleteActivity;
-  final VoidCallback? onSaved;
+  /// Fired after a successful save with the workout UUID still selected, or
+  /// null when the user unpicked it, so the caller does not consume a workout
+  /// that is no longer attached.
+  final void Function(String? selectedWorkoutUuid)? onSaved;
   final bool skipLocationValidation;
   final String? prefilledName;
   final ActivityData? preselectedWorkout;
@@ -275,6 +278,12 @@ class _ActivityDialogState extends State<ActivityDialog> {
 
   List<ActivityData> _healthKitActivities = [];
   String? _selectedHealthKitUuid;
+
+  // Form values as they were before a workout was applied. Unpicking a workout
+  // puts these back, so the imported duration/heart rate/time never linger on an
+  // activity that no longer has a workout attached. A null member means that
+  // field was never overwritten and must be left alone.
+  ({String? name, String? duration, String? heartrate, String? time, String? endTime})? _formBeforeWorkout;
   static const _importedWorkoutsKey = 'healthkit_imported_workout_uuids';
   static const _healthKitMappingKey = 'healthkit_activityid_to_uuid';
 
@@ -355,6 +364,11 @@ class _ActivityDialogState extends State<ActivityDialog> {
     }
     if (widget.preselectedWorkout != null) {
       final w = widget.preselectedWorkout!;
+      // Every one of these was pre-filled from this very workout - the name from
+      // `prefilledName`, the rest from its rating - so unpicking it has to empty
+      // them. Restoring what is on the form would put the workout's own values
+      // straight back.
+      _formBeforeWorkout = (name: "", duration: "", heartrate: "", time: "", endTime: "");
       _selectedHealthKitUuid = w.uuid;
       durationController.text = w.duration.toString();
       if (w.value > 0) heartrateController.text = w.value.toString();
@@ -515,7 +529,34 @@ class _ActivityDialogState extends State<ActivityDialog> {
     });
   }
 
+  /// Remembers each field's pre-import value the first time it is about to be
+  /// overwritten; values already captured are kept, so switching between
+  /// workouts still restores the original form and not the previous workout.
+  void _captureFormBeforeWorkout({bool includeName = true}) {
+    final captured = _formBeforeWorkout;
+    _formBeforeWorkout = (
+      name: captured?.name ?? (includeName ? nameController.text : null),
+      duration: captured?.duration ?? durationController.text,
+      heartrate: captured?.heartrate ?? heartrateController.text,
+      time: captured?.time ?? time,
+      endTime: captured?.endTime ?? endTime,
+    );
+  }
+
+  void _clearWorkoutSelection() {
+    _selectedHealthKitUuid = null;
+    final captured = _formBeforeWorkout;
+    if (captured == null) return;
+    if (captured.name != null) nameController.text = captured.name!;
+    if (captured.duration != null) durationController.text = captured.duration!;
+    if (captured.heartrate != null) heartrateController.text = captured.heartrate!;
+    if (captured.time != null) time = captured.time!;
+    if (captured.endTime != null) endTime = captured.endTime!;
+    _formBeforeWorkout = null;
+  }
+
   void _applyWorkoutSelection(ActivityData data) {
+    _captureFormBeforeWorkout();
     _selectedHealthKitUuid = data.uuid;
     // For extra activities the name is entered by the user, so import the
     // workout's type as the activity name.
@@ -616,7 +657,11 @@ class _ActivityDialogState extends State<ActivityDialog> {
         behavior: HitTestBehavior.opaque,
         onTap: () {
           setState(() {
-            _applyWorkoutSelection(data);
+            if (_selectedHealthKitUuid == data.uuid) {
+              _clearWorkoutSelection();
+            } else {
+              _applyWorkoutSelection(data);
+            }
           });
         },
         child: Container(
@@ -869,7 +914,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
         date: widget.activity.date!,
         patientId: widget.patient.id!,
         extraActivityName: nameController.text));
-    widget.onSaved?.call();
+    widget.onSaved?.call(_selectedHealthKitUuid);
     _saveSelectedHealthKitUuid();
     Navigator.pop(context);
 
@@ -923,7 +968,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
         activity: extraActivity,
         patientId: widget.patient.id!,
       ));
-      widget.onSaved?.call();
+      widget.onSaved?.call(_selectedHealthKitUuid);
       _saveSelectedHealthKitUuid();
       Navigator.pop(context);
       checkIfActiveMinutesAchieved(MediaQuery.of(context).size.height);
@@ -982,7 +1027,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
       } else {
         activityBloc!.add(AddActivityEvent(activity: activity, patientId: widget.patient.id!, type: widget.activity.type!));
       }
-      widget.onSaved?.call();
+      widget.onSaved?.call(_selectedHealthKitUuid);
       _saveSelectedHealthKitUuid();
       Navigator.pop(context);
       return;
@@ -1011,7 +1056,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
         date: widget.activity.date!,
         patientId: widget.patient.id!,
         extraActivityName: nameController.text));
-    widget.onSaved?.call();
+    widget.onSaved?.call(_selectedHealthKitUuid);
     _saveSelectedHealthKitUuid();
     Navigator.pop(context);
   }
