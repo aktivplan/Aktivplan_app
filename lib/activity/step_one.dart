@@ -24,6 +24,7 @@ class StepOne extends StatefulWidget {
   final Function(String) planTrainingPlan;
   final Function() onCancelled;
   final bool isTrainingPlan;
+  final InstitutionDTO? institution;
 
   StepOne({
     Key? key,
@@ -31,6 +32,7 @@ class StepOne extends StatefulWidget {
     required this.planTrainingPlan,
     required this.onCancelled,
     required this.isTrainingPlan,
+    this.institution,
   }) : super(key: key);
 
   @override
@@ -76,8 +78,40 @@ class _StepOneState extends State<StepOne> {
     }
   }
 
+  List<Widget> getAdditionalOptions(bool isKlimafit) {
+    List<Widget> toReturn = [];
+    if (isKlimafit && !widget.isTrainingPlan) {
+      toReturn.add(getOptionForActivityType(ActivityType.PREDEFINED_ACTIVITY));
+      toReturn.add(getOptionForActivityType(ActivityType.PREDEFINED_ACTIVE_MOBILITY));
+    }
+    toReturn.add(getOptionForActivityType(ActivityType.APPOINTMENT));
+    return toReturn;
+  }
+
+  getOptionForActivityType(ActivityType activityType) {
+    return Container(
+      decoration: BoxDecoration(border: Border.all(color: datatableBorderColor), borderRadius: BorderRadius.circular(8)),
+      child: ListTile(
+        onTap: () => widget.planActivity(activityType),
+        leading: Icon(activityType.iconData, color: Colors.black),
+        title: Text(
+          activityType.getTranslatedText(context),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.black),
+        ),
+        trailing: Icon(
+          Icons.chevron_right,
+          color: Colors.black,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!widget.isTrainingPlan && widget.institution == null) {
+      return Center(child: CircularProgressIndicator());
+    }
+    bool isKlimafit = widget.institution?.institutionFocus?.isKlimafit() ?? false;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -86,22 +120,9 @@ class _StepOneState extends State<StepOne> {
         if (trainingPlans.isEmpty)
           ExerciseCategories(
             optionCallback: exerciseChosen,
+            isKlimafit: isKlimafit,
             hideTrainingPlan: widget.isTrainingPlan || !userRepository.showTrainingPlans,
-            additionalOption: Container(
-              decoration: BoxDecoration(border: Border.all(color: datatableBorderColor), borderRadius: BorderRadius.circular(8)),
-              child: ListTile(
-                onTap: () => widget.planActivity(ActivityType.APPOINTMENT),
-                leading: Icon(ActivityType.APPOINTMENT.iconData, color: Colors.black),
-                title: Text(
-                  ActivityType.APPOINTMENT.getTranslatedText(context),
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.black),
-                ),
-                trailing: Icon(
-                  Icons.chevron_right,
-                  color: Colors.black,
-                ),
-              ),
-            ),
+            additionalOptions: getAdditionalOptions(isKlimafit),
           ),
         if (trainingPlans.isNotEmpty)
           Padding(

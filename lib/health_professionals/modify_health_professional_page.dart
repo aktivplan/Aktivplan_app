@@ -172,10 +172,11 @@ class _ModifyHealthProfessionalPageState extends State<ModifyHealthProfessionalP
 
   void _openFileExplorer() async {
     try {
-      _paths = (await FilePicker.platform.pickFiles(
+      _paths = (await FilePicker.pickFiles(
             type: FileType.custom,
             allowMultiple: false,
             allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            withData: true,
           ))
               ?.files ??
           [];

@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **title** | **Map<String, String>** |  | [optional] [default to const {}]
 **text** | **Map<String, String>** |  | [optional] [default to const {}]
+**restriction** | [**MessageRestriction**](MessageRestriction.md) |  | [optional] 
 **id** | **String** |  | [optional] 
 **pictureId** | **Map<String, String>** |  | [optional] [default to const {}]
 

@@ -49,7 +49,7 @@ class _EditStoryButtonsState extends State<EditStoryButtons> {
                 children: [
                   CircleAvatar(
                     radius: radiusMini,
-                    backgroundColor: Color(Colors.white.value),
+                    backgroundColor: Color(Colors.white.toARGB32()),
                     child: IconButton(
                       onPressed: () => context.beamToNamed('/contacts/my-story/add-message'),
                       icon: Icon(Icons.text_format),
@@ -59,7 +59,7 @@ class _EditStoryButtonsState extends State<EditStoryButtons> {
                   if (!kIsWeb)
                     CircleAvatar(
                       radius: radiusMini,
-                      backgroundColor: Color(Colors.white.value),
+                      backgroundColor: Color(Colors.white.toARGB32()),
                       child: IconButton(
                         onPressed: () => context.beamToNamed('/contacts/my-story/add-pictures'),
                         icon: Icon(Icons.camera_alt_outlined),
@@ -71,7 +71,7 @@ class _EditStoryButtonsState extends State<EditStoryButtons> {
           ),
           CircleAvatar(
             radius: radius,
-            backgroundColor: Color(Colors.white.value),
+            backgroundColor: Color(Colors.white.toARGB32()),
             child: IconButton(
               onPressed: _toggleExpand,
               icon: Icon(Icons.add),
@@ -82,7 +82,7 @@ class _EditStoryButtonsState extends State<EditStoryButtons> {
           ),
           CircleAvatar(
             radius: radius,
-            backgroundColor: Color(Colors.white.value),
+            backgroundColor: Color(Colors.white.toARGB32()),
             child: IconButton(
               onPressed: () {
                 widget.storyController.pause();

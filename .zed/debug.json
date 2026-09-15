@@ -1,0 +1,56 @@
+[
+  {
+    "adapter": "Dart",
+    "label": "aptapp",
+    "request": "launch",
+    "type": "flutter",
+    "program": "lib/main.dart",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "useFvm": true,
+    "device_id": "chrome",
+    "platform": "web"
+  },
+  {
+    "adapter": "Dart",
+    "label": "aptapp - localhost",
+    "request": "launch",
+    "type": "flutter",
+    "program": "lib/main.dart",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "useFvm": true,
+    "device_id": "chrome",
+    "platform": "web",
+    "args": [
+      "--dart-define=BASE_URL=http://localhost:8080",
+      "--web-experimental-hot-reload"
+    ]
+  },
+  {
+    "adapter": "Dart",
+    "label": "aptapp - localhost android",
+    "request": "launch",
+    "type": "flutter",
+    "program": "lib/main.dart",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "useFvm": true,
+    "device_id": "<android-device-id>",
+    "platform": "android",
+    "args": [
+      "--dart-define=BASE_URL=http://10.0.2.2:8080"
+    ]
+  },
+  {
+    "adapter": "Dart",
+    "label": "aptapp - prod",
+    "request": "launch",
+    "type": "flutter",
+    "program": "lib/main.dart",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "useFvm": true,
+    "device_id": "chrome",
+    "platform": "web",
+    "args": [
+      "--dart-define=BASE_URL=https://aktivplan.lbidhp.at"
+    ]
+  }
+]

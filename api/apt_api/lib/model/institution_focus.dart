@@ -35,11 +35,17 @@ class InstitutionFocus {
       InstitutionFocus._(r'CARDIOVASCULAR_REHABILITATION');
   static const PROMOTING_A_HEALTHY_LIFESTYLE =
       InstitutionFocus._(r'PROMOTING_A_HEALTHY_LIFESTYLE');
+  static const KLIMAFIT = InstitutionFocus._(r'KLIMAFIT');
+  static const KLIMAFIT_LIGHT = InstitutionFocus._(r'KLIMAFIT_LIGHT');
+  static const PREHAB_TO_REHAB = InstitutionFocus._(r'PREHAB_TO_REHAB');
 
   /// List of all possible values in this [enum][InstitutionFocus].
   static const values = <InstitutionFocus>[
     CARDIOVASCULAR_REHABILITATION,
     PROMOTING_A_HEALTHY_LIFESTYLE,
+    KLIMAFIT,
+    KLIMAFIT_LIGHT,
+    PREHAB_TO_REHAB,
   ];
 
   static InstitutionFocus? fromJson(dynamic value) =>
@@ -87,6 +93,12 @@ class InstitutionFocusTypeTransformer {
           return InstitutionFocus.CARDIOVASCULAR_REHABILITATION;
         case r'PROMOTING_A_HEALTHY_LIFESTYLE':
           return InstitutionFocus.PROMOTING_A_HEALTHY_LIFESTYLE;
+        case r'KLIMAFIT':
+          return InstitutionFocus.KLIMAFIT;
+        case r'KLIMAFIT_LIGHT':
+          return InstitutionFocus.KLIMAFIT_LIGHT;
+        case r'PREHAB_TO_REHAB':
+          return InstitutionFocus.PREHAB_TO_REHAB;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');

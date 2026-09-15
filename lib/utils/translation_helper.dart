@@ -49,16 +49,25 @@ void initTextEditingControllerFromTranslationObject(
   englishTextController.text = translationField?["EN"] ?? "";
 }
 
-String getTranslatedTimeString(String? time, BuildContext context) {
-  if ((time ?? "").isEmpty) {
+String getTranslatedTimeString(String time, String endTime, BuildContext context) {
+  if (time.isEmpty) {
     return "";
   }
   final String userLocale = Localizations.localeOf(context).languageCode.toUpperCase();
   if (userLocale == "DE") {
+    if (endTime.isNotEmpty) {
+      return "$time - $endTime Uhr";
+    }
     return "$time Uhr";
   }
-  final DateTime tempDate = DateFormat("hh:mm").parse(time!);
-  return DateFormat("h:mm a").format(tempDate);
+  final DateTime tempDate = DateFormat("hh:mm").parse(time);
+  final String startTime = DateFormat("h:mm a").format(tempDate);
+  if (endTime.isEmpty) {
+    return startTime;
+  }
+  final DateTime tempEndDate = DateFormat("hh:mm").parse(endTime);
+  final String formattedEndTime = DateFormat("h:mm a").format(tempEndDate);
+  return "$startTime - $formattedEndTime";
 }
 
 String getStrengtheningExecutionString(StrengtheningExercisePostDTO exercise, BuildContext context) {

@@ -5,7 +5,7 @@
 import 'package:apt_api/api.dart';
 ```
 
-All URIs are relative to *https://aktivplan-plus.ap-stage.at*
+All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------

@@ -27,6 +27,7 @@ class ActivityPostDTO {
     this.startDate,
     this.endDate,
     this.time,
+    this.endTime,
     this.workout,
     this.enduranceExercise,
     this.intervalExercise,
@@ -35,11 +36,13 @@ class ActivityPostDTO {
     this.task,
     this.appointment,
     this.trainingPlan,
+    this.predefinedActivity,
     this.days = const [],
     this.repeats,
     this.repeatCount,
     this.name = const {},
     this.youTubeUrl = const {},
+    this.videoFileKey,
     this.datesToHide = const [],
   });
 
@@ -82,6 +85,14 @@ class ActivityPostDTO {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? time;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? endTime;
 
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
@@ -147,6 +158,14 @@ class ActivityPostDTO {
   ///
   TrainingPlanPostDTO? trainingPlan;
 
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  PredefinedActivityPostDTO? predefinedActivity;
+
   List<DayOfWeek> days;
 
   ///
@@ -169,6 +188,14 @@ class ActivityPostDTO {
 
   Map<String, String> youTubeUrl;
 
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? videoFileKey;
+
   List<String> datesToHide;
 
   @override
@@ -180,6 +207,7 @@ class ActivityPostDTO {
           other.startDate == startDate &&
           other.endDate == endDate &&
           other.time == time &&
+          other.endTime == endTime &&
           other.workout == workout &&
           other.enduranceExercise == enduranceExercise &&
           other.intervalExercise == intervalExercise &&
@@ -188,11 +216,13 @@ class ActivityPostDTO {
           other.task == task &&
           other.appointment == appointment &&
           other.trainingPlan == trainingPlan &&
+          other.predefinedActivity == predefinedActivity &&
           _deepEquality.equals(other.days, days) &&
           other.repeats == repeats &&
           other.repeatCount == repeatCount &&
           _deepEquality.equals(other.name, name) &&
           _deepEquality.equals(other.youTubeUrl, youTubeUrl) &&
+          other.videoFileKey == videoFileKey &&
           _deepEquality.equals(other.datesToHide, datesToHide);
 
   @override
@@ -203,6 +233,7 @@ class ActivityPostDTO {
       (startDate == null ? 0 : startDate!.hashCode) +
       (endDate == null ? 0 : endDate!.hashCode) +
       (time == null ? 0 : time!.hashCode) +
+      (endTime == null ? 0 : endTime!.hashCode) +
       (workout == null ? 0 : workout!.hashCode) +
       (enduranceExercise == null ? 0 : enduranceExercise!.hashCode) +
       (intervalExercise == null ? 0 : intervalExercise!.hashCode) +
@@ -211,16 +242,18 @@ class ActivityPostDTO {
       (task == null ? 0 : task!.hashCode) +
       (appointment == null ? 0 : appointment!.hashCode) +
       (trainingPlan == null ? 0 : trainingPlan!.hashCode) +
+      (predefinedActivity == null ? 0 : predefinedActivity!.hashCode) +
       (days.hashCode) +
       (repeats == null ? 0 : repeats!.hashCode) +
       (repeatCount == null ? 0 : repeatCount!.hashCode) +
       (name.hashCode) +
       (youTubeUrl.hashCode) +
+      (videoFileKey == null ? 0 : videoFileKey!.hashCode) +
       (datesToHide.hashCode);
 
   @override
   String toString() =>
-      'ActivityPostDTO[plannedBy=$plannedBy, patientId=$patientId, startDate=$startDate, endDate=$endDate, time=$time, workout=$workout, enduranceExercise=$enduranceExercise, intervalExercise=$intervalExercise, strengtheningExercise=$strengtheningExercise, otherExercise=$otherExercise, task=$task, appointment=$appointment, trainingPlan=$trainingPlan, days=$days, repeats=$repeats, repeatCount=$repeatCount, name=$name, youTubeUrl=$youTubeUrl, datesToHide=$datesToHide]';
+      'ActivityPostDTO[plannedBy=$plannedBy, patientId=$patientId, startDate=$startDate, endDate=$endDate, time=$time, endTime=$endTime, workout=$workout, enduranceExercise=$enduranceExercise, intervalExercise=$intervalExercise, strengtheningExercise=$strengtheningExercise, otherExercise=$otherExercise, task=$task, appointment=$appointment, trainingPlan=$trainingPlan, predefinedActivity=$predefinedActivity, days=$days, repeats=$repeats, repeatCount=$repeatCount, name=$name, youTubeUrl=$youTubeUrl, videoFileKey=$videoFileKey, datesToHide=$datesToHide]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -248,6 +281,11 @@ class ActivityPostDTO {
       json[r'time'] = this.time;
     } else {
       json[r'time'] = null;
+    }
+    if (this.endTime != null) {
+      json[r'endTime'] = this.endTime;
+    } else {
+      json[r'endTime'] = null;
     }
     if (this.workout != null) {
       json[r'workout'] = this.workout;
@@ -289,6 +327,11 @@ class ActivityPostDTO {
     } else {
       json[r'trainingPlan'] = null;
     }
+    if (this.predefinedActivity != null) {
+      json[r'predefinedActivity'] = this.predefinedActivity;
+    } else {
+      json[r'predefinedActivity'] = null;
+    }
     json[r'days'] = this.days;
     if (this.repeats != null) {
       json[r'repeats'] = this.repeats;
@@ -302,6 +345,11 @@ class ActivityPostDTO {
     }
     json[r'name'] = this.name;
     json[r'youTubeUrl'] = this.youTubeUrl;
+    if (this.videoFileKey != null) {
+      json[r'videoFileKey'] = this.videoFileKey;
+    } else {
+      json[r'videoFileKey'] = null;
+    }
     json[r'datesToHide'] = this.datesToHide;
     return json;
   }
@@ -332,6 +380,7 @@ class ActivityPostDTO {
         startDate: mapValueOfType<String>(json, r'startDate'),
         endDate: mapValueOfType<String>(json, r'endDate'),
         time: mapValueOfType<String>(json, r'time'),
+        endTime: mapValueOfType<String>(json, r'endTime'),
         workout: WorkoutPostDTO.fromJson(json[r'workout']),
         enduranceExercise:
             EnduranceExercisePostDTO.fromJson(json[r'enduranceExercise']),
@@ -343,12 +392,15 @@ class ActivityPostDTO {
         task: TaskPostDTO.fromJson(json[r'task']),
         appointment: AppointmentPostDTO.fromJson(json[r'appointment']),
         trainingPlan: TrainingPlanPostDTO.fromJson(json[r'trainingPlan']),
+        predefinedActivity:
+            PredefinedActivityPostDTO.fromJson(json[r'predefinedActivity']),
         days: DayOfWeek.listFromJson(json[r'days']),
         repeats: ActivityRepeat.fromJson(json[r'repeats']),
         repeatCount: mapValueOfType<int>(json, r'repeatCount'),
         name: mapCastOfType<String, String>(json, r'name') ?? const {},
         youTubeUrl:
             mapCastOfType<String, String>(json, r'youTubeUrl') ?? const {},
+        videoFileKey: mapValueOfType<String>(json, r'videoFileKey'),
         datesToHide: json[r'datesToHide'] is Iterable
             ? (json[r'datesToHide'] as Iterable)
                 .cast<String>()

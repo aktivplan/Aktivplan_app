@@ -60,7 +60,7 @@ try {
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *https://aktivplan-plus.ap-stage.at*
+All URIs are relative to *http://localhost:8080*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
@@ -68,10 +68,11 @@ Class | Method | HTTP request | Description
 *ActivityControllerApi* | [**createExtraActivity**](doc//ActivityControllerApi.md#createextraactivity) | **POST** /activities/EXTRA | createExtraActivity
 *ActivityControllerApi* | [**createPersonalGoal**](doc//ActivityControllerApi.md#createpersonalgoal) | **POST** /activities/personalGoals | 
 *ActivityControllerApi* | [**deleteActivity**](doc//ActivityControllerApi.md#deleteactivity) | **DELETE** /activities/{id} | 
+*ActivityControllerApi* | [**deleteActivityVideoById**](doc//ActivityControllerApi.md#deleteactivityvideobyid) | **DELETE** /activities/video/{id} | deleteActivityVideoById
 *ActivityControllerApi* | [**deletePersonalGoal**](doc//ActivityControllerApi.md#deletepersonalgoal) | **DELETE** /activities/personalGoals/{id} | 
 *ActivityControllerApi* | [**getActiveMinutes**](doc//ActivityControllerApi.md#getactiveminutes) | **GET** /activities/activeMinutes/{type} | 
 *ActivityControllerApi* | [**getActivities**](doc//ActivityControllerApi.md#getactivities) | **GET** /activities | 
-*ActivityControllerApi* | [**getActivityNamesAutocomplete**](doc//ActivityControllerApi.md#getactivitynamesautocomplete) | **GET** /activities/EXTRA/autocomplete | getActivityNamesAutocomplete
+*ActivityControllerApi* | [**getActivityNamesAutocomplete**](doc//ActivityControllerApi.md#getactivitynamesautocomplete) | **GET** /activities/{type}/autocomplete | getActivityNamesAutocomplete
 *ActivityControllerApi* | [**getActivityPercentageData**](doc//ActivityControllerApi.md#getactivitypercentagedata) | **GET** /activities/active-minutes/percentage-data | 
 *ActivityControllerApi* | [**getPersonalGoals**](doc//ActivityControllerApi.md#getpersonalgoals) | **GET** /activities/personalGoals | 
 *ActivityControllerApi* | [**hideActivity**](doc//ActivityControllerApi.md#hideactivity) | **PUT** /activities/hide | 
@@ -81,8 +82,10 @@ Class | Method | HTTP request | Description
 *ActivityControllerApi* | [**updateActivityRating**](doc//ActivityControllerApi.md#updateactivityrating) | **PUT** /activities/{id}/{date} | updateActivityRating
 *ActivityControllerApi* | [**updateExtraActivity**](doc//ActivityControllerApi.md#updateextraactivity) | **PUT** /activities/EXTRA/{id} | updateExtraActivity
 *ActivityControllerApi* | [**updatePersonalGoal**](doc//ActivityControllerApi.md#updatepersonalgoal) | **PUT** /activities/personalGoals/{id} | 
+*ActivityControllerApi* | [**uploadActivityVideoById**](doc//ActivityControllerApi.md#uploadactivityvideobyid) | **POST** /activities/video/{id} | uploadActivityVideoById
 *AuthenticationControllerApi* | [**changeUserPassword**](doc//AuthenticationControllerApi.md#changeuserpassword) | **POST** /authentication/change-password | 
 *AuthenticationControllerApi* | [**createAuthenticationToken**](doc//AuthenticationControllerApi.md#createauthenticationtoken) | **POST** /authentication/login | 
+*AuthenticationControllerApi* | [**createAuthenticationTokenWithCredentials**](doc//AuthenticationControllerApi.md#createauthenticationtokenwithcredentials) | **POST** /authentication/token | createAuthenticationTokenWithCredentials
 *AuthenticationControllerApi* | [**forgotPassword**](doc//AuthenticationControllerApi.md#forgotpassword) | **POST** /authentication/forgotPassword | 
 *AuthenticationControllerApi* | [**getCurrentUser**](doc//AuthenticationControllerApi.md#getcurrentuser) | **GET** /authentication/currentUser | 
 *AuthenticationControllerApi* | [**refreshAuthenticationToken**](doc//AuthenticationControllerApi.md#refreshauthenticationtoken) | **POST** /authentication/refresh | 
@@ -91,6 +94,11 @@ Class | Method | HTTP request | Description
 *AuthenticationControllerApi* | [**storeFirebaseToken**](doc//AuthenticationControllerApi.md#storefirebasetoken) | **POST** /authentication/firebaseToken | 
 *AuthenticationControllerApi* | [**switchCurrentLanguage**](doc//AuthenticationControllerApi.md#switchcurrentlanguage) | **POST** /authentication/language | 
 *ConsentControllerApi* | [**getConsents**](doc//ConsentControllerApi.md#getconsents) | **GET** /consents | 
+*DatahubControllerApi* | [**getRecommendations**](doc//DatahubControllerApi.md#getrecommendations) | **GET** /datahub/recommendations/{patientId} | 
+*DatahubControllerApi* | [**getRecommendationsForDate**](doc//DatahubControllerApi.md#getrecommendationsfordate) | **GET** /datahub/recommendations/{patientId}/{date} | 
+*DatahubControllerApi* | [**getRequestStructure**](doc//DatahubControllerApi.md#getrequeststructure) | **GET** /datahub/request-structure | 
+*DatahubControllerApi* | [**getTestRequestData**](doc//DatahubControllerApi.md#gettestrequestdata) | **GET** /datahub/test-request/{patientId}/{date} | 
+*DatahubControllerApi* | [**testRequest**](doc//DatahubControllerApi.md#testrequest) | **POST** /datahub/test-request/{patientId}/{date} | 
 *ExerciseControllerApi* | [**createEnduranceExercise**](doc//ExerciseControllerApi.md#createenduranceexercise) | **POST** /exercises/ENDURANCE | createEnduranceExercise
 *ExerciseControllerApi* | [**createHypertrophyExercise**](doc//ExerciseControllerApi.md#createhypertrophyexercise) | **POST** /exercises/HYPERTROPHY | createHypertrophyExercise
 *ExerciseControllerApi* | [**createIntervalExercise**](doc//ExerciseControllerApi.md#createintervalexercise) | **POST** /exercises/INTERVAL | createIntervalExercise
@@ -98,6 +106,7 @@ Class | Method | HTTP request | Description
 *ExerciseControllerApi* | [**createStrengtheningExercise**](doc//ExerciseControllerApi.md#createstrengtheningexercise) | **POST** /exercises/STRENGTHENING | createStrengtheningExercise
 *ExerciseControllerApi* | [**createTask**](doc//ExerciseControllerApi.md#createtask) | **POST** /exercises/TASK | createTask
 *ExerciseControllerApi* | [**deleteExercise**](doc//ExerciseControllerApi.md#deleteexercise) | **DELETE** /exercises/{id} | deleteExercise
+*ExerciseControllerApi* | [**deleteExerciseVideoById**](doc//ExerciseControllerApi.md#deleteexercisevideobyid) | **DELETE** /exercises/video/{id} | deleteExerciseVideoById
 *ExerciseControllerApi* | [**getExercises**](doc//ExerciseControllerApi.md#getexercises) | **GET** /exercises/{type} | 
 *ExerciseControllerApi* | [**updateEnduranceExercise**](doc//ExerciseControllerApi.md#updateenduranceexercise) | **PUT** /exercises/ENDURANCE/{id} | updateEnduranceExercise
 *ExerciseControllerApi* | [**updateHypertrophyExercise**](doc//ExerciseControllerApi.md#updatehypertrophyexercise) | **PUT** /exercises/HYPERTROPHY/{id} | updateHypertrophyExercise
@@ -105,6 +114,7 @@ Class | Method | HTTP request | Description
 *ExerciseControllerApi* | [**updateOtherExercise**](doc//ExerciseControllerApi.md#updateotherexercise) | **PUT** /exercises/OTHER/{id} | updateOtherExercise
 *ExerciseControllerApi* | [**updateStrengtheningExercise**](doc//ExerciseControllerApi.md#updatestrengtheningexercise) | **PUT** /exercises/STRENGTHENING/{id} | updateStrengtheningExercise
 *ExerciseControllerApi* | [**updateTask**](doc//ExerciseControllerApi.md#updatetask) | **PUT** /exercises/TASK/{id} | updateTask
+*ExerciseControllerApi* | [**uploadExerciseVideoById**](doc//ExerciseControllerApi.md#uploadexercisevideobyid) | **POST** /exercises/video/{id} | uploadExerciseVideoById
 *ExportControllerApi* | [**createCSV**](doc//ExportControllerApi.md#createcsv) | **POST** /export/csv | 
 *ExportControllerApi* | [**createReport**](doc//ExportControllerApi.md#createreport) | **POST** /export/report | 
 *ExportControllerApi* | [**getCSV**](doc//ExportControllerApi.md#getcsv) | **GET** /export/csv/{key} | 
@@ -116,6 +126,7 @@ Class | Method | HTTP request | Description
 *ExternalAppControllerApi* | [**updateExternalApp**](doc//ExternalAppControllerApi.md#updateexternalapp) | **PUT** /external-apps/{id} | updateExternalApp
 *ExternalAppControllerApi* | [**updateExternalAppOrdering**](doc//ExternalAppControllerApi.md#updateexternalappordering) | **PUT** /external-apps/templates/order | updateExternalAppOrdering
 *ExternalControllerApi* | [**createHealthData**](doc//ExternalControllerApi.md#createhealthdata) | **POST** /external/health-data | 
+*FileControllerApi* | [**getFile**](doc//FileControllerApi.md#getfile) | **GET** /files | 
 *InstitutionControllerApi* | [**createInstitution**](doc//InstitutionControllerApi.md#createinstitution) | **POST** /institutions | createInstitution
 *InstitutionControllerApi* | [**deleteInstitution**](doc//InstitutionControllerApi.md#deleteinstitution) | **DELETE** /institutions/{id} | deleteInstitution
 *InstitutionControllerApi* | [**getInstitutionById**](doc//InstitutionControllerApi.md#getinstitutionbyid) | **GET** /institutions/{id} | 
@@ -163,6 +174,7 @@ Class | Method | HTTP request | Description
 *TrainingPlanControllerApi* | [**getTrainingPlan**](doc//TrainingPlanControllerApi.md#gettrainingplan) | **GET** /training-plans/{id} | 
 *TrainingPlanControllerApi* | [**getTrainingPlans**](doc//TrainingPlanControllerApi.md#gettrainingplans) | **GET** /training-plans | 
 *TrainingPlanControllerApi* | [**updateTrainingPlan**](doc//TrainingPlanControllerApi.md#updatetrainingplan) | **PUT** /training-plans/{id} | updateTrainingPlan
+*UserControllerApi* | [**canSelfSignIn**](doc//UserControllerApi.md#canselfsignin) | **GET** /users/public/can-self-sign-in | 
 *UserControllerApi* | [**changeHealthcareProfessionalForPatients**](doc//UserControllerApi.md#changehealthcareprofessionalforpatients) | **PUT** /users/change-healthcare-professional | 
 *UserControllerApi* | [**createHealthcareProfessional**](doc//UserControllerApi.md#createhealthcareprofessional) | **POST** /users/HEALTHCARE_PROFESSIONAL | createHealthcareProfessional
 *UserControllerApi* | [**createPatient**](doc//UserControllerApi.md#createpatient) | **POST** /users/PATIENT | createPatient
@@ -179,6 +191,7 @@ Class | Method | HTTP request | Description
 *UserControllerApi* | [**getPatientUserCountByHealthcareProfessionalId**](doc//UserControllerApi.md#getpatientusercountbyhealthcareprofessionalid) | **GET** /users/HEALTHCARE_PROFESSIONAL/{id}/user-count | 
 *UserControllerApi* | [**getPatientsOverview**](doc//UserControllerApi.md#getpatientsoverview) | **GET** /users/PATIENT | getPatientsOverview
 *UserControllerApi* | [**getUserPictureById**](doc//UserControllerApi.md#getuserpicturebyid) | **GET** /users/userPicture/{id} | 
+*UserControllerApi* | [**importPatientsFromCsv**](doc//UserControllerApi.md#importpatientsfromcsv) | **POST** /users/INSTITUTION/{institutionId}/HEALTHCARE_PROFESSIONAL/{healthcareProfessionalId}/PATIENTS/import | importPatientsFromCsv
 *UserControllerApi* | [**requestHealthDataChange**](doc//UserControllerApi.md#requesthealthdatachange) | **POST** /users/PATIENT/request-health-data-change | requestHealthDataChange
 *UserControllerApi* | [**requestProfileDeletion**](doc//UserControllerApi.md#requestprofiledeletion) | **POST** /users/PATIENT/request-deletion | requestProfileDeletion
 *UserControllerApi* | [**sendPatientWelcomeMail**](doc//UserControllerApi.md#sendpatientwelcomemail) | **PUT** /users/PATIENT/WELCOME_MAIL/{id} | sendPatientWelcomeMail
@@ -194,10 +207,19 @@ Class | Method | HTTP request | Description
 *VideoControllerApi* | [**getVideoTemplates**](doc//VideoControllerApi.md#getvideotemplates) | **GET** /videos/templates | 
 *VideoControllerApi* | [**updateVideoTemplate**](doc//VideoControllerApi.md#updatevideotemplate) | **PUT** /videos/templates/{id} | updateVideoTemplate
 *VideoControllerApi* | [**updateVideoTemplateOrdering**](doc//VideoControllerApi.md#updatevideotemplateordering) | **PUT** /videos/templates/order | updateVideoTemplateOrdering
+*WebhookControllerApi* | [**createOrUpdateP2RCoach**](doc//WebhookControllerApi.md#createorupdatep2rcoach) | **PUT** /webhooks/p2r/coach | createOrUpdateP2RCoach
+*WebhookControllerApi* | [**createOrUpdateP2RPatient**](doc//WebhookControllerApi.md#createorupdatep2rpatient) | **PUT** /webhooks/p2r/patient | createOrUpdateP2RPatient
+*WidgetControllerApi* | [**getKlimafitPlant**](doc//WidgetControllerApi.md#getklimafitplant) | **GET** /widget/klimafit-plant | 
+*WidgetControllerApi* | [**getKlimafitPlantForPatient**](doc//WidgetControllerApi.md#getklimafitplantforpatient) | **GET** /widget/klimafit-plant/{patientId} | 
+*WidgetControllerApi* | [**getKlimafitPlantForPatientPng**](doc//WidgetControllerApi.md#getklimafitplantforpatientpng) | **GET** /widget/klimafit-plant/{patientId}/png | 
+*WidgetControllerApi* | [**getPatientDailyActivities**](doc//WidgetControllerApi.md#getpatientdailyactivities) | **GET** /widget/daily-activities/{patientId} | 
+*WidgetControllerApi* | [**getPatientDailyActivitiesPng**](doc//WidgetControllerApi.md#getpatientdailyactivitiespng) | **GET** /widget/daily-activities/{patientId}/png | 
 *WorkoutControllerApi* | [**createWorkout**](doc//WorkoutControllerApi.md#createworkout) | **POST** /workouts | createWorkout
 *WorkoutControllerApi* | [**deleteWorkout**](doc//WorkoutControllerApi.md#deleteworkout) | **DELETE** /workouts/{id} | deleteWorkout
+*WorkoutControllerApi* | [**deleteWorkoutVideoById**](doc//WorkoutControllerApi.md#deleteworkoutvideobyid) | **DELETE** /workouts/video/{id} | deleteWorkoutVideoById
 *WorkoutControllerApi* | [**getWorkouts**](doc//WorkoutControllerApi.md#getworkouts) | **GET** /workouts | 
 *WorkoutControllerApi* | [**updateWorkout**](doc//WorkoutControllerApi.md#updateworkout) | **PUT** /workouts/{id} | updateWorkout
+*WorkoutControllerApi* | [**uploadWorkoutVideoById**](doc//WorkoutControllerApi.md#uploadworkoutvideobyid) | **POST** /workouts/video/{id} | uploadWorkoutVideoById
 
 
 ## Documentation For Models
@@ -208,6 +230,7 @@ Class | Method | HTTP request | Description
  - [ActiveMinutesType](doc//ActiveMinutesType.md)
  - [Activity](doc//Activity.md)
  - [ActivityAutocompleteGetDTO](doc//ActivityAutocompleteGetDTO.md)
+ - [ActivityContext](doc//ActivityContext.md)
  - [ActivityGraphDTO](doc//ActivityGraphDTO.md)
  - [ActivityOverviewDTO](doc//ActivityOverviewDTO.md)
  - [ActivityPatientRating](doc//ActivityPatientRating.md)
@@ -228,6 +251,9 @@ Class | Method | HTTP request | Description
  - [ConsentGetDTO](doc//ConsentGetDTO.md)
  - [ConsentType](doc//ConsentType.md)
  - [CurrentUserDTO](doc//CurrentUserDTO.md)
+ - [DatahubRequestDataDTO](doc//DatahubRequestDataDTO.md)
+ - [DatahubResponse](doc//DatahubResponse.md)
+ - [DatahubResponseRecommendationsInner](doc//DatahubResponseRecommendationsInner.md)
  - [DayOfWeek](doc//DayOfWeek.md)
  - [EnduranceExercise](doc//EnduranceExercise.md)
  - [EnduranceExercisePostDTO](doc//EnduranceExercisePostDTO.md)
@@ -244,6 +270,7 @@ Class | Method | HTTP request | Description
  - [FirebaseTokenDTO](doc//FirebaseTokenDTO.md)
  - [FirebaseTokenTarget](doc//FirebaseTokenTarget.md)
  - [ForgotPasswordDTO](doc//ForgotPasswordDTO.md)
+ - [GenericWeather](doc//GenericWeather.md)
  - [HealthData](doc//HealthData.md)
  - [HealthDataChangeDTO](doc//HealthDataChangeDTO.md)
  - [HealthDataPostDTO](doc//HealthDataPostDTO.md)
@@ -251,17 +278,22 @@ Class | Method | HTTP request | Description
  - [HealthcareProfessionalPostDTO](doc//HealthcareProfessionalPostDTO.md)
  - [HealthcareProfessionalProfileDTO](doc//HealthcareProfessionalProfileDTO.md)
  - [HealthcareProfessionalsOverviewDTO](doc//HealthcareProfessionalsOverviewDTO.md)
+ - [HeatTolerance](doc//HeatTolerance.md)
  - [HideActivityPostDTO](doc//HideActivityPostDTO.md)
+ - [ImportSummaryDTO](doc//ImportSummaryDTO.md)
  - [InstitutionAdministratorGetDTO](doc//InstitutionAdministratorGetDTO.md)
  - [InstitutionCountDTO](doc//InstitutionCountDTO.md)
  - [InstitutionDTO](doc//InstitutionDTO.md)
  - [InstitutionFocus](doc//InstitutionFocus.md)
  - [InstitutionImportDTO](doc//InstitutionImportDTO.md)
  - [InstitutionImportType](doc//InstitutionImportType.md)
+ - [InstitutionP2RFocus](doc//InstitutionP2RFocus.md)
  - [InstitutionPostDTO](doc//InstitutionPostDTO.md)
  - [IntervalExercise](doc//IntervalExercise.md)
  - [IntervalExercisePostDTO](doc//IntervalExercisePostDTO.md)
+ - [KlimafitUserDataDTO](doc//KlimafitUserDataDTO.md)
  - [LanguageSwitchDTO](doc//LanguageSwitchDTO.md)
+ - [LocationDTO](doc//LocationDTO.md)
  - [MessageCountDTO](doc//MessageCountDTO.md)
  - [MessageDTO](doc//MessageDTO.md)
  - [MessageGetDTO](doc//MessageGetDTO.md)
@@ -269,6 +301,7 @@ Class | Method | HTTP request | Description
  - [MessageOverviewDTO](doc//MessageOverviewDTO.md)
  - [MessagePutDTO](doc//MessagePutDTO.md)
  - [MessageReceiverNameDTO](doc//MessageReceiverNameDTO.md)
+ - [MessageRestriction](doc//MessageRestriction.md)
  - [MessageSchedule](doc//MessageSchedule.md)
  - [MessageScheduleGetDTO](doc//MessageScheduleGetDTO.md)
  - [MessageSchedulePostDTO](doc//MessageSchedulePostDTO.md)
@@ -278,11 +311,14 @@ Class | Method | HTTP request | Description
  - [MessageTemplateDTO](doc//MessageTemplateDTO.md)
  - [MessageTemplatePostDTO](doc//MessageTemplatePostDTO.md)
  - [MessageType](doc//MessageType.md)
+ - [MobilityPreference](doc//MobilityPreference.md)
  - [MoveActivityPostDTO](doc//MoveActivityPostDTO.md)
  - [MovePersonalGoalPostDTO](doc//MovePersonalGoalPostDTO.md)
  - [OrderingDTO](doc//OrderingDTO.md)
  - [OtherExercise](doc//OtherExercise.md)
  - [OtherExercisePostDTO](doc//OtherExercisePostDTO.md)
+ - [P2RCoachPostDTO](doc//P2RCoachPostDTO.md)
+ - [P2RPatientPostDTO](doc//P2RPatientPostDTO.md)
  - [PatientGetDTO](doc//PatientGetDTO.md)
  - [PatientNotesDTO](doc//PatientNotesDTO.md)
  - [PatientOverviewDTO](doc//PatientOverviewDTO.md)
@@ -292,12 +328,20 @@ Class | Method | HTTP request | Description
  - [PatientsOverviewDTO](doc//PatientsOverviewDTO.md)
  - [PersonalGoal](doc//PersonalGoal.md)
  - [PersonalGoalPostDTO](doc//PersonalGoalPostDTO.md)
+ - [PredefinedActivityPostDTO](doc//PredefinedActivityPostDTO.md)
+ - [PredefinedActivityType](doc//PredefinedActivityType.md)
  - [PreparedReportDTO](doc//PreparedReportDTO.md)
+ - [RecommendationLevel](doc//RecommendationLevel.md)
+ - [RecommendationType](doc//RecommendationType.md)
+ - [RecoomendationReason](doc//RecoomendationReason.md)
  - [RefreshTokenDTO](doc//RefreshTokenDTO.md)
  - [ReportPostDTO](doc//ReportPostDTO.md)
  - [ResetPasswordDTO](doc//ResetPasswordDTO.md)
+ - [RouteProposal](doc//RouteProposal.md)
+ - [RoutingMode](doc//RoutingMode.md)
  - [ShareActivityDataPostDTO](doc//ShareActivityDataPostDTO.md)
  - [SocialMessagePostDTO](doc//SocialMessagePostDTO.md)
+ - [SpaceTimeRecommendationChangeType](doc//SpaceTimeRecommendationChangeType.md)
  - [StatusFileDTO](doc//StatusFileDTO.md)
  - [StatusFileType](doc//StatusFileType.md)
  - [StatusMessagePostDTO](doc//StatusMessagePostDTO.md)
@@ -307,6 +351,7 @@ Class | Method | HTTP request | Description
  - [StrengtheningExercisePostDTO](doc//StrengtheningExercisePostDTO.md)
  - [Task](doc//Task.md)
  - [TaskPostDTO](doc//TaskPostDTO.md)
+ - [TokenRequestDTO](doc//TokenRequestDTO.md)
  - [TrainingPlan](doc//TrainingPlan.md)
  - [TrainingPlanExercisePostDTO](doc//TrainingPlanExercisePostDTO.md)
  - [TrainingPlanOverviewDTO](doc//TrainingPlanOverviewDTO.md)
@@ -319,6 +364,10 @@ Class | Method | HTTP request | Description
  - [VideoTemplate](doc//VideoTemplate.md)
  - [VideoTemplateDTO](doc//VideoTemplateDTO.md)
  - [VideoTemplatePostDTO](doc//VideoTemplatePostDTO.md)
+ - [Weather](doc//Weather.md)
+ - [WeatherWarning](doc//WeatherWarning.md)
+ - [WeatherWarningLevel](doc//WeatherWarningLevel.md)
+ - [WeatherWarningType](doc//WeatherWarningType.md)
  - [Workout](doc//Workout.md)
  - [WorkoutPostDTO](doc//WorkoutPostDTO.md)
 

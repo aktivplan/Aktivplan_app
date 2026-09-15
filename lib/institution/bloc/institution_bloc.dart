@@ -26,7 +26,7 @@ class InstitutionBloc extends Bloc<InstitutionEvent, InstitutionState> {
     });
     on<FetchInstitutionsEvent>((event, emit) async {
       List<InstitutionDTO>? institutions = await institutionRepository.getInstitutions();
-      emit(FetchedInstitutionsState(institutions: institutions!));
+      emit(FetchedInstitutionsState(institutions: institutions ?? []));
     });
     on<FetchSpecificInstitutionsEvent>((event, emit) async {
       InstitutionDTO? institut = await institutionRepository.getInstitutionbyId(id: event.id);

@@ -26,6 +26,9 @@ class Workout {
     this.notes = const {},
     this.exercises = const [],
     this.youTubeUrl = const {},
+    this.videoFileKey,
+    this.videoWaitBetweenExercisesSeconds,
+    this.waitTimeText,
     this.exerciseDurationSeconds,
     this.id,
     this.institutionId,
@@ -39,6 +42,30 @@ class Workout {
   List<StrengtheningExercisePostDTO> exercises;
 
   Map<String, String> youTubeUrl;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? videoFileKey;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  int? videoWaitBetweenExercisesSeconds;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? waitTimeText;
 
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
@@ -80,6 +107,10 @@ class Workout {
           _deepEquality.equals(other.notes, notes) &&
           _deepEquality.equals(other.exercises, exercises) &&
           _deepEquality.equals(other.youTubeUrl, youTubeUrl) &&
+          other.videoFileKey == videoFileKey &&
+          other.videoWaitBetweenExercisesSeconds ==
+              videoWaitBetweenExercisesSeconds &&
+          other.waitTimeText == waitTimeText &&
           other.exerciseDurationSeconds == exerciseDurationSeconds &&
           other.id == id &&
           other.institutionId == institutionId &&
@@ -92,6 +123,11 @@ class Workout {
       (notes.hashCode) +
       (exercises.hashCode) +
       (youTubeUrl.hashCode) +
+      (videoFileKey == null ? 0 : videoFileKey!.hashCode) +
+      (videoWaitBetweenExercisesSeconds == null
+          ? 0
+          : videoWaitBetweenExercisesSeconds!.hashCode) +
+      (waitTimeText == null ? 0 : waitTimeText!.hashCode) +
       (exerciseDurationSeconds == null
           ? 0
           : exerciseDurationSeconds!.hashCode) +
@@ -101,7 +137,7 @@ class Workout {
 
   @override
   String toString() =>
-      'Workout[name=$name, notes=$notes, exercises=$exercises, youTubeUrl=$youTubeUrl, exerciseDurationSeconds=$exerciseDurationSeconds, id=$id, institutionId=$institutionId, importId=$importId]';
+      'Workout[name=$name, notes=$notes, exercises=$exercises, youTubeUrl=$youTubeUrl, videoFileKey=$videoFileKey, videoWaitBetweenExercisesSeconds=$videoWaitBetweenExercisesSeconds, waitTimeText=$waitTimeText, exerciseDurationSeconds=$exerciseDurationSeconds, id=$id, institutionId=$institutionId, importId=$importId]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -109,6 +145,22 @@ class Workout {
     json[r'notes'] = this.notes;
     json[r'exercises'] = this.exercises;
     json[r'youTubeUrl'] = this.youTubeUrl;
+    if (this.videoFileKey != null) {
+      json[r'videoFileKey'] = this.videoFileKey;
+    } else {
+      json[r'videoFileKey'] = null;
+    }
+    if (this.videoWaitBetweenExercisesSeconds != null) {
+      json[r'videoWaitBetweenExercisesSeconds'] =
+          this.videoWaitBetweenExercisesSeconds;
+    } else {
+      json[r'videoWaitBetweenExercisesSeconds'] = null;
+    }
+    if (this.waitTimeText != null) {
+      json[r'waitTimeText'] = this.waitTimeText;
+    } else {
+      json[r'waitTimeText'] = null;
+    }
     if (this.exerciseDurationSeconds != null) {
       json[r'exerciseDurationSeconds'] = this.exerciseDurationSeconds;
     } else {
@@ -159,6 +211,10 @@ class Workout {
             StrengtheningExercisePostDTO.listFromJson(json[r'exercises']),
         youTubeUrl:
             mapCastOfType<String, String>(json, r'youTubeUrl') ?? const {},
+        videoFileKey: mapValueOfType<String>(json, r'videoFileKey'),
+        videoWaitBetweenExercisesSeconds:
+            mapValueOfType<int>(json, r'videoWaitBetweenExercisesSeconds'),
+        waitTimeText: mapValueOfType<String>(json, r'waitTimeText'),
         exerciseDurationSeconds:
             mapValueOfType<int>(json, r'exerciseDurationSeconds'),
         id: mapValueOfType<String>(json, r'id'),

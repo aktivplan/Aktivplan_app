@@ -7,6 +7,7 @@
 // (see https://www.apache.org/licenses/LICENSE-2.0 and
 // https://commonsclause.com/).
 
+import 'package:apt_api/api.dart';
 import 'package:aptapp/authentication/user_repository.dart';
 import 'package:aptapp/beamer/router_service.dart';
 import 'package:aptapp/colors.dart';
@@ -18,8 +19,8 @@ import 'package:aptapp/utils/keys.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:kiwi/kiwi.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class InstitutionAdminDrawer extends StatefulWidget {
   final Widget drawerHeader;
@@ -81,36 +82,38 @@ class _InstitutionAdminDrawerState extends State<InstitutionAdminDrawer> with Lo
               context.beamToNamed('/training');
             },
           ),
-          ListTile(
-            key: Key(KEY_BUTTON_MESSAGES),
-            tileColor: RouterService.isActive(context, "/messages") ? primarySwatch[50] : Colors.transparent,
-            leading: Icon(Icons.message, color: primaryColor),
-            title: Text(
-              context.i18n.tipsAndInfos,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: RouterService.isActive(context, "/messages") ? Theme.of(context).primaryColor : lightTextColor,
-                    fontWeight: FontWeight.w600,
-                  ),
+          if (userRepository.currentInstitution!.institutionFocus != InstitutionFocus.KLIMAFIT_LIGHT)
+            ListTile(
+              key: Key(KEY_BUTTON_MESSAGES),
+              tileColor: RouterService.isActive(context, "/messages") ? primarySwatch[50] : Colors.transparent,
+              leading: Icon(Icons.message, color: primaryColor),
+              title: Text(
+                context.i18n.tipsAndInfos,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: RouterService.isActive(context, "/messages") ? Theme.of(context).primaryColor : lightTextColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              onTap: () async {
+                context.beamToNamed('/messages');
+              },
             ),
-            onTap: () async {
-              context.beamToNamed('/messages');
-            },
-          ),
-          ListTile(
-            key: Key(KEY_BUTTON_THEME_VIDEOS),
-            tileColor: RouterService.isActive(context, "/video-templates") ? primarySwatch[50] : Colors.transparent,
-            leading: Icon(Icons.play_circle_fill, color: primaryColor),
-            title: Text(
-              context.i18n.themeVideos,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: RouterService.isActive(context, "/video-templates") ? Theme.of(context).primaryColor : lightTextColor,
-                    fontWeight: FontWeight.w600,
-                  ),
+          if (userRepository.currentInstitution!.institutionFocus != InstitutionFocus.KLIMAFIT_LIGHT)
+            ListTile(
+              key: Key(KEY_BUTTON_THEME_VIDEOS),
+              tileColor: RouterService.isActive(context, "/video-templates") ? primarySwatch[50] : Colors.transparent,
+              leading: Icon(Icons.play_circle_fill, color: primaryColor),
+              title: Text(
+                context.i18n.themeVideos,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: RouterService.isActive(context, "/video-templates") ? Theme.of(context).primaryColor : lightTextColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              onTap: () async {
+                context.beamToNamed('/video-templates');
+              },
             ),
-            onTap: () async {
-              context.beamToNamed('/video-templates');
-            },
-          ),
           ListTile(
             key: Key(KEY_BUTTON_ADDITIONAL_APPS),
             tileColor: RouterService.isActive(context, "/external-apps") ? primarySwatch[50] : Colors.transparent,

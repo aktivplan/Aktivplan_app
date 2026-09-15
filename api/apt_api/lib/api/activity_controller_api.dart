@@ -243,6 +243,70 @@ class ActivityControllerApi {
     }
   }
 
+  /// deleteActivityVideoById
+  ///
+  /// ADMINISTRATOR | INSTITUTION_ADMINISTRATOR | HEALTHCARE_PROFESSIONAL
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  Future<Response> deleteActivityVideoByIdWithHttpInfo(
+    String id,
+  ) async {
+    // ignore: prefer_const_declarations
+    final path = r'/activities/video/{id}'.replaceAll('{id}', id);
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+    return apiClient.invokeAPI(
+      path,
+      'DELETE',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// deleteActivityVideoById
+  ///
+  /// ADMINISTRATOR | INSTITUTION_ADMINISTRATOR | HEALTHCARE_PROFESSIONAL
+  ///
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  Future<bool?> deleteActivityVideoById(
+    String id,
+  ) async {
+    final response = await deleteActivityVideoByIdWithHttpInfo(
+      id,
+    );
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty &&
+        response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(
+        await _decodeBodyBytes(response),
+        'bool',
+      ) as bool;
+    }
+    return null;
+  }
+
   /// Performs an HTTP 'DELETE /activities/personalGoals/{id}' operation and returns the [Response].
   /// Parameters:
   ///
@@ -451,9 +515,16 @@ class ActivityControllerApi {
   /// PATIENT
   ///
   /// Note: This method returns the HTTP [Response].
-  Future<Response> getActivityNamesAutocompleteWithHttpInfo() async {
+  ///
+  /// Parameters:
+  ///
+  /// * [ActivityType] type (required):
+  Future<Response> getActivityNamesAutocompleteWithHttpInfo(
+    ActivityType type,
+  ) async {
     // ignore: prefer_const_declarations
-    final path = r'/activities/EXTRA/autocomplete';
+    final path = r'/activities/{type}/autocomplete'
+        .replaceAll('{type}', type.toString());
 
     // ignore: prefer_final_locals
     Object? postBody;
@@ -478,8 +549,16 @@ class ActivityControllerApi {
   /// getActivityNamesAutocomplete
   ///
   /// PATIENT
-  Future<ActivityAutocompleteGetDTO?> getActivityNamesAutocomplete() async {
-    final response = await getActivityNamesAutocompleteWithHttpInfo();
+  ///
+  /// Parameters:
+  ///
+  /// * [ActivityType] type (required):
+  Future<ActivityAutocompleteGetDTO?> getActivityNamesAutocomplete(
+    ActivityType type,
+  ) async {
+    final response = await getActivityNamesAutocompleteWithHttpInfo(
+      type,
+    );
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -1048,6 +1127,88 @@ class ActivityControllerApi {
         await _decodeBodyBytes(response),
         'PersonalGoal',
       ) as PersonalGoal;
+    }
+    return null;
+  }
+
+  /// uploadActivityVideoById
+  ///
+  /// ADMINISTRATOR | INSTITUTION_ADMINISTRATOR | HEALTHCARE_PROFESSIONAL
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  ///
+  /// * [MultipartFile] videoFile (required):
+  Future<Response> uploadActivityVideoByIdWithHttpInfo(
+    String id,
+    MultipartFile videoFile,
+  ) async {
+    // ignore: prefer_const_declarations
+    final path = r'/activities/video/{id}'.replaceAll('{id}', id);
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['multipart/form-data'];
+
+    bool hasFields = false;
+    final mp = MultipartRequest('POST', Uri.parse(path));
+    if (videoFile != null) {
+      hasFields = true;
+      mp.fields[r'videoFile'] = videoFile.field;
+      mp.files.add(videoFile);
+    }
+    if (hasFields) {
+      postBody = mp;
+    }
+
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// uploadActivityVideoById
+  ///
+  /// ADMINISTRATOR | INSTITUTION_ADMINISTRATOR | HEALTHCARE_PROFESSIONAL
+  ///
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  ///
+  /// * [MultipartFile] videoFile (required):
+  Future<FileGetDTO?> uploadActivityVideoById(
+    String id,
+    MultipartFile videoFile,
+  ) async {
+    final response = await uploadActivityVideoByIdWithHttpInfo(
+      id,
+      videoFile,
+    );
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty &&
+        response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(
+        await _decodeBodyBytes(response),
+        'FileGetDTO',
+      ) as FileGetDTO;
     }
     return null;
   }

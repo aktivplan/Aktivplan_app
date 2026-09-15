@@ -47,6 +47,8 @@ class _ActiveMinutesCardState extends State<ActiveMinutesCard> {
   int? calendarWeek;
   int? durationMinutes;
   int? durationMinutesActive;
+  bool _expanded = false;
+  Key activeMinutesPageKey = UniqueKey();
 
   @override
   void initState() {
@@ -57,17 +59,31 @@ class _ActiveMinutesCardState extends State<ActiveMinutesCard> {
     durationMinutesActive = widget.activeMinutes.durationMinutesActive;
   }
 
-  goToChartPage() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return ActiveMinutesPage(
-          patient: widget.patient!,
-          parentHeight: MediaQuery.of(context).size.height,
-          selectedDate: widget.startDate,
-        );
-      },
-    );
+  @override
+  void didUpdateWidget(covariant ActiveMinutesCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.activeMinutes.durationMinutes != oldWidget.activeMinutes.durationMinutes ||
+        widget.activeMinutes.durationMinutesActive != oldWidget.activeMinutes.durationMinutesActive) {
+      activeMinutesPageKey = UniqueKey();
+    }
+  }
+
+  void goToChartPage() {
+    // Open full-screen so the page's Scaffold covers the entire route
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => ActiveMinutesPage(
+        patient: widget.patient!,
+        parentHeight: MediaQuery.of(context).size.height,
+        selectedDate: widget.startDate,
+        isKlimafit: widget.activeMinutes.klimafit ?? false,
+      ),
+    ));
+  }
+
+  void toggleExpanded() {
+    setState(() {
+      _expanded = !_expanded;
+    });
   }
 
   final List activities = List.empty();
@@ -104,36 +120,116 @@ class _ActiveMinutesCardState extends State<ActiveMinutesCard> {
     }
 
     double percentage = (durationMinutes ?? 0) > 0 ? durationMinutesActive! / durationMinutes! : 0;
+    double percentagePredefinedActiveMobility = 0;
+    double gradientThreshold = 0;
+    if ((widget.activeMinutes.activityPointsActiveMobility ?? 0) > 0 || (widget.activeMinutes.activityPointsPredefinedActivity ?? 0) > 0) {
+      num overallPoints = (widget.activeMinutes.activityPointsActiveMobility ?? 0) + (widget.activeMinutes.activityPointsPredefinedActivity ?? 0);
+      percentagePredefinedActiveMobility = (widget.activeMinutes.activityPointsActiveMobility ?? 0) / overallPoints;
+      if (percentagePredefinedActiveMobility > 0.1 && percentagePredefinedActiveMobility < 0.9) {
+        gradientThreshold = 0.1;
+      }
+    }
+
+    bool isKlimafit = widget.activeMinutes.klimafit ?? false;
     return ResponsiveBuilder(builder: (context, size) {
       if (size.isMobile || widget.mobileOnly) {
-        return InkWell(
-          child: Card(
-            margin: EdgeInsets.zero,
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("$durationMinutesActive/$durationMinutes",
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black, fontWeight: FontWeight.bold)),
-                  Text(widget.startDate.weekOfYear != currentCalendarWeek
-                      ? context.i18n.activeMinutesInCalendarWeek(widget.startDate.weekOfYear)
-                      : context.i18n.activeMinutesPerWeek),
-                  SizedBox(height: 10),
+        final bool isMobileKlimafit = isKlimafit;
+        return Card(
+          margin: EdgeInsets.zero,
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  onTap: widget.showCharts ? (isMobileKlimafit ? toggleExpanded : goToChartPage) : null,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("$durationMinutesActive/$durationMinutes",
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black, fontWeight: FontWeight.bold)),
+                              Text(widget.startDate.weekOfYear != currentCalendarWeek
+                                  ? isKlimafit
+                                      ? context.i18n.activeMinutesInCalendarWeekKlimafit(widget.startDate.weekOfYear)
+                                      : context.i18n.activeMinutesInCalendarWeek(widget.startDate.weekOfYear)
+                                  : isKlimafit
+                                      ? context.i18n.activeMinutesPerWeekKlimafit
+                                      : context.i18n.activeMinutesPerWeek),
+                            ],
+                          ),
+                        ),
+                        if (isMobileKlimafit)
+                          Icon(
+                            _expanded ? Icons.expand_less : Icons.expand_more,
+                            color: extraActivityColor,
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                if (isKlimafit)
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        gradient: LinearGradient(colors: const [
+                          predefinedActiveMobilityColor,
+                          predefinedActiveMobilityColor,
+                          predefinedActivityColor,
+                          predefinedActivityColor,
+                          Colors.grey,
+                        ], stops: [
+                          0,
+                          (percentagePredefinedActiveMobility - gradientThreshold) * percentage,
+                          (percentagePredefinedActiveMobility + gradientThreshold) * percentage,
+                          percentage,
+                          percentage,
+                        ])),
+                    child: const SizedBox(height: 12),
+                  ),
+                if (!isKlimafit)
                   ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(20)),
                     child: LinearProgressIndicator(
                       color: primaryColor,
                       backgroundColor: mobileBackgroundColor,
                       minHeight: 12,
-                      value: (durationMinutes ?? 0) > 0 ? durationMinutesActive! / durationMinutes! : 0,
+                      value: percentage,
                     ),
                   ),
-                ],
-              ),
+                if (isMobileKlimafit)
+                  AnimatedCrossFade(
+                    firstChild: SizedBox.shrink(),
+                    secondChild: Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: SizedBox(
+                        height: 370,
+                        child: ActiveMinutesPage(
+                          key: activeMinutesPageKey,
+                          patient: widget.patient!,
+                          parentHeight: 400,
+                          selectedDate: widget.startDate,
+                          isKlimafit: widget.activeMinutes.klimafit ?? false,
+                          isEmbedded: true,
+                        ),
+                      ),
+                    ),
+                    crossFadeState: _expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                    duration: const Duration(milliseconds: 200),
+                  ),
+              ],
             ),
           ),
-          onTap: widget.showCharts ? goToChartPage : null,
         );
       }
       return Container(
@@ -156,7 +252,7 @@ class _ActiveMinutesCardState extends State<ActiveMinutesCard> {
                         child: Row(
                           children: [
                             Text(
-                              context.i18n.activeMinutes,
+                              widget.activeMinutes.klimafit! ? context.i18n.activeMinutesKlimafit : context.i18n.activeMinutes,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: lightTextColor,
                                   ),
@@ -171,6 +267,7 @@ class _ActiveMinutesCardState extends State<ActiveMinutesCard> {
                           durationMinutesActive: durationMinutesActive!,
                           durationMinutes: durationMinutes!,
                           cardContainerHeight: 360,
+                          isKlimafit: widget.activeMinutes.klimafit ?? false,
                         ),
                       ),
                     ],
@@ -190,17 +287,25 @@ class _ActiveMinutesCardState extends State<ActiveMinutesCard> {
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
+        // Use a white AlertDialog with a subtle shape so the content looks integrated
         return AlertDialog(
-            insetPadding: EdgeInsets.all(30),
-            contentPadding: EdgeInsets.all(0),
-            content: AspectRatio(
-              aspectRatio: 5 / 6,
-              child: LayoutBuilder(
-                builder: (context, boxConstraints) {
-                  return ActiveMinutesPage(patient: widget.patient!, parentHeight: boxConstraints.maxHeight, selectedDate: widget.startDate);
-                },
-              ),
-            ));
+          insetPadding: EdgeInsets.all(30),
+          contentPadding: EdgeInsets.all(0),
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          content: AspectRatio(
+            aspectRatio: 5 / 6,
+            child: LayoutBuilder(
+              builder: (context, boxConstraints) {
+                return ActiveMinutesPage(
+                    patient: widget.patient!,
+                    parentHeight: boxConstraints.maxHeight,
+                    selectedDate: widget.startDate,
+                    isKlimafit: widget.activeMinutes.klimafit ?? false);
+              },
+            ),
+          ),
+        );
       },
     );
   }

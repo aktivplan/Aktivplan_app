@@ -25,6 +25,7 @@ class FileGetDTO {
     this.exists,
     this.url,
     this.filename,
+    this.fileKey,
   });
 
   ///
@@ -51,24 +52,34 @@ class FileGetDTO {
   ///
   String? filename;
 
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? fileKey;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is FileGetDTO &&
           other.exists == exists &&
           other.url == url &&
-          other.filename == filename;
+          other.filename == filename &&
+          other.fileKey == fileKey;
 
   @override
   int get hashCode =>
       // ignore: unnecessary_parenthesis
       (exists == null ? 0 : exists!.hashCode) +
       (url == null ? 0 : url!.hashCode) +
-      (filename == null ? 0 : filename!.hashCode);
+      (filename == null ? 0 : filename!.hashCode) +
+      (fileKey == null ? 0 : fileKey!.hashCode);
 
   @override
   String toString() =>
-      'FileGetDTO[exists=$exists, url=$url, filename=$filename]';
+      'FileGetDTO[exists=$exists, url=$url, filename=$filename, fileKey=$fileKey]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -86,6 +97,11 @@ class FileGetDTO {
       json[r'filename'] = this.filename;
     } else {
       json[r'filename'] = null;
+    }
+    if (this.fileKey != null) {
+      json[r'fileKey'] = this.fileKey;
+    } else {
+      json[r'fileKey'] = null;
     }
     return json;
   }
@@ -114,6 +130,7 @@ class FileGetDTO {
         exists: mapValueOfType<bool>(json, r'exists'),
         url: mapValueOfType<String>(json, r'url'),
         filename: mapValueOfType<String>(json, r'filename'),
+        fileKey: mapValueOfType<String>(json, r'fileKey'),
       );
     }
     return null;

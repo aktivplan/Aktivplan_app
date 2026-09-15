@@ -168,7 +168,10 @@ class _ContactDetailPageState extends State<ContactDetailPage> with TraceablePag
                               _events = events;
                             },
                           ),
-                          PatientActivityList(events: _events, currentDate: _currentDate),
+                          PatientActivityList(
+                            events: _events,
+                            currentDate: _currentDate,
+                          ),
                           if (state.detail.shareActiveMinutes ?? true) ...[
                             SizedBox(height: 10),
                             ActiveMinutesCard(

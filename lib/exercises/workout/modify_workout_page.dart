@@ -11,6 +11,7 @@ import 'package:apt_api/api.dart';
 import 'package:aptapp/exercises/bloc/exercises_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import 'edit_strengthening_exercise.dart';
@@ -38,6 +39,7 @@ class _ModifyWorkoutPageState extends State<ModifyWorkoutPage> {
   var chosenExercise;
   bool isChosen = false;
   int step = 1;
+  MultipartFile? workoutMainVideoFile;
 
   addStrengthExerciseType(exercise) {
     setState(() {
@@ -136,8 +138,10 @@ class _ModifyWorkoutPageState extends State<ModifyWorkoutPage> {
                       exercises: widget.workout.exercises,
                       chooseStrengthExercise: chooseStrengthExerciseType,
                       editAlreadyChosenExercise: (exercise) => editChosenStrengthBeforeAdd(exercise, true),
+                      updateVideoFile: (video) => setState(() => workoutMainVideoFile = video),
                       isEditing: widget.edit,
                       containerWidth: containerWidth,
+                      videoFile: workoutMainVideoFile,
                     ),
                   ),
                 if (step == 2)
@@ -166,7 +170,7 @@ class _ModifyWorkoutPageState extends State<ModifyWorkoutPage> {
                     alignment: Alignment.center,
                     fit: BoxFit.contain,
                     child: EditStrengtheningExercise(
-                      exerciseType: chosenExerciseType!,
+                      exerciseType: chosenExerciseType ?? chosenExercise.type,
                       exercise: chosenExercise,
                       getHome: goHome,
                       goBack: goStepBack,

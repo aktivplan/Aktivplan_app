@@ -23,6 +23,7 @@ import 'package:aptapp/widget/save_button.dart';
 import 'package:beamer/beamer.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../apt_layout.dart';
@@ -61,22 +62,18 @@ class _ModifyInstitutionPageState extends State<ModifyInstitutionPage> with Trac
   final lastNameController = TextEditingController();
   final emailController = TextEditingController();
   final photoController = TextEditingController();
+  final minimumDaysBetweenInformationMessagesController = TextEditingController();
   bool showTrainingPlans = false;
   bool allowRescheduleActivities = false;
   bool enableSocialFeatures = false;
   InstitutionFocus institutionFocus = InstitutionFocus.CARDIOVASCULAR_REHABILITATION;
+  InstitutionP2RFocus institutionP2RFocus = InstitutionP2RFocus.ORTHO_BV;
   InstitutionBloc? instBloc;
   InstitutionDTO? institution;
   bool hasChanges = false;
 
   final institutionApi = new InstitutionControllerApi(apiClient);
   InstitutionCountDTO userCount = new InstitutionCountDTO();
-
-  @override
-  void dispose() {
-    firstNameController.dispose();
-    super.dispose();
-  }
 
   @override
   void initState() {
@@ -88,6 +85,7 @@ class _ModifyInstitutionPageState extends State<ModifyInstitutionPage> with Trac
       showTrainingPlans = true;
       allowRescheduleActivities = false;
       enableSocialFeatures = false;
+      minimumDaysBetweenInformationMessagesController.text = "3";
     }
   }
 
@@ -106,6 +104,8 @@ class _ModifyInstitutionPageState extends State<ModifyInstitutionPage> with Trac
       phoneNumberUserQueries: phoneNumberUserQueriesController.text.trim(),
       availabilityPhone: getTranslationObjectFromController(availabilityPhoneController, englishAvailabilityPhoneController),
       getInTouchNotes: getTranslationObjectFromController(getInTouchNotesController, englishGetInTouchNotesController),
+      institutionP2RFocus: institutionP2RFocus,
+      minimumDaysBetweenInformationMessages: int.tryParse(minimumDaysBetweenInformationMessagesController.text) ?? 0,
     );
   }
 
@@ -125,6 +125,8 @@ class _ModifyInstitutionPageState extends State<ModifyInstitutionPage> with Trac
           phoneNumberUserQueries: phoneNumberUserQueriesController.text.trim(),
           availabilityPhone: getTranslationObjectFromController(availabilityPhoneController, englishAvailabilityPhoneController),
           getInTouchNotes: getTranslationObjectFromController(getInTouchNotesController, englishGetInTouchNotesController),
+          institutionP2RFocus: institutionP2RFocus,
+          minimumDaysBetweenInformationMessages: int.tryParse(minimumDaysBetweenInformationMessagesController.text) ?? 0,
           id: null);
       instBloc!.add(AddInstitutionEvent(institution: getInstitutionPostDTO()));
       goBack();
@@ -147,6 +149,8 @@ class _ModifyInstitutionPageState extends State<ModifyInstitutionPage> with Trac
           phoneNumberUserQueries: phoneNumberUserQueriesController.text.trim(),
           availabilityPhone: getTranslationObjectFromController(availabilityPhoneController, englishAvailabilityPhoneController),
           getInTouchNotes: getTranslationObjectFromController(getInTouchNotesController, englishGetInTouchNotesController),
+          institutionP2RFocus: institutionP2RFocus,
+          minimumDaysBetweenInformationMessages: int.tryParse(minimumDaysBetweenInformationMessagesController.text) ?? 0,
           id: institution!.id);
       instBloc!.add(UpdateInstitutionEvent(id: institution!.id!, institution: getInstitutionPostDTO()));
       goBack();
@@ -170,6 +174,7 @@ class _ModifyInstitutionPageState extends State<ModifyInstitutionPage> with Trac
     emailController.text = institution!.email ?? "";
     emailUserQueriesController.text = institution!.emailUserQueries ?? "";
     phoneNumberUserQueriesController.text = institution!.phoneNumberUserQueries ?? "";
+    minimumDaysBetweenInformationMessagesController.text = institution!.minimumDaysBetweenInformationMessages?.toString() ?? "3";
     initTextEditingControllerFromTranslationObject(institution!.url, urlController, englishUrlController);
     initTextEditingControllerFromTranslationObject(institution!.availabilityPhone, availabilityPhoneController, englishAvailabilityPhoneController);
     initTextEditingControllerFromTranslationObject(institution!.getInTouchNotes, getInTouchNotesController, englishGetInTouchNotesController);
@@ -179,6 +184,7 @@ class _ModifyInstitutionPageState extends State<ModifyInstitutionPage> with Trac
       showTrainingPlans = institution!.showTrainingPlans!;
       allowRescheduleActivities = institution!.allowRescheduleActivities ?? false;
       enableSocialFeatures = institution!.enableSocialFeatures ?? false;
+      institutionP2RFocus = institution!.institutionP2RFocus ?? InstitutionP2RFocus.ORTHO_BV;
     });
 
     final counter = await institutionApi.getInstitutionUserCountById(institution!.id!);
@@ -244,7 +250,7 @@ class _ModifyInstitutionPageState extends State<ModifyInstitutionPage> with Trac
                     ),
                     FormFieldPadding(
                       child: DropdownButtonFormField(
-                        value: institutionFocus,
+                        initialValue: institutionFocus,
                         onChanged: (value) {
                           setState(() {
                             institutionFocus = value as InstitutionFocus;
@@ -284,19 +290,20 @@ class _ModifyInstitutionPageState extends State<ModifyInstitutionPage> with Trac
                     FormFieldPadding(
                       child: Column(
                         children: [
-                          CheckboxListTile(
-                            contentPadding: EdgeInsets.zero,
-                            activeColor: Colors.black,
-                            controlAffinity: ListTileControlAffinity.leading,
-                            value: showTrainingPlans,
-                            onChanged: (value) {
-                              setState(() {
-                                showTrainingPlans = value ?? false;
-                                this.hasChanges = true;
-                              });
-                            },
-                            title: Text(context.i18n.allowTrainingPlans),
-                          ),
+                          if (institutionFocus != InstitutionFocus.KLIMAFIT)
+                            CheckboxListTile(
+                              contentPadding: EdgeInsets.zero,
+                              activeColor: Colors.black,
+                              controlAffinity: ListTileControlAffinity.leading,
+                              value: showTrainingPlans,
+                              onChanged: (value) {
+                                setState(() {
+                                  showTrainingPlans = value ?? false;
+                                  this.hasChanges = true;
+                                });
+                              },
+                              title: Text(context.i18n.allowTrainingPlans),
+                            ),
                           CheckboxListTile(
                             contentPadding: EdgeInsets.zero,
                             activeColor: Colors.black,
@@ -323,8 +330,58 @@ class _ModifyInstitutionPageState extends State<ModifyInstitutionPage> with Trac
                             },
                             title: Text(context.i18n.enableSocialFeatures),
                           ),
+                          if (institutionFocus == InstitutionFocus.PREHAB_TO_REHAB)
+                            DropdownButtonFormField(
+                              initialValue: institutionP2RFocus,
+                              onChanged: (value) {
+                                setState(() {
+                                  institutionP2RFocus = value as InstitutionP2RFocus;
+                                  this.hasChanges = true;
+                                });
+                              },
+                              isExpanded: true,
+                              decoration: InputDecoration(
+                                labelText: context.i18n.prehab2RehabFocus + ' *',
+                                border: const OutlineInputBorder(),
+                              ),
+                              focusColor: Colors.transparent,
+                              validator: (value) => value == null ? context.i18n.validationNotEmpty : null,
+                              items: InstitutionP2RFocus.values.map((value) {
+                                return DropdownMenuItem<InstitutionP2RFocus>(
+                                  child: FittedBox(child: Text(value.getText(context))),
+                                  value: value,
+                                );
+                              }).toList(),
+                            ),
                           SizedBox(height: 10),
                         ],
+                      ),
+                    ),
+                    TextFormField(
+                      controller: minimumDaysBetweenInformationMessagesController,
+                      keyboardType: TextInputType.numberWithOptions(signed: true),
+                      inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                      validator: (value) {
+                        if ((value ?? "").isEmpty) {
+                          return context.i18n.validationNotEmpty;
+                        } else {
+                          return null;
+                        }
+                      },
+                      onChanged: (value) => {
+                        setState(() {
+                          this.hasChanges = true;
+                        })
+                      },
+                      decoration: InputDecoration(
+                        hintText: context.i18n.minimumDaysBetweenInformationMessages,
+                        labelText: context.i18n.minimumDaysBetweenInformationMessages + " *",
+                        border: OutlineInputBorder(),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: datatableBorderColor,
+                          ),
+                        ),
                       ),
                     ),
                     FormFieldPadding(

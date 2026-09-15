@@ -38,7 +38,7 @@ class _LanguageTabsState extends State<LanguageTabs> {
               },
               style: OutlinedButton.styleFrom(
                 side: BorderSide(width: 1, color: primaryColor),
-                backgroundColor: isGerman ? primaryColor.withOpacity(.2) : null,
+                backgroundColor: isGerman ? primaryColor.withValues(alpha: .2) : null,
               ),
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
@@ -54,7 +54,7 @@ class _LanguageTabsState extends State<LanguageTabs> {
               },
               style: OutlinedButton.styleFrom(
                 side: BorderSide(width: 1, color: primaryColor),
-                backgroundColor: !isGerman ? primaryColor.withOpacity(.2) : null,
+                backgroundColor: !isGerman ? primaryColor.withValues(alpha: .2) : null,
               ),
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),

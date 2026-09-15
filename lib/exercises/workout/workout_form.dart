@@ -21,20 +21,24 @@ import 'package:aptapp/widget/cancel_button.dart';
 import 'package:aptapp/widget/delete_button.dart';
 import 'package:aptapp/widget/form_field_padding.dart';
 import 'package:aptapp/widget/save_button.dart';
+import 'package:aptapp/widget/video_form_field.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
+import 'package:http/http.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class WorkoutForm extends StatefulWidget {
   final List<dynamic> exercises;
   final Function() chooseStrengthExercise;
   final Function(dynamic) editAlreadyChosenExercise;
+  final Function(MultipartFile?) updateVideoFile;
   final Workout workout;
   final bool isEditing;
   final double containerWidth;
+  final MultipartFile? videoFile;
 
   WorkoutForm(
       {Key? key,
@@ -43,7 +47,9 @@ class WorkoutForm extends StatefulWidget {
       required this.editAlreadyChosenExercise,
       required this.isEditing,
       required this.workout,
-      required this.containerWidth})
+      required this.containerWidth,
+      required this.videoFile,
+      required this.updateVideoFile})
       : super(key: key);
 
   @override
@@ -51,6 +57,7 @@ class WorkoutForm extends StatefulWidget {
 }
 
 class _WorkoutFormState extends State<WorkoutForm> {
+  final double FIELD_SPACING = 16;
   final _addWorkoutFormKey = GlobalKey<FormState>();
   final nameController = TextEditingController();
   final nameEnglishController = TextEditingController();
@@ -59,10 +66,14 @@ class _WorkoutFormState extends State<WorkoutForm> {
   final notesEnglishController = TextEditingController();
   final youTubeUrlController = TextEditingController();
   final youTubeUrlEnglishController = TextEditingController();
+  final videoWaitBetweenExercisesController = TextEditingController();
+  final waitTimeTextController = TextEditingController();
   ExerciseBloc? exerciseBloc;
   bool isAscending = true;
   List<StrengtheningExercisePostDTO> exercises = [];
   bool hasChanges = false;
+  bool didChangeVideoFile = false;
+  MultipartFile? videoFile;
 
   @override
   void initState() {
@@ -77,6 +88,13 @@ class _WorkoutFormState extends State<WorkoutForm> {
       durationController.text = Duration(seconds: widget.workout.exerciseDurationSeconds!).inMinutes.toString();
     } else {
       durationController.text = widget.workout.exercises.isNotEmpty ? getWorkoutExercisesDurationInMinutes(widget.workout.exercises).toString() : "";
+    }
+    videoWaitBetweenExercisesController.text =
+        widget.workout.videoWaitBetweenExercisesSeconds != null ? widget.workout.videoWaitBetweenExercisesSeconds.toString() : "";
+    waitTimeTextController.text = widget.workout.waitTimeText ?? "";
+    if (widget.videoFile != null) {
+      videoFile = widget.videoFile;
+      didChangeVideoFile = true;
     }
   }
 
@@ -96,44 +114,23 @@ class _WorkoutFormState extends State<WorkoutForm> {
     widget.chooseStrengthExercise();
   }
 
-  getMapsOfExerciseTypes(exercise) {
-    Map<String, dynamic> ex = {
-      "exerciseDurationSeconds": exercise.exerciseDurationSeconds,
-      "exerciseIntensityPercentageEnd": exercise.exerciseIntensityPercentageEnd,
-      "exerciseIntensityPercentageStart": exercise.exerciseIntensityPercentageStart,
-      "exerciseRepeatCount": exercise.exerciseRepeatCount,
-      "exerciseRepeatSets": exercise.exerciseRepeatSets,
-      "hasRepeatCount": exercise.exerciseRepeatCount != 0,
-      "hint": exercise.hint,
-      "muscleGroups": exercise.muscleGroups,
-      "name": exercise.name,
-      "needsEquipment": exercise.needsEquipment,
-      "weight": exercise.weight,
-      "type": exercise.type,
-      "youTubeUrl": exercise.youTubeUrl
-    };
-    return ex;
-  }
-
   createWorkout() {
     if (_addWorkoutFormKey.currentState!.validate()) {
-      List workoutExerciseTypes = [];
-      exercises.forEach((exercise) {
-        workoutExerciseTypes.add(getMapsOfExerciseTypes(exercise));
-      });
-      Map<String, dynamic> data = {
-        "exercises": workoutExerciseTypes,
-        "name": getTranslationObjectFromController(nameController, nameEnglishController),
-        "exerciseDurationSeconds": durationController.text.isNotEmpty ? int.tryParse(durationController.text)! * MINUTES_TO_SECONDS : null,
-        "notes": getTranslationObjectFromController(notesController, notesEnglishController),
-        "youTubeUrl": getTranslationObjectFromController(youTubeUrlController, youTubeUrlEnglishController),
-      };
-      var workout = WorkoutPostDTO.fromJson(data);
+      var workout = WorkoutPostDTO(
+          exercises: exercises,
+          name: getTranslationObjectFromController(nameController, nameEnglishController),
+          exerciseDurationSeconds: durationController.text.isNotEmpty ? int.tryParse(durationController.text)! * MINUTES_TO_SECONDS : null,
+          notes: getTranslationObjectFromController(notesController, notesEnglishController),
+          youTubeUrl: getTranslationObjectFromController(youTubeUrlController, youTubeUrlEnglishController),
+          videoFileKey: widget.workout.videoFileKey ?? "",
+          videoWaitBetweenExercisesSeconds:
+              videoWaitBetweenExercisesController.text.isNotEmpty ? int.tryParse(videoWaitBetweenExercisesController.text) : null,
+          waitTimeText: waitTimeTextController.text);
 
       if (widget.isEditing) {
-        exerciseBloc!.add(UpdateWorkoutEvent(id: widget.workout.id!, workout: workout!));
+        exerciseBloc!.add(UpdateWorkoutEvent(id: widget.workout.id!, workout: workout, videoFile: videoFile, didChangeVideoFile: didChangeVideoFile));
       } else {
-        exerciseBloc!.add(SaveWorkoutEvent(workout: workout!));
+        exerciseBloc!.add(SaveWorkoutEvent(workout: workout, videoFile: videoFile));
       }
 
       context.beamBack();
@@ -148,7 +145,6 @@ class _WorkoutFormState extends State<WorkoutForm> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
 
     return ResponsiveBuilder(builder: (context, size) {
       return Container(
@@ -177,7 +173,7 @@ class _WorkoutFormState extends State<WorkoutForm> {
               LanguageTabs(
                 germanFields: [
                   SizedBox(
-                    height: height * 0.02,
+                    height: FIELD_SPACING,
                   ),
                   Container(
                     child: TextFormField(
@@ -209,7 +205,7 @@ class _WorkoutFormState extends State<WorkoutForm> {
                     ),
                   ),
                   SizedBox(
-                    height: height * 0.02,
+                    height: FIELD_SPACING,
                   ),
                   TextFormField(
                     textAlign: TextAlign.start,
@@ -231,16 +227,71 @@ class _WorkoutFormState extends State<WorkoutForm> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: height * 0.02,
+                  Padding(
+                    padding: EdgeInsets.only(bottom: FIELD_SPACING),
+                    child: VideoFormField(
+                        initialFileKey: widget.workout.videoFileKey ?? "",
+                        initialVideoFile: widget.videoFile,
+                        onUpdateFile: (file) {
+                          setState(() {
+                            videoFile = file;
+                            hasChanges = true;
+                            didChangeVideoFile = true;
+                          });
+                          widget.updateVideoFile(videoFile);
+                        }),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: FIELD_SPACING),
+                    child: TextFormField(
+                      controller: videoWaitBetweenExercisesController,
+                      keyboardType: TextInputType.numberWithOptions(signed: true),
+                      inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                      onChanged: (value) => {
+                        setState(() {
+                          this.hasChanges = true;
+                        })
+                      },
+                      decoration: InputDecoration(
+                        hintText: context.i18n.videoWaitBetweenExercisesSeconds,
+                        labelText: context.i18n.videoWaitBetweenExercisesSeconds,
+                        border: OutlineInputBorder(),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: datatableBorderColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: FIELD_SPACING),
+                    child: TextFormField(
+                      controller: waitTimeTextController,
+                      onChanged: (value) => {
+                        setState(() {
+                          this.hasChanges = true;
+                        })
+                      },
+                      decoration: InputDecoration(
+                        hintText: context.i18n.waitTimeText,
+                        labelText: context.i18n.waitTimeText,
+                        border: OutlineInputBorder(),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: datatableBorderColor,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                   Stack(
                     clipBehavior: Clip.none,
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(bottom: 24),
+                        padding: EdgeInsets.only(bottom: FIELD_SPACING),
                         child: Container(
-                          height: height * 0.3,
+                          height: 300,
                           decoration: BoxDecoration(
                               border: Border.all(
                                 color: datatableBorderColor,
@@ -264,7 +315,7 @@ class _WorkoutFormState extends State<WorkoutForm> {
                         ),
                       ),
                       Positioned(
-                        bottom: 0,
+                        bottom: -8,
                         left: 0,
                         right: 0,
                         child: Row(
@@ -280,7 +331,7 @@ class _WorkoutFormState extends State<WorkoutForm> {
                     ],
                   ),
                   SizedBox(
-                    height: height * 0.02,
+                    height: FIELD_SPACING * 2,
                   ),
                   Container(
                     child: TextFormField(
@@ -330,7 +381,7 @@ class _WorkoutFormState extends State<WorkoutForm> {
                       ],
                     ),
                   ),
-                  SizedBox(height: height * 0.02),
+                  SizedBox(height: FIELD_SPACING),
                   Container(
                     child: TextFormField(
                       textAlign: TextAlign.start,
@@ -369,7 +420,7 @@ class _WorkoutFormState extends State<WorkoutForm> {
                     ),
                   ),
                   SizedBox(
-                    height: height * 0.02,
+                    height: FIELD_SPACING,
                   ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
@@ -399,7 +450,7 @@ class _WorkoutFormState extends State<WorkoutForm> {
                 ],
                 englishFields: [
                   SizedBox(
-                    height: height * 0.02,
+                    height: FIELD_SPACING,
                   ),
                   Container(
                     child: TextFormField(
@@ -431,7 +482,7 @@ class _WorkoutFormState extends State<WorkoutForm> {
                     ),
                   ),
                   SizedBox(
-                    height: height * 0.02,
+                    height: FIELD_SPACING,
                   ),
                   TextFormField(
                     textAlign: TextAlign.start,
@@ -448,7 +499,7 @@ class _WorkoutFormState extends State<WorkoutForm> {
                       ),
                     ),
                   ),
-                  SizedBox(height: height * 0.02),
+                  SizedBox(height: FIELD_SPACING),
                   Container(
                     child: TextFormField(
                       textAlign: TextAlign.start,
@@ -477,7 +528,7 @@ class _WorkoutFormState extends State<WorkoutForm> {
                 ],
               ),
               SizedBox(
-                height: height * 0.02,
+                height: FIELD_SPACING,
               ),
             ],
           ),

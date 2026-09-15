@@ -14,6 +14,7 @@ import 'package:aptapp/authentication/user_repository.dart';
 import 'package:aptapp/beamer/guards.dart';
 import 'package:aptapp/beamer/router_service.dart';
 import 'package:aptapp/colors.dart';
+import 'package:aptapp/institution/bloc/institution_repository.dart';
 import 'package:aptapp/l10n/i18n.dart';
 import 'package:aptapp/mixins/traceable_page_mixin.dart';
 import 'package:aptapp/theme.dart';
@@ -36,6 +37,9 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:kiwi/kiwi.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:styled_text/styled_text.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart' show MultipartFile;
+import 'package:http_parser/http_parser.dart';
 
 class PatientOverviewPage extends StatefulWidget {
   final String healthcareProfessionalId;
@@ -71,6 +75,8 @@ class _PatientOverviewPageState extends State<PatientOverviewPage> with Traceabl
   FileGetDTO userPicture = FileGetDTO(exists: false);
   bool showThreeWeekState = false;
   FocusNode dropdownFocusNode = FocusNode();
+  bool isKlimafit = false;
+  bool isImporting = false;
 
   @override
   void initState() {
@@ -78,8 +84,8 @@ class _PatientOverviewPageState extends State<PatientOverviewPage> with Traceabl
     userBloc = BlocProvider.of<UserBloc>(context);
     sortColumn(0, false);
     newHealthcareProfessionalId = "";
+    UserControllerRepository userControllerRepository = KiwiContainer().resolve<UserControllerRepository>();
     if (userRepository.userRole == UserRole.ADMINISTRATOR || userRepository.userRole == UserRole.INSTITUTION_ADMINISTRATOR) {
-      UserControllerRepository userControllerRepository = KiwiContainer().resolve<UserControllerRepository>();
       if (widget.healthcareProfessionalId.isNotEmpty) {
         userControllerRepository.getUserPicture(id: widget.healthcareProfessionalId, userRole: UserRole.HEALTHCARE_PROFESSIONAL).then((value) {
           setState(() {
@@ -95,12 +101,21 @@ class _PatientOverviewPageState extends State<PatientOverviewPage> with Traceabl
         }
       });
     }
-    context.read<UserBloc>().stream.listen((state) {
-      if (state is FetchedPatientsState) {
-        setState(() {
-          showThreeWeekState = showThreeWeekStateForPatient(state.users.institution!);
-        });
-      }
+    gatherShowThreeWeekState();
+  }
+
+  gatherShowThreeWeekState() async {
+    String institutionId = widget.institutionId ?? "";
+    if (institutionId.isEmpty) {
+      UserControllerRepository userControllerRepository = KiwiContainer().resolve<UserControllerRepository>();
+      var healthcareProfessional = await userControllerRepository.getHealthcareProfessionalById(id: widget.healthcareProfessionalId);
+      institutionId = healthcareProfessional!.institutionId!;
+    }
+    InstitutionRepository institutionRepository = KiwiContainer().resolve<InstitutionRepository>();
+    var institution = await institutionRepository.getInstitutionbyId(id: institutionId);
+    setState(() {
+      showThreeWeekState = showThreeWeekStateForPatient(institution!);
+      isKlimafit = institution.institutionFocus?.isKlimafit() ?? false;
     });
   }
 
@@ -111,9 +126,11 @@ class _PatientOverviewPageState extends State<PatientOverviewPage> with Traceabl
     });
     if (columnIndex == 0) {
       if (ascending) {
-        users.sort((a, b) => (a.lastName ?? "").toLowerCase().compareTo((b.lastName ?? "").toLowerCase()));
+        users.sort((a, b) =>
+            ("${a.lastName ?? ""} ${a.firstName ?? ""}").toLowerCase().compareTo(("${b.lastName ?? ""} ${b.firstName ?? ""}").toLowerCase()));
       } else {
-        users.sort((a, b) => (b.lastName ?? "").toLowerCase().compareTo((a.lastName ?? "").toLowerCase()));
+        users.sort((a, b) =>
+            ("${b.lastName ?? ""} ${b.firstName ?? ""}").toLowerCase().compareTo(("${a.lastName ?? ""} ${a.firstName ?? ""}").toLowerCase()));
       }
     } else if (columnIndex == 1) {
       if (ascending) {
@@ -166,12 +183,69 @@ class _PatientOverviewPageState extends State<PatientOverviewPage> with Traceabl
     }
   }
 
+  Future<void> _handleImportPatients(SizingInformation size) async {
+    final repo = KiwiContainer().resolve<UserControllerRepository>();
+    try {
+      setState(() {
+        isImporting = true;
+      });
+
+      final result = await FilePicker.pickFiles(type: FileType.custom, allowedExtensions: ['csv'], withData: true);
+      if (result == null || result.files.isEmpty) {
+        setState(() {
+          isImporting = false;
+        });
+        return;
+      }
+      final picked = result.files.single;
+      MultipartFile file = picked.bytes != null
+          ? MultipartFile.fromBytes('file', picked.bytes!, filename: picked.name, contentType: MediaType('text', 'csv'))
+          : await MultipartFile.fromPath("pictureFile", picked.path!, filename: picked.name);
+
+      final importSummary =
+          await repo.importPatientsFromCsv(institutionId: institutionId, healthcareProfessionalId: healthcareProfessionalId, file: file);
+
+      await showDialog(
+          context: context,
+          builder: (ctx) {
+            return AlertDialog(
+              title: Text(context.i18n.importPatientsFromCsv),
+              content: Text(context.i18n.importSummaryCreated(importSummary?.created ?? 0) +
+                  '\n' +
+                  context.i18n.importSummaryUpdated(importSummary?.updated ?? 0) +
+                  '\n' +
+                  context.i18n.importSummarySkipped(importSummary?.skipped ?? 0)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: Text('OK'),
+                )
+              ],
+            );
+          });
+
+      // reload patients after import
+      userBloc?.add(FetchPatientsEvent(healthcareProfessionalId: healthcareProfessionalId));
+    } catch (e) {
+      final snack = getSnackbar(context.i18n.error, size.isMobile, context, error: true);
+      snack.show(context);
+    } finally {
+      setState(() {
+        isImporting = false;
+      });
+    }
+  }
+
   getPatientsInfoLine(SizingInformation size) {
     if (size.isMobile && selectMode == PatientSelectMode.None) {
       return Container();
     }
     Widget completionText = StyledText(
-      text: showThreeWeekState ? context.i18n.patientsInfoActiveMinutesThreeWeeks : context.i18n.patientsInfoActiveMinutes,
+      text: showThreeWeekState
+          ? context.i18n.patientsInfoActiveMinutesThreeWeeks
+          : isKlimafit
+              ? context.i18n.patientsInfoActiveMinutesKlimafit
+              : context.i18n.patientsInfoActiveMinutes,
       tags: {
         'b': StyledTextTag(style: TextStyle(fontWeight: FontWeight.bold)),
         'trafficLight1': StyledTextWidgetTag(
@@ -326,17 +400,30 @@ class _PatientOverviewPageState extends State<PatientOverviewPage> with Traceabl
                                 state is FetchedPatientsState ? state.users.healthcareProfessional?.jobName ?? "" : "",
                               ),
                             ),
-                            right: ElevatedButton(
-                                key: Key(KEY_PATIENTS_BUTTON_EDIT_HEALTH_EXPERT),
-                                onPressed: state is FetchedPatientsState
-                                    ? () => context.beamToNamed(
-                                          RouterService.healthcareProfessionalEditRoute(
-                                              institutionId: state.users.institution!.id!,
-                                              healthcareProfessionalId: state.users.healthcareProfessional!.id!),
-                                          data: {'user': state.users.healthcareProfessional, 'institution': state.users.institution},
-                                        )
-                                    : null,
-                                child: Text(context.i18n.editHealthcareProfessional.toUpperCase())),
+                            right: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ElevatedButton(
+                                    key: Key(KEY_PATIENTS_BUTTON_EDIT_HEALTH_EXPERT),
+                                    onPressed: state is FetchedPatientsState
+                                        ? () => context.beamToNamed(
+                                              RouterService.healthcareProfessionalEditRoute(
+                                                  institutionId: state.users.institution!.id!,
+                                                  healthcareProfessionalId: state.users.healthcareProfessional!.id!),
+                                              data: {'user': state.users.healthcareProfessional, 'institution': state.users.institution},
+                                            )
+                                        : null,
+                                    child: Text(context.i18n.editHealthcareProfessional.toUpperCase())),
+                                SizedBox(width: 8),
+                                if (userRepository.userRole == UserRole.ADMINISTRATOR && state is FetchedPatientsState)
+                                  ElevatedButton(
+                                      key: Key(KEY_PATIENTS_BUTTON_IMPORT),
+                                      onPressed: !isImporting ? () => _handleImportPatients(size) : null,
+                                      child: isImporting
+                                          ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                                          : Text((context.i18n.importPatientsFromCsv).toUpperCase())),
+                              ],
+                            ),
                             tableHeadline: headline,
                           ),
                           getPatientsInfoLine(size),
@@ -424,7 +511,11 @@ class _PatientOverviewPageState extends State<PatientOverviewPage> with Traceabl
                                 selectedColumnIndex: selectedColumn,
                                 dataColoumnIndex: 3,
                                 label: Text(
-                                  showThreeWeekState ? context.i18n.patientStateActiveMinutes : context.i18n.patientStatePlannedActiveMinutes,
+                                  showThreeWeekState
+                                      ? context.i18n.patientStateActiveMinutes
+                                      : isKlimafit
+                                          ? context.i18n.patientStatePlannedActiveMinutesKlimafit
+                                          : context.i18n.patientStatePlannedActiveMinutes,
                                   style: TextStyle(fontWeight: FontWeight.w600),
                                 ),
                                 onSort: (columnIndex, ascending) {

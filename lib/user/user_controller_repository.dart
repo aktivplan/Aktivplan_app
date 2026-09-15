@@ -30,20 +30,33 @@ class UserControllerRepository {
 
   Future<PatientGetDTO?> createPatient({required PatientGetDTO patient, MultipartFile? picture}) async {
     final PatientGetDTO? toReturn = await userApi.createPatient(PatientPostDTO(
-        activityClass: patient.activityClass,
-        birthDate: patient.birthDate,
-        diseases: patient.diseases,
-        email: patient.email,
-        firstName: patient.firstName,
-        healthcareProfessionalId: patient.healthcareProfessionalId,
-        height: patient.height,
-        lastName: patient.lastName,
-        maximumBloodPressure: patient.maximumBloodPressure,
-        maximumHeartRate: patient.maximumHeartRate,
-        maximumOxygenConsumption: patient.maximumOxygenConsumption,
-        maximumPerformance: patient.maximumPerformance,
-        medication: patient.medication,
-        weight: patient.weight));
+      activityClass: patient.activityClass,
+      birthDate: patient.birthDate,
+      diseases: patient.diseases,
+      email: patient.email,
+      firstName: patient.firstName,
+      healthcareProfessionalId: patient.healthcareProfessionalId,
+      height: patient.height,
+      lastName: patient.lastName,
+      maximumBloodPressure: patient.maximumBloodPressure,
+      maximumHeartRate: patient.maximumHeartRate,
+      maximumOxygenConsumption: patient.maximumOxygenConsumption,
+      maximumPerformance: patient.maximumPerformance,
+      medication: patient.medication,
+      weight: patient.weight,
+      homeLocation: patient.homeLocation,
+      homeLocationAddress: patient.homeLocationAddress,
+      workLocation: patient.workLocation,
+      workLocationAddress: patient.workLocationAddress,
+      heatTolerance: patient.heatTolerance,
+      mobilityPreferences: patient.mobilityPreferences,
+      dislikedMobilityPreferences: patient.dislikedMobilityPreferences,
+      preferredActivities: patient.preferredActivities,
+      dislikedActivities: patient.dislikedActivities,
+      participantId: patient.participantId,
+      surgeryDate: patient.surgeryDate,
+      surgeryTime: patient.surgeryTime,
+    ));
     if (picture != null) {
       await userApi.uploadUserPictureById(toReturn!.id!, UserRole.PATIENT, picture);
     }
@@ -54,20 +67,33 @@ class UserControllerRepository {
     final PatientGetDTO? toReturn = await userApi.updatePatient(
         id,
         PatientPostDTO(
-            activityClass: patient.activityClass,
-            birthDate: patient.birthDate,
-            diseases: patient.diseases,
-            email: patient.email,
-            firstName: patient.firstName,
-            healthcareProfessionalId: patient.healthcareProfessionalId,
-            height: patient.height,
-            lastName: patient.lastName,
-            maximumBloodPressure: patient.maximumBloodPressure,
-            maximumHeartRate: patient.maximumHeartRate,
-            maximumOxygenConsumption: patient.maximumOxygenConsumption,
-            maximumPerformance: patient.maximumPerformance,
-            medication: patient.medication,
-            weight: patient.weight));
+          activityClass: patient.activityClass,
+          birthDate: patient.birthDate,
+          diseases: patient.diseases,
+          email: patient.email,
+          firstName: patient.firstName,
+          healthcareProfessionalId: patient.healthcareProfessionalId,
+          height: patient.height,
+          lastName: patient.lastName,
+          maximumBloodPressure: patient.maximumBloodPressure,
+          maximumHeartRate: patient.maximumHeartRate,
+          maximumOxygenConsumption: patient.maximumOxygenConsumption,
+          maximumPerformance: patient.maximumPerformance,
+          medication: patient.medication,
+          weight: patient.weight,
+          homeLocation: patient.homeLocation,
+          homeLocationAddress: patient.homeLocationAddress,
+          workLocation: patient.workLocation,
+          workLocationAddress: patient.workLocationAddress,
+          heatTolerance: patient.heatTolerance,
+          mobilityPreferences: patient.mobilityPreferences,
+          dislikedMobilityPreferences: patient.dislikedMobilityPreferences,
+          preferredActivities: patient.preferredActivities,
+          dislikedActivities: patient.dislikedActivities,
+          participantId: patient.participantId,
+          surgeryDate: patient.surgeryDate,
+          surgeryTime: patient.surgeryTime,
+        ));
     if (picture != null) {
       await userApi.uploadUserPictureById(id, UserRole.PATIENT, picture);
     }
@@ -80,6 +106,15 @@ class UserControllerRepository {
 
   Future<HealthcareProfessionalsOverviewDTO?> getHealthcareProfessionals({String? institutionId}) async {
     return userApi.getHealthcareProfessionalsOverview(institutionId: institutionId);
+  }
+
+  Future<HealthcareProfessionalGetDTO?> getHealthcareProfessionalById({required String id}) async {
+    return userApi.getHealthcareProfessionalById(id);
+  }
+
+  Future<ImportSummaryDTO?> importPatientsFromCsv(
+      {required String institutionId, required String healthcareProfessionalId, required MultipartFile file}) async {
+    return await userApi.importPatientsFromCsv(institutionId, healthcareProfessionalId, file);
   }
 
   Future<HealthcareProfessionalProfileDTO?> getHealthcareProfessionalProfile(String senderId) async {

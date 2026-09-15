@@ -9,6 +9,7 @@
 
 import 'package:apt_api/api.dart';
 import 'package:aptapp/colors.dart';
+import 'package:aptapp/l10n/i18n.dart';
 import 'package:flutter/widgets.dart';
 
 int getWorkoutExercisesDurationInMinutes(List<StrengtheningExercisePostDTO> exercises) {
@@ -60,6 +61,32 @@ bool showThreeWeekStateForPatient(InstitutionDTO institution) {
   return (institution.institutionFocus ?? InstitutionFocus.CARDIOVASCULAR_REHABILITATION) == InstitutionFocus.PROMOTING_A_HEALTHY_LIFESTYLE;
 }
 
+bool showPersonalGoalsForPatient(InstitutionDTO institution) {
+  return institution.institutionFocus != InstitutionFocus.KLIMAFIT_LIGHT;
+}
+
+String getRatingText(BuildContext context, int? value) {
+  switch (value) {
+    case 0:
+      return context.i18n.trainingValue_0;
+    case 1:
+    case 2:
+    case 3:
+      return context.i18n.trainingValue_1_3;
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+      return context.i18n.trainingValue_4_7;
+    case 8:
+    case 9:
+    case 10:
+      return context.i18n.trainingValue_8_10;
+    default:
+      return context.i18n.trainingValue_0;
+  }
+}
+
 Widget getTrafficLightForPercentage(int percentageValue, double size, {Widget? childWidget}) {
   Color trafficLightColor = trafficLight3;
   if (percentageValue < 50) {
@@ -76,4 +103,58 @@ Widget getTrafficLightForPercentage(int percentageValue, double size, {Widget? c
     ),
     child: childWidget,
   );
+}
+
+DayOfWeek getDayOfWeekfromDateTime(DateTime dateTime) {
+  switch (dateTime.weekday) {
+    case 1:
+      return DayOfWeek.MONDAY;
+    case 2:
+      return DayOfWeek.TUESDAY;
+    case 3:
+      return DayOfWeek.WEDNESDAY;
+    case 4:
+      return DayOfWeek.THURSDAY;
+    case 5:
+      return DayOfWeek.FRIDAY;
+    case 6:
+      return DayOfWeek.SATURDAY;
+    case 7:
+    default:
+      return DayOfWeek.SUNDAY;
+  }
+}
+
+String getPesiValueText(BuildContext context, int pesiValue) {
+  switch (pesiValue) {
+    case 1:
+      return context.i18n.pesiValue_1;
+    case 2:
+      return context.i18n.pesiValue_2;
+    case 3:
+      return context.i18n.pesiValue_3;
+    case 4:
+      return context.i18n.pesiValue_4;
+    case 5:
+      return context.i18n.pesiValue_5;
+    default:
+      return "";
+  }
+}
+
+Color getPesiValueColor(int pesiValue) {
+  switch (pesiValue) {
+    case 1:
+      return Color(0xFF53ab9a);
+    case 2:
+      return Color(0xFFf4ca5d);
+    case 3:
+      return Color(0xFFe39940);
+    case 4:
+      return Color(0xFFe4733a);
+    case 5:
+      return Color(0xFFc43b32);
+    default:
+      return primaryColor;
+  }
 }

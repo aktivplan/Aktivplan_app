@@ -5,7 +5,7 @@
 import 'package:apt_api/api.dart';
 ```
 
-All URIs are relative to *https://aktivplan-plus.ap-stage.at*
+All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -13,10 +13,11 @@ Method | HTTP request | Description
 [**createExtraActivity**](ActivityControllerApi.md#createextraactivity) | **POST** /activities/EXTRA | createExtraActivity
 [**createPersonalGoal**](ActivityControllerApi.md#createpersonalgoal) | **POST** /activities/personalGoals | 
 [**deleteActivity**](ActivityControllerApi.md#deleteactivity) | **DELETE** /activities/{id} | 
+[**deleteActivityVideoById**](ActivityControllerApi.md#deleteactivityvideobyid) | **DELETE** /activities/video/{id} | deleteActivityVideoById
 [**deletePersonalGoal**](ActivityControllerApi.md#deletepersonalgoal) | **DELETE** /activities/personalGoals/{id} | 
 [**getActiveMinutes**](ActivityControllerApi.md#getactiveminutes) | **GET** /activities/activeMinutes/{type} | 
 [**getActivities**](ActivityControllerApi.md#getactivities) | **GET** /activities | 
-[**getActivityNamesAutocomplete**](ActivityControllerApi.md#getactivitynamesautocomplete) | **GET** /activities/EXTRA/autocomplete | getActivityNamesAutocomplete
+[**getActivityNamesAutocomplete**](ActivityControllerApi.md#getactivitynamesautocomplete) | **GET** /activities/{type}/autocomplete | getActivityNamesAutocomplete
 [**getActivityPercentageData**](ActivityControllerApi.md#getactivitypercentagedata) | **GET** /activities/active-minutes/percentage-data | 
 [**getPersonalGoals**](ActivityControllerApi.md#getpersonalgoals) | **GET** /activities/personalGoals | 
 [**hideActivity**](ActivityControllerApi.md#hideactivity) | **PUT** /activities/hide | 
@@ -26,6 +27,7 @@ Method | HTTP request | Description
 [**updateActivityRating**](ActivityControllerApi.md#updateactivityrating) | **PUT** /activities/{id}/{date} | updateActivityRating
 [**updateExtraActivity**](ActivityControllerApi.md#updateextraactivity) | **PUT** /activities/EXTRA/{id} | updateExtraActivity
 [**updatePersonalGoal**](ActivityControllerApi.md#updatepersonalgoal) | **PUT** /activities/personalGoals/{id} | 
+[**uploadActivityVideoById**](ActivityControllerApi.md#uploadactivityvideobyid) | **POST** /activities/video/{id} | uploadActivityVideoById
 
 
 # **createActivity**
@@ -209,6 +211,53 @@ void (empty response body)
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **deleteActivityVideoById**
+> bool deleteActivityVideoById(id)
+
+deleteActivityVideoById
+
+ADMINISTRATOR | INSTITUTION_ADMINISTRATOR | HEALTHCARE_PROFESSIONAL
+
+### Example
+```dart
+import 'package:apt_api/api.dart';
+// TODO Configure API key authorization: apiKey
+//defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKey = 'YOUR_API_KEY';
+// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKeyPrefix = 'Bearer';
+
+final api_instance = ActivityControllerApi();
+final id = id_example; // String | 
+
+try {
+    final result = api_instance.deleteActivityVideoById(id);
+    print(result);
+} catch (e) {
+    print('Exception when calling ActivityControllerApi->deleteActivityVideoById: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
+
+### Return type
+
+**bool**
+
+### Authorization
+
+[apiKey](../README.md#apiKey)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **deletePersonalGoal**
 > deletePersonalGoal(id)
 
@@ -354,7 +403,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **getActivityNamesAutocomplete**
-> ActivityAutocompleteGetDTO getActivityNamesAutocomplete()
+> ActivityAutocompleteGetDTO getActivityNamesAutocomplete(type)
 
 getActivityNamesAutocomplete
 
@@ -369,9 +418,10 @@ import 'package:apt_api/api.dart';
 //defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKeyPrefix = 'Bearer';
 
 final api_instance = ActivityControllerApi();
+final type = ; // ActivityType | 
 
 try {
-    final result = api_instance.getActivityNamesAutocomplete();
+    final result = api_instance.getActivityNamesAutocomplete(type);
     print(result);
 } catch (e) {
     print('Exception when calling ActivityControllerApi->getActivityNamesAutocomplete: $e\n');
@@ -379,7 +429,10 @@ try {
 ```
 
 ### Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **type** | [**ActivityType**](.md)|  | 
 
 ### Return type
 
@@ -812,6 +865,55 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
  - **Content-Type**: application/json
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **uploadActivityVideoById**
+> FileGetDTO uploadActivityVideoById(id, videoFile)
+
+uploadActivityVideoById
+
+ADMINISTRATOR | INSTITUTION_ADMINISTRATOR | HEALTHCARE_PROFESSIONAL
+
+### Example
+```dart
+import 'package:apt_api/api.dart';
+// TODO Configure API key authorization: apiKey
+//defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKey = 'YOUR_API_KEY';
+// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKeyPrefix = 'Bearer';
+
+final api_instance = ActivityControllerApi();
+final id = id_example; // String | 
+final videoFile = BINARY_DATA_HERE; // MultipartFile | 
+
+try {
+    final result = api_instance.uploadActivityVideoById(id, videoFile);
+    print(result);
+} catch (e) {
+    print('Exception when calling ActivityControllerApi->uploadActivityVideoById: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
+ **videoFile** | **MultipartFile**|  | 
+
+### Return type
+
+[**FileGetDTO**](FileGetDTO.md)
+
+### Authorization
+
+[apiKey](../README.md#apiKey)
+
+### HTTP request headers
+
+ - **Content-Type**: multipart/form-data
  - **Accept**: */*
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

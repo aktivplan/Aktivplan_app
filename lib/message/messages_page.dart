@@ -9,6 +9,8 @@
 
 import 'package:apt_api/api.dart';
 import 'package:aptapp/colors.dart';
+import 'package:aptapp/l10n/app_localizations_de.dart';
+import 'package:aptapp/l10n/app_localizations_en.dart';
 import 'package:aptapp/l10n/i18n.dart';
 import 'package:aptapp/main.dart';
 import 'package:aptapp/message/bloc/message_bloc.dart';
@@ -69,16 +71,69 @@ class _MessagesPageState extends State<MessagesPage> with TraceablePageMixin, Wi
     });
   }
 
+  void _showFullscreenImage(String url) {
+    if (url.isEmpty) return;
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: .9),
+      builder: (_) => Material(
+        color: Colors.transparent,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(color: Colors.black),
+              ),
+            ),
+            Center(
+              child: InteractiveViewer(
+                panEnabled: true,
+                minScale: 0.5,
+                maxScale: 4.0,
+                child: Image.network(
+                  url,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 16,
+              right: 16,
+              child: SafeArea(
+                child: IconButton(
+                  icon: Icon(Icons.close, color: Colors.white, size: 28),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget renderMessage(MessageDTO message) {
     final bool showSenderName =
         message.type!.value.startsWith('REMIND') || message.type == MessageType.PERSONAL || message.type == MessageType.SOCIAL;
     String subjectText = message.subject ?? "";
     if (message.type == MessageType.ACHIEVED_ACTIVE_MINUTES || message.type == MessageType.ACHIEVED_GOAL) {
-      subjectText = context.i18n.achievedActivityShort;
+      subjectText =
+          message.language == TranslationLanguage.DE ? AppLocalizationsDe().achievedActivityShort : AppLocalizationsEn().achievedActivityShort;
     } else if (message.type == MessageType.REMIND_ACTIVITY) {
-      subjectText = context.i18n.reminderActivity;
+      subjectText = message.language == TranslationLanguage.DE ? AppLocalizationsDe().reminderActivity : AppLocalizationsEn().reminderActivity;
     } else if (message.type == MessageType.ACHIEVED_REMAINING_ACTIVE_MINUTES) {
-      subjectText = context.i18n.yourWeeklyGoal;
+      subjectText = message.language == TranslationLanguage.DE ? AppLocalizationsDe().yourWeeklyGoal : AppLocalizationsEn().yourWeeklyGoal;
+    }
+    Color colorToUse = accentColor;
+    if (message.type == MessageType.INFORMATION) {
+      colorToUse = extraActivityColor;
+    } else if (message.type!.value.startsWith('ACHIEVED') ||
+        message.type == MessageType.REMIND_GOAL ||
+        message.type == MessageType.REMIND_GOAL_MULTIPLE) {
+      colorToUse = goalColor;
+    } else if (message.type == MessageType.WARNING) {
+      colorToUse = errorColor;
     }
     return Column(
       children: [
@@ -90,13 +145,7 @@ class _MessagesPageState extends State<MessagesPage> with TraceablePageMixin, Wi
               child: Icon(
                 Icons.circle,
                 size: 10,
-                color: message.type == MessageType.INFORMATION
-                    ? extraActivityColor
-                    : message.type!.value.startsWith('ACHIEVED') ||
-                            message.type == MessageType.REMIND_GOAL ||
-                            message.type == MessageType.REMIND_GOAL_MULTIPLE
-                        ? goalColor
-                        : accentColor,
+                color: colorToUse,
               ),
             ),
             Flexible(
@@ -110,10 +159,13 @@ class _MessagesPageState extends State<MessagesPage> with TraceablePageMixin, Wi
             padding: EdgeInsets.only(top: 5, left: 25),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Image.network(
-                pictures[message.pictureId]!.url ?? "",
-                height: 100,
-                fit: BoxFit.cover,
+              child: GestureDetector(
+                onTap: () => _showFullscreenImage(pictures[message.pictureId]!.url ?? ""),
+                child: Image.network(
+                  pictures[message.pictureId]!.url ?? "",
+                  height: 100,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),

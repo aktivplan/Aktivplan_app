@@ -319,7 +319,7 @@ class _ExportDocumentationPageState extends State<ExportDocumentationPage> with 
                     ),
                   FormFieldPadding(
                     child: DropdownButtonFormField(
-                      value: selectedOptionValue,
+                      initialValue: selectedOptionValue,
                       onChanged: (value) {
                         setState(() {
                           selectedOptionValue = value?.toString() ?? "";

@@ -14,6 +14,7 @@ import 'package:aptapp/colors.dart';
 import 'package:aptapp/l10n/i18n.dart';
 import 'package:aptapp/patient/personal_goal_dialog.dart';
 import 'package:aptapp/theme.dart';
+import 'package:aptapp/utils/constants.dart';
 import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/translation_helper.dart';
 import 'package:flutter/material.dart';
@@ -23,15 +24,17 @@ import 'package:kiwi/kiwi.dart';
 class PatientActivityList extends StatefulWidget {
   final Map<String, List> events;
   final Jiffy currentDate;
+  final bool isKlimafit;
 
   final Function(dynamic)? markAsDone;
   final Function(ActivityOverviewDTO)? onTapActivity;
-  final Function()? onAddActivity;
+  final Function(ActivityType?)? onAddActivity;
 
   PatientActivityList({
     Key? key,
     required this.events,
     required this.currentDate,
+    this.isKlimafit = false,
     this.markAsDone,
     this.onTapActivity,
     this.onAddActivity,
@@ -44,6 +47,7 @@ class PatientActivityList extends StatefulWidget {
 class _PatientActivityListState extends State<PatientActivityList> {
   @override
   Widget build(BuildContext context) {
+    bool isPatient = KiwiContainer().resolve<UserRepository>().userRole == UserRole.PATIENT;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -61,18 +65,28 @@ class _PatientActivityListState extends State<PatientActivityList> {
               ),
             ),
           ),
-        if (widget.onAddActivity != null)
+        if (widget.onAddActivity != null && !widget.isKlimafit)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
+            padding: const EdgeInsets.only(top: 12, bottom: 6),
             child: ElevatedButton.icon(
               style:
                   getElevatedButtonStyle(context, backgroundColor: userRepository.userRole == UserRole.PATIENT ? extraActivityColor : primaryColor),
-              onPressed: widget.onAddActivity,
+              onPressed: () => widget.onAddActivity!(ActivityType.EXTRA),
               icon: Icon(Icons.add),
               label: Text(
-                KiwiContainer().resolve<UserRepository>().userRole == UserRole.PATIENT
-                    ? context.i18n.extraActivity.toUpperCase()
-                    : context.i18n.activityPlanStep3,
+                isPatient ? context.i18n.extraActivity.toUpperCase() : context.i18n.activityPlanStep3,
+              ),
+            ),
+          ),
+        if (isPatient && widget.onAddActivity != null && widget.isKlimafit)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: ElevatedButton.icon(
+              style: getElevatedButtonStyle(context, backgroundColor: primaryColor),
+              onPressed: () => widget.onAddActivity!(null),
+              icon: Icon(Icons.add),
+              label: Text(
+                context.i18n.calendarEntry.toUpperCase(),
               ),
             ),
           ),
@@ -105,20 +119,13 @@ class _PatientActivityListState extends State<PatientActivityList> {
           markAsDone: this.widget.markAsDone != null ? () => this.widget.markAsDone!(item) : null,
         );
       } else if (item is ActivityOverviewDTO) {
-        Color iconColor = plannedActivityColor;
+        Color iconColor = item.type!.backgroundColor;
         bool isCompletable = true;
-        if (item.type == ActivityType.EXTRA) {
-          iconColor = extraActivityColor;
-        } else if (item.type == ActivityType.APPOINTMENT) {
-          iconColor = primaryColor;
-          if (userRepository.userRole == UserRole.PATIENT) {
-            isCompletable = false;
-          }
-        } else if (item.type == ActivityType.TASK) {
-          iconColor = plannedTaskColor;
+        if (item.type == ActivityType.APPOINTMENT && userRepository.userRole == UserRole.PATIENT) {
+          isCompletable = false;
         }
         String subtitle = item.type != ActivityType.OTHER ? item.type!.getTranslatedText(context) : "";
-        final String timeString = getTranslatedTimeString(item.time ?? "", context);
+        final String timeString = getTranslatedTimeString(item.time ?? "", item.endTime ?? "", context);
         int duration = item.durationMinutes ?? 0;
         if (widget.onTapActivity != null && timeString.isNotEmpty) {
           if (subtitle.isNotEmpty) {
@@ -130,7 +137,10 @@ class _PatientActivityListState extends State<PatientActivityList> {
           if (subtitle.isNotEmpty) {
             subtitle += ", ";
           }
-          subtitle += "$duration ${context.i18n.durationValueMinutes}";
+          String durationUnit = item.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY || item.type == ActivityType.PREDEFINED_ACTIVITY
+              ? context.i18n.durationValuePoints
+              : context.i18n.durationValueMinutes;
+          subtitle += "$duration $durationUnit";
         }
 
         return ActivityListTile(
@@ -140,7 +150,7 @@ class _PatientActivityListState extends State<PatientActivityList> {
             weight: 1000,
           ),
           color: iconColor,
-          title: getTranslatedText(item.name, context),
+          title: getActivityName(item, context),
           subtitle: subtitle,
           done: isCompletable ? item.rating!.done : null,
           onTap: widget.onTapActivity != null ? () => widget.onTapActivity!(item) : null,

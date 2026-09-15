@@ -40,6 +40,9 @@ class ActivityType {
   static const OTHER = ActivityType._(r'OTHER');
   static const APPOINTMENT = ActivityType._(r'APPOINTMENT');
   static const TASK = ActivityType._(r'TASK');
+  static const PREDEFINED_ACTIVITY = ActivityType._(r'PREDEFINED_ACTIVITY');
+  static const PREDEFINED_ACTIVE_MOBILITY =
+      ActivityType._(r'PREDEFINED_ACTIVE_MOBILITY');
 
   /// List of all possible values in this [enum][ActivityType].
   static const values = <ActivityType>[
@@ -52,6 +55,8 @@ class ActivityType {
     OTHER,
     APPOINTMENT,
     TASK,
+    PREDEFINED_ACTIVITY,
+    PREDEFINED_ACTIVE_MOBILITY,
   ];
 
   static ActivityType? fromJson(dynamic value) =>
@@ -113,6 +118,10 @@ class ActivityTypeTypeTransformer {
           return ActivityType.APPOINTMENT;
         case r'TASK':
           return ActivityType.TASK;
+        case r'PREDEFINED_ACTIVITY':
+          return ActivityType.PREDEFINED_ACTIVITY;
+        case r'PREDEFINED_ACTIVE_MOBILITY':
+          return ActivityType.PREDEFINED_ACTIVE_MOBILITY;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');

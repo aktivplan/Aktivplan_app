@@ -135,6 +135,70 @@ class AuthenticationControllerApi {
     return null;
   }
 
+  /// createAuthenticationTokenWithCredentials
+  ///
+  /// Either authenticate using client-id and client-secret or by using a CAATS token
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [TokenRequestDTO] tokenRequestDTO (required):
+  Future<Response> createAuthenticationTokenWithCredentialsWithHttpInfo(
+    TokenRequestDTO tokenRequestDTO,
+  ) async {
+    // ignore: prefer_const_declarations
+    final path = r'/authentication/token';
+
+    // ignore: prefer_final_locals
+    Object? postBody = tokenRequestDTO;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['application/json'];
+
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// createAuthenticationTokenWithCredentials
+  ///
+  /// Either authenticate using client-id and client-secret or by using a CAATS token
+  ///
+  /// Parameters:
+  ///
+  /// * [TokenRequestDTO] tokenRequestDTO (required):
+  Future<AccessTokenDTO?> createAuthenticationTokenWithCredentials(
+    TokenRequestDTO tokenRequestDTO,
+  ) async {
+    final response = await createAuthenticationTokenWithCredentialsWithHttpInfo(
+      tokenRequestDTO,
+    );
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty &&
+        response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(
+        await _decodeBodyBytes(response),
+        'AccessTokenDTO',
+      ) as AccessTokenDTO;
+    }
+    return null;
+  }
+
   /// Performs an HTTP 'POST /authentication/forgotPassword' operation and returns the [Response].
   /// Parameters:
   ///

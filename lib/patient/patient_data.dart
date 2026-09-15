@@ -19,6 +19,7 @@ import 'package:aptapp/patient/bloc/mailbloc.dart';
 import 'package:aptapp/theme.dart';
 import 'package:aptapp/user/bloc/user_bloc.dart';
 import 'package:aptapp/user/user_controller_repository.dart';
+import 'package:aptapp/utils/constants.dart';
 import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/keys.dart';
 import 'package:aptapp/utils/trace_helpers.dart';
@@ -30,10 +31,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart';
 import 'package:kiwi/kiwi.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:styled_text/styled_text.dart';
 
 class PatientDataPage extends StatefulWidget {
   final PatientGetDTO patient;
@@ -63,6 +66,9 @@ class _PatientDataPageState extends State<PatientDataPage> with TraceablePageMix
   bool doEditStatusMessage = false;
   final statusMessageController = TextEditingController();
 
+  final institutionApi = new InstitutionControllerApi(apiClient);
+  InstitutionDTO? institution;
+
   @override
   void initState() {
     super.initState();
@@ -74,15 +80,23 @@ class _PatientDataPageState extends State<PatientDataPage> with TraceablePageMix
         userPicture = value!;
       });
     });
+    if ((widget.patient.institutionId ?? "").isNotEmpty) {
+      institutionApi.getInstitutionById(widget.patient.institutionId!).then((value) {
+        setState(() {
+          institution = value;
+        });
+      });
+    }
   }
 
   uploadImage() async {
     var oldPicture = userPicture;
     try {
-      final List<PlatformFile> files = (await FilePicker.platform.pickFiles(
+      final List<PlatformFile> files = (await FilePicker.pickFiles(
             type: FileType.custom,
             allowMultiple: false,
             allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            withData: true,
           ))
               ?.files ??
           [];
@@ -593,7 +607,18 @@ class _PatientDataPageState extends State<PatientDataPage> with TraceablePageMix
                         onPressed: () => userPicture?.exists ?? false ? showProfilePictureActionButtons() : uploadImage(),
                       ),
                       SizedBox(height: 10),
-                      if (userRepository.currentInstitution?.enableSocialFeatures ?? false) ...[
+                      if (institution?.institutionFocus == InstitutionFocus.KLIMAFIT)
+                        Padding(
+                            padding: EdgeInsets.only(bottom: 10),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: SvgPicture.network(
+                                "$basePath/widget/klimafit-plant/${userRepository.currentUser.id}?isProfileView=true",
+                                width: containerWidth,
+                                fit: BoxFit.cover,
+                              ),
+                            )),
+                      if (institution?.enableSocialFeatures ?? false) ...[
                         Container(
                           decoration: BoxDecoration(
                               border: Border.all(color: datatableBorderColor), borderRadius: BorderRadius.circular(8), color: Colors.white),
@@ -651,7 +676,7 @@ class _PatientDataPageState extends State<PatientDataPage> with TraceablePageMix
                             SizedBox(height: 10),
                             SwitchListTile(
                               controlAffinity: ListTileControlAffinity.leading,
-                              activeColor: primaryColor,
+                              activeThumbColor: primaryColor,
                               value: shareActivityData,
                               onChanged: (value) {
                                 setState(() {
@@ -669,40 +694,40 @@ class _PatientDataPageState extends State<PatientDataPage> with TraceablePageMix
                               ),
                             ),
                             if (shareActivityData) ...[
-                              RadioListTile(
-                                value: true,
-                                contentPadding: EdgeInsets.only(left: 5),
+                              RadioGroup<bool>(
                                 groupValue: shareActiveMinutes,
-                                activeColor: primaryColor,
-                                dense: true,
-                                visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity),
-                                onChanged: (value) {
+                                onChanged: (bool? value) {
                                   setState(() {
                                     shareActiveMinutes = value ?? true;
                                     userRepository.updateShareActivityData(shareActivityData, shareActiveMinutes);
                                   });
                                 },
-                                title: Transform.translate(
-                                  offset: const Offset(-12, 0),
-                                  child: Text(context.i18n.activeMinutesShow, style: Theme.of(context).textTheme.bodyLarge),
-                                ),
-                              ),
-                              RadioListTile(
-                                value: false,
-                                contentPadding: EdgeInsets.only(left: 5),
-                                groupValue: shareActiveMinutes,
-                                activeColor: primaryColor,
-                                dense: true,
-                                visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity),
-                                onChanged: (value) {
-                                  setState(() {
-                                    shareActiveMinutes = value ?? false;
-                                    userRepository.updateShareActivityData(shareActivityData, shareActiveMinutes);
-                                  });
-                                },
-                                title: Transform.translate(
-                                  offset: const Offset(-12, 0),
-                                  child: Text(context.i18n.activeMinutesHide, style: Theme.of(context).textTheme.bodyLarge),
+                                child: Column(
+                                  children: [
+                                    ...[true, false]
+                                        .map((value) => RadioListTile<bool>(
+                                              value: value,
+                                              contentPadding: EdgeInsets.only(left: 5),
+                                              activeColor: primaryColor,
+                                              dense: true,
+                                              visualDensity: const VisualDensity(
+                                                  horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity),
+                                              title: Transform.translate(
+                                                offset: const Offset(-12, 0),
+                                                child: Text(
+                                                  value
+                                                      ? institution?.institutionFocus?.isKlimafit() ?? false
+                                                          ? context.i18n.activeMinutesShowKlimafit
+                                                          : context.i18n.activeMinutesShow
+                                                      : institution?.institutionFocus?.isKlimafit() ?? false
+                                                          ? context.i18n.activeMinutesHideKlimafit
+                                                          : context.i18n.activeMinutesHide,
+                                                  style: Theme.of(context).textTheme.bodyLarge,
+                                                ),
+                                              ),
+                                            ))
+                                        .toList(),
+                                  ],
                                 ),
                               ),
                             ],
@@ -710,55 +735,62 @@ class _PatientDataPageState extends State<PatientDataPage> with TraceablePageMix
                         ),
                         SizedBox(height: 10),
                       ],
-                      Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(color: datatableBorderColor), borderRadius: BorderRadius.circular(8), color: Colors.white),
-                        padding: EdgeInsets.all(5),
-                        width: double.infinity,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: 10, left: 10),
-                              child: SelectableText(context.i18n.trainingState,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: lightTextColor,
-                                      )),
-                            ),
-                            SizedBox(height: 10),
-                            ...[PatientState.NO_STATE, PatientState.INAPPROPRIATE_TRAINING_PLAN, PatientState.ON_VACATION, PatientState.SICK]
-                                .map(
-                                  (entry) => RadioListTile(
-                                    value: entry,
-                                    contentPadding: EdgeInsets.only(left: 5),
-                                    groupValue: patientState,
-                                    activeColor: primaryColor,
-                                    dense: true,
-                                    visualDensity:
-                                        const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        patientState = value;
-                                        userRepository.storePatientState(patient.id!, patientState);
-                                        MatomoTracker.instance.trackEvent(
-                                          eventInfo: EventInfo(
-                                              category: EVENT_CATEGORY_PATIENT_STATE,
-                                              name: EVENT_NAME_UPDATE,
-                                              action: "Set Patient State to $patientState"),
-                                        );
-                                      });
-                                    },
-                                    title: Transform.translate(
-                                      offset: const Offset(-12, 0),
-                                      child: Text(entry.getTranslatedText(context), style: Theme.of(context).textTheme.bodyLarge),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                            SizedBox(height: 5),
-                          ],
+                      if (!(institution?.institutionFocus?.isKlimafit() ?? false))
+                        Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(color: datatableBorderColor), borderRadius: BorderRadius.circular(8), color: Colors.white),
+                          padding: EdgeInsets.all(5),
+                          width: double.infinity,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(top: 10, left: 10),
+                                child: SelectableText(context.i18n.trainingState,
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: lightTextColor,
+                                        )),
+                              ),
+                              SizedBox(height: 10),
+                              RadioGroup<PatientState>(
+                                groupValue: patientState,
+                                onChanged: (PatientState? value) {
+                                  setState(() {
+                                    patientState = value ?? PatientState.NO_STATE;
+                                    userRepository.storePatientState(patient.id!, patientState);
+                                    MatomoTracker.instance.trackEvent(
+                                      eventInfo: EventInfo(
+                                        category: EVENT_CATEGORY_PATIENT_STATE,
+                                        name: EVENT_NAME_UPDATE,
+                                        action: "Set Patient State to $patientState",
+                                      ),
+                                    );
+                                  });
+                                },
+                                child: Column(
+                                  children: [
+                                    ...[PatientState.NO_STATE, PatientState.INAPPROPRIATE_TRAINING_PLAN, PatientState.ON_VACATION, PatientState.SICK]
+                                        .map((entry) => RadioListTile<PatientState>(
+                                              value: entry,
+                                              toggleable: true,
+                                              contentPadding: EdgeInsets.only(left: 5),
+                                              activeColor: primaryColor,
+                                              dense: true,
+                                              visualDensity: const VisualDensity(
+                                                  horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity),
+                                              title: Transform.translate(
+                                                offset: const Offset(-12, 0),
+                                                child: Text(entry.getTranslatedText(context), style: Theme.of(context).textTheme.bodyLarge),
+                                              ),
+                                            ))
+                                        .toList(),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 5),
+                            ],
+                          ),
                         ),
-                      ),
                       SizedBox(height: 10),
                       Container(
                         decoration: BoxDecoration(
@@ -779,34 +811,7 @@ class _PatientDataPageState extends State<PatientDataPage> with TraceablePageMix
                                           )),
                                 ),
                                 SizedBox(height: 5),
-                                PatientInfoRow(title: context.i18n.birthdate, value: patient.birthDate!),
-                                PatientInfoRow(title: context.i18n.bodyHeight, value: patient.height.toString(), unit: "cm"),
-                                PatientInfoRow(title: context.i18n.bodyWeight, value: patient.weight.toString(), unit: "kg"),
-                                SizedBox(height: 10),
-                                PatientInfoRow(
-                                  title: context.i18n.activityClass,
-                                  value: patient.activityClass.toString(),
-                                ),
-                                PatientInfoRow(title: context.i18n.maximumHeartRateShort, value: patient.maximumHeartRate.toString(), unit: "bpm"),
-                                if ((patient.maximumBloodPressure ?? "").isNotEmpty)
-                                  PatientInfoRow(
-                                      title: context.i18n.maximumBloodPressureShort, value: patient.maximumBloodPressure.toString(), unit: "mmHg"),
-                                if ((patient.maximumPerformance ?? 0) > 0)
-                                  PatientInfoRow(
-                                      title: context.i18n.maximumPerformanceShort, value: patient.maximumPerformance.toString(), unit: "Watt/kg"),
-                                SizedBox(height: 10),
-                                if ((patient.maximumOxygenConsumption ?? 0) > 0)
-                                  PatientInfoRow(
-                                      title: context.i18n.maximumOxygenShort, value: patient.maximumOxygenConsumption.toString(), unit: "ml/kg/min"),
-                                PatientInfoRow(
-                                  title: context.i18n.comorbidities,
-                                  value: ((patient.diseases ?? "-") == "-") || patient.diseases!.isEmpty ? context.i18n.none : patient.diseases!,
-                                ),
-                                PatientInfoRow(
-                                  title: context.i18n.medication,
-                                  value:
-                                      ((patient.medication ?? "-") == "-") || patient.medication!.isEmpty ? context.i18n.none : patient.medication!,
-                                ),
+                                ...getPatientInfoRows(patient, containerWidth),
                                 SizedBox(height: 10),
                                 SizedBox(
                                   width: containerWidth - 22,
@@ -858,6 +863,67 @@ class _PatientDataPageState extends State<PatientDataPage> with TraceablePageMix
     );
   }
 
+  List<Widget> getPatientInfoRows(PatientGetDTO patient, double width) {
+    if (institution?.institutionFocus?.isKlimafit() ?? false) {
+      return [
+        if ((patient.participantId ?? "").isNotEmpty)
+          PatientInfoRow(title: context.i18n.participantId, value: patient.participantId ?? "", width: width),
+        PatientInfoRow(title: context.i18n.homeLocation, value: patient.homeLocationAddress ?? "-", width: width),
+        PatientInfoRow(title: context.i18n.workLocation, value: patient.workLocationAddress ?? "-", width: width),
+        PatientInfoRow(title: context.i18n.heatTolerance, value: patient.heatTolerance?.getTranslatedText(context) ?? "-", width: width),
+        PatientInfoRow(
+            title: context.i18n.mobilityPreference,
+            value: patient.mobilityPreferences.map((e) => e.getTranslatedText(context)).join(", "),
+            width: width),
+        PatientInfoRow(
+            title: context.i18n.dislikedMobilityPreference,
+            value: patient.dislikedMobilityPreferences.map((e) => e.getTranslatedText(context)).join(", "),
+            width: width),
+        PatientInfoRow(
+            title: context.i18n.activityPreference,
+            value: patient.preferredActivities.map((e) => e.getTranslatedText(context)).join(", "),
+            width: width),
+        PatientInfoRow(
+            title: context.i18n.dislikedActivityPreference,
+            value: patient.dislikedActivities.map((e) => e.getTranslatedText(context)).join(", "),
+            width: width),
+      ];
+    }
+
+    return [
+      PatientInfoRow(
+          title: context.i18n.birthdate,
+          value: (patient.birthDate ?? "").isNotEmpty ? germanDateFormat.format(DateTime.parse(patient.birthDate!)) : "-",
+          width: width),
+      PatientInfoRow(title: context.i18n.bodyHeight, value: patient.height.toString(), unit: "cm", width: width),
+      PatientInfoRow(title: context.i18n.bodyWeight, value: patient.weight.toString(), unit: "kg", width: width),
+      SizedBox(height: 10),
+      PatientInfoRow(
+        title: context.i18n.activityClass,
+        value: patient.activityClass.toString(),
+        width: width,
+      ),
+      PatientInfoRow(title: context.i18n.maximumHeartRateShort, value: patient.maximumHeartRate.toString(), unit: "bpm", width: width),
+      if ((patient.maximumBloodPressure ?? "").isNotEmpty)
+        PatientInfoRow(title: context.i18n.maximumBloodPressureShort, value: patient.maximumBloodPressure.toString(), unit: "mmHg", width: width),
+      if ((patient.maximumPerformance ?? 0) > 0)
+        PatientInfoRow(title: context.i18n.maximumPerformanceShort, value: patient.maximumPerformance.toString(), unit: "Watt/kg", width: width),
+      SizedBox(height: 10),
+      if ((patient.maximumOxygenConsumption ?? 0) > 0)
+        PatientInfoRow(title: context.i18n.maximumOxygenShort, value: patient.maximumOxygenConsumption.toString(), unit: "ml/kg/min", width: width),
+      PatientInfoRow(
+        title: context.i18n.comorbidities,
+        value: ((patient.diseases ?? "-") == "-") || patient.diseases!.isEmpty ? context.i18n.none : patient.diseases!,
+        width: width,
+      ),
+      PatientInfoRow(
+        title: context.i18n.medication,
+        value: ((patient.medication ?? "-") == "-") || patient.medication!.isEmpty ? context.i18n.none : patient.medication!,
+        width: width,
+      ),
+    ];
+  }
+
   String get traceablePageName => "Patient Data Page";
 }
 
@@ -865,31 +931,29 @@ class PatientInfoRow extends StatelessWidget {
   final String title;
   final String value;
   final String unit;
+  final double width;
 
-  PatientInfoRow({Key? key, required this.title, required this.value, this.unit = ""}) : super(key: key);
+  PatientInfoRow({Key? key, required this.title, required this.value, this.unit = "", required this.width}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 12, right: 12, bottom: 4),
-      child: SelectableText.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: title + ": ",
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            TextSpan(
-              text: value.isEmpty ? "-" : "$value ",
+    return Row(
+      children: [
+        SizedBox(
+          width: width - 24,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 12, right: 12, bottom: 4),
+            child: StyledText(
+              softWrap: true,
+              text: "<b>${title}:</b> ${value.isEmpty ? '-' : value}${unit.isNotEmpty ? ' $unit' : ''}",
               style: Theme.of(context).textTheme.bodyLarge,
+              tags: {
+                'b': StyledTextTag(style: TextStyle(fontWeight: FontWeight.w600)),
+              },
             ),
-            TextSpan(
-              text: unit,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }

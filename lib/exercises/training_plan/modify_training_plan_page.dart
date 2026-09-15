@@ -31,7 +31,7 @@ import 'package:aptapp/widget/save_button.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class ModifyTrainingPlanPage extends StatefulWidget {
@@ -136,7 +136,7 @@ class _ModifyTrainingPlanPageState extends State<ModifyTrainingPlanPage> {
       while (DayOfWeek.values[startDate.weekday - 1] != selectedDayOfWeek) {
         startDate = startDate.add(Duration(days: 1));
       }
-      if (editThis) {
+      if (editThis && activityToEdit != null) {
         activityToEdit!.startDate = startDate.toString();
         activityToEdit!.days = [DayOfWeek.values[startDate.weekday - 1]];
         activityToEdit!.repeatCount = 1;
@@ -207,7 +207,7 @@ class _ModifyTrainingPlanPageState extends State<ModifyTrainingPlanPage> {
                             ),
                           ),
                         ),
-                        value: trainingPlans.firstWhere((element) => element.id == trainingPlanId, orElse: null),
+                        initialValue: trainingPlans.firstWhere((element) => element.id == trainingPlanId, orElse: null),
                         items: trainingPlans.map((e) => DropdownMenuItem<TrainingPlanOverviewDTO>(value: e, child: Text(e.name ?? ""))).toList(),
                         onChanged: (value) {
                           setState(() {
@@ -429,6 +429,7 @@ class _ModifyTrainingPlanPageState extends State<ModifyTrainingPlanPage> {
                   ..startingWeek = i
                   ..type = data.training.type
                   ..time = data.training.time
+                  ..endTime = data.training.endTime
                   ..appointment = data.training.appointment
                   ..enduranceExercise = data.training.enduranceExercise
                   ..intervalExercise = data.training.intervalExercise
@@ -554,15 +555,13 @@ class _ModifyTrainingPlanPageState extends State<ModifyTrainingPlanPage> {
         final training = trainingPlansForDay[index];
         Widget icon = Icon(training.type!.iconData, color: Colors.white);
         final theme = Theme.of(context);
-        Color backgroundColor = plannedActivityColor;
-        final String timeText = getTranslatedTimeString(training.time ?? "", context);
+        final String timeText = getTranslatedTimeString(training.time ?? "", training.endTime ?? "", context);
         String? nameText;
         int durationMinutes = -1;
         final List<String> descriptionTexts = [];
 
         switch (training.type) {
           case ActivityType.APPOINTMENT:
-            backgroundColor = primaryColor;
             nameText = training.appointment!.name ?? "";
             break;
           case ActivityType.ENDURANCE:
@@ -589,7 +588,6 @@ class _ModifyTrainingPlanPageState extends State<ModifyTrainingPlanPage> {
             durationMinutes = getOtherExerciseDurationMinutes(training.otherExercise!);
             break;
           case ActivityType.TASK:
-            backgroundColor = plannedTaskColor;
             descriptionTexts.add(ActivityType.TASK.getTranslatedText(context));
             nameText = getTranslatedText(training.task!.name, context);
             durationMinutes = 0;
@@ -614,7 +612,7 @@ class _ModifyTrainingPlanPageState extends State<ModifyTrainingPlanPage> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             child: Container(
-              decoration: BoxDecoration(color: backgroundColor, borderRadius: BorderRadius.circular(4)),
+              decoration: BoxDecoration(color: training.type!.backgroundColor, borderRadius: BorderRadius.circular(4)),
               child: Row(
                 children: [
                   Transform.scale(scale: 0.75, child: icon),
@@ -717,6 +715,7 @@ class _ModifyTrainingPlanPageState extends State<ModifyTrainingPlanPage> {
       ..startingWeek = selectedWeekEntry
       ..type = type
       ..time = activity.time
+      ..endTime = activity.endTime
       ..appointment = activity.appointment
       ..enduranceExercise = activity.enduranceExercise
       ..intervalExercise = activity.intervalExercise
@@ -795,6 +794,7 @@ class _ModifyTrainingPlanPageState extends State<ModifyTrainingPlanPage> {
   ActivityPostDTO trainingPlanWeekEntryToActivity(TrainingPlanExercisePostDTO trainingPlanWeekEntry) {
     final ActivityPostDTO activity = ActivityPostDTO()
       ..time = trainingPlanWeekEntry.time
+      ..endTime = trainingPlanWeekEntry.endTime
       ..appointment = trainingPlanWeekEntry.appointment
       ..enduranceExercise = trainingPlanWeekEntry.enduranceExercise
       ..intervalExercise = trainingPlanWeekEntry.intervalExercise
@@ -812,23 +812,29 @@ class _ModifyTrainingPlanPageState extends State<ModifyTrainingPlanPage> {
     final ActivityOverviewDTO activity = ActivityOverviewDTO()
       ..type = trainingPlanWeekEntry.type
       ..time = trainingPlanWeekEntry.time
+      ..endTime = trainingPlanWeekEntry.endTime
       ..repeats = trainingPlanWeekEntry.repeats;
     activity.activity = trainingPlanWeekEntryToActivity(trainingPlanWeekEntry);
     if (trainingPlanWeekEntry.enduranceExercise != null) {
       activity.name = trainingPlanWeekEntry.enduranceExercise!.name;
       activity.activity!.youTubeUrl = trainingPlanWeekEntry.enduranceExercise!.youTubeUrl;
+      activity.activity!.videoFileKey = trainingPlanWeekEntry.enduranceExercise!.videoFileKey;
     } else if (trainingPlanWeekEntry.intervalExercise != null) {
       activity.name = trainingPlanWeekEntry.intervalExercise!.name;
       activity.activity!.youTubeUrl = trainingPlanWeekEntry.intervalExercise!.youTubeUrl;
+      activity.activity!.videoFileKey = trainingPlanWeekEntry.intervalExercise!.videoFileKey;
     } else if (trainingPlanWeekEntry.strengtheningExercise != null) {
       activity.name = trainingPlanWeekEntry.strengtheningExercise!.name;
       activity.activity!.youTubeUrl = trainingPlanWeekEntry.strengtheningExercise!.youTubeUrl;
+      activity.activity!.videoFileKey = trainingPlanWeekEntry.strengtheningExercise!.videoFileKey;
     } else if (trainingPlanWeekEntry.workout != null) {
       activity.name = trainingPlanWeekEntry.workout!.name;
       activity.activity!.youTubeUrl = trainingPlanWeekEntry.workout!.youTubeUrl;
+      activity.activity!.videoFileKey = trainingPlanWeekEntry.workout!.videoFileKey;
     } else if (trainingPlanWeekEntry.otherExercise != null) {
       activity.name = trainingPlanWeekEntry.otherExercise!.name;
       activity.activity!.youTubeUrl = trainingPlanWeekEntry.otherExercise!.youTubeUrl;
+      activity.activity!.videoFileKey = trainingPlanWeekEntry.otherExercise!.videoFileKey;
     } else if (trainingPlanWeekEntry.appointment != null) {
       activity.name = getTranslationObjectFromText(trainingPlanWeekEntry.appointment!.name, trainingPlanWeekEntry.appointment!.name);
     } else if (trainingPlanWeekEntry.task != null) {

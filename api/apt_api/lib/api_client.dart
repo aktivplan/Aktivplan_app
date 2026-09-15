@@ -21,7 +21,7 @@ part of openapi.api;
 
 class ApiClient {
   ApiClient({
-    this.basePath = 'https://aktivplan-plus.ap-stage.at',
+    this.basePath = 'http://localhost:8080',
     this.authentication,
   });
 
@@ -250,6 +250,8 @@ class ApiClient {
           return Activity.fromJson(value);
         case 'ActivityAutocompleteGetDTO':
           return ActivityAutocompleteGetDTO.fromJson(value);
+        case 'ActivityContext':
+          return ActivityContext.fromJson(value);
         case 'ActivityGraphDTO':
           return ActivityGraphDTO.fromJson(value);
         case 'ActivityOverviewDTO':
@@ -290,6 +292,12 @@ class ApiClient {
           return ConsentTypeTypeTransformer().decode(value);
         case 'CurrentUserDTO':
           return CurrentUserDTO.fromJson(value);
+        case 'DatahubRequestDataDTO':
+          return DatahubRequestDataDTO.fromJson(value);
+        case 'DatahubResponse':
+          return DatahubResponse.fromJson(value);
+        case 'DatahubResponseRecommendationsInner':
+          return DatahubResponseRecommendationsInner.fromJson(value);
         case 'DayOfWeek':
           return DayOfWeekTypeTransformer().decode(value);
         case 'EnduranceExercise':
@@ -322,6 +330,8 @@ class ApiClient {
           return FirebaseTokenTargetTypeTransformer().decode(value);
         case 'ForgotPasswordDTO':
           return ForgotPasswordDTO.fromJson(value);
+        case 'GenericWeather':
+          return GenericWeather.fromJson(value);
         case 'HealthData':
           return HealthData.fromJson(value);
         case 'HealthDataChangeDTO':
@@ -336,8 +346,12 @@ class ApiClient {
           return HealthcareProfessionalProfileDTO.fromJson(value);
         case 'HealthcareProfessionalsOverviewDTO':
           return HealthcareProfessionalsOverviewDTO.fromJson(value);
+        case 'HeatTolerance':
+          return HeatToleranceTypeTransformer().decode(value);
         case 'HideActivityPostDTO':
           return HideActivityPostDTO.fromJson(value);
+        case 'ImportSummaryDTO':
+          return ImportSummaryDTO.fromJson(value);
         case 'InstitutionAdministratorGetDTO':
           return InstitutionAdministratorGetDTO.fromJson(value);
         case 'InstitutionCountDTO':
@@ -350,14 +364,20 @@ class ApiClient {
           return InstitutionImportDTO.fromJson(value);
         case 'InstitutionImportType':
           return InstitutionImportTypeTypeTransformer().decode(value);
+        case 'InstitutionP2RFocus':
+          return InstitutionP2RFocusTypeTransformer().decode(value);
         case 'InstitutionPostDTO':
           return InstitutionPostDTO.fromJson(value);
         case 'IntervalExercise':
           return IntervalExercise.fromJson(value);
         case 'IntervalExercisePostDTO':
           return IntervalExercisePostDTO.fromJson(value);
+        case 'KlimafitUserDataDTO':
+          return KlimafitUserDataDTO.fromJson(value);
         case 'LanguageSwitchDTO':
           return LanguageSwitchDTO.fromJson(value);
+        case 'LocationDTO':
+          return LocationDTO.fromJson(value);
         case 'MessageCountDTO':
           return MessageCountDTO.fromJson(value);
         case 'MessageDTO':
@@ -372,6 +392,8 @@ class ApiClient {
           return MessagePutDTO.fromJson(value);
         case 'MessageReceiverNameDTO':
           return MessageReceiverNameDTO.fromJson(value);
+        case 'MessageRestriction':
+          return MessageRestrictionTypeTransformer().decode(value);
         case 'MessageSchedule':
           return MessageSchedule.fromJson(value);
         case 'MessageScheduleGetDTO':
@@ -390,6 +412,8 @@ class ApiClient {
           return MessageTemplatePostDTO.fromJson(value);
         case 'MessageType':
           return MessageTypeTypeTransformer().decode(value);
+        case 'MobilityPreference':
+          return MobilityPreferenceTypeTransformer().decode(value);
         case 'MoveActivityPostDTO':
           return MoveActivityPostDTO.fromJson(value);
         case 'MovePersonalGoalPostDTO':
@@ -400,6 +424,10 @@ class ApiClient {
           return OtherExercise.fromJson(value);
         case 'OtherExercisePostDTO':
           return OtherExercisePostDTO.fromJson(value);
+        case 'P2RCoachPostDTO':
+          return P2RCoachPostDTO.fromJson(value);
+        case 'P2RPatientPostDTO':
+          return P2RPatientPostDTO.fromJson(value);
         case 'PatientGetDTO':
           return PatientGetDTO.fromJson(value);
         case 'PatientNotesDTO':
@@ -418,18 +446,35 @@ class ApiClient {
           return PersonalGoal.fromJson(value);
         case 'PersonalGoalPostDTO':
           return PersonalGoalPostDTO.fromJson(value);
+        case 'PredefinedActivityPostDTO':
+          return PredefinedActivityPostDTO.fromJson(value);
+        case 'PredefinedActivityType':
+          return PredefinedActivityTypeTypeTransformer().decode(value);
         case 'PreparedReportDTO':
           return PreparedReportDTO.fromJson(value);
+        case 'RecommendationLevel':
+          return RecommendationLevelTypeTransformer().decode(value);
+        case 'RecommendationType':
+          return RecommendationTypeTypeTransformer().decode(value);
+        case 'RecoomendationReason':
+          return RecoomendationReasonTypeTransformer().decode(value);
         case 'RefreshTokenDTO':
           return RefreshTokenDTO.fromJson(value);
         case 'ReportPostDTO':
           return ReportPostDTO.fromJson(value);
         case 'ResetPasswordDTO':
           return ResetPasswordDTO.fromJson(value);
+        case 'RouteProposal':
+          return RouteProposal.fromJson(value);
+        case 'RoutingMode':
+          return RoutingModeTypeTransformer().decode(value);
         case 'ShareActivityDataPostDTO':
           return ShareActivityDataPostDTO.fromJson(value);
         case 'SocialMessagePostDTO':
           return SocialMessagePostDTO.fromJson(value);
+        case 'SpaceTimeRecommendationChangeType':
+          return SpaceTimeRecommendationChangeTypeTypeTransformer()
+              .decode(value);
         case 'StatusFileDTO':
           return StatusFileDTO.fromJson(value);
         case 'StatusFileType':
@@ -449,6 +494,8 @@ class ApiClient {
           return Task.fromJson(value);
         case 'TaskPostDTO':
           return TaskPostDTO.fromJson(value);
+        case 'TokenRequestDTO':
+          return TokenRequestDTO.fromJson(value);
         case 'TrainingPlan':
           return TrainingPlan.fromJson(value);
         case 'TrainingPlanExercisePostDTO':
@@ -473,6 +520,14 @@ class ApiClient {
           return VideoTemplateDTO.fromJson(value);
         case 'VideoTemplatePostDTO':
           return VideoTemplatePostDTO.fromJson(value);
+        case 'Weather':
+          return Weather.fromJson(value);
+        case 'WeatherWarning':
+          return WeatherWarning.fromJson(value);
+        case 'WeatherWarningLevel':
+          return WeatherWarningLevelTypeTransformer().decode(value);
+        case 'WeatherWarningType':
+          return WeatherWarningTypeTypeTransformer().decode(value);
         case 'Workout':
           return Workout.fromJson(value);
         case 'WorkoutPostDTO':

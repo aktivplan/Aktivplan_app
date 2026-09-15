@@ -22,13 +22,11 @@ import 'package:responsive_grid/responsive_grid.dart';
 import 'package:styled_text/styled_text.dart';
 
 class PatientInfoLine extends StatefulWidget {
-  final PatientGetDTO patient;
   final PatientOverviewDTO patientOverview;
   final List<PersonalGoal> personalGoals;
   final FileGetDTO userPicture;
 
-  PatientInfoLine({Key? key, required this.patient, required this.patientOverview, required this.personalGoals, required this.userPicture})
-      : super(key: key);
+  PatientInfoLine({Key? key, required this.patientOverview, required this.personalGoals, required this.userPicture}) : super(key: key);
 
   @override
   _PatientInfoLineState createState() => _PatientInfoLineState();
@@ -41,6 +39,7 @@ class _PatientInfoLineState extends State<PatientInfoLine> {
     int activityPercentage = showThreeWeekState
         ? widget.patientOverview.user!.activityPercentageLastThreeWeeks!
         : widget.patientOverview.user!.activityPercentageLastFourWeeks!;
+    PatientGetDTO patient = widget.patientOverview.user!;
     return Padding(
       padding: EdgeInsets.only(bottom: 10),
       child: ResponsiveGridRow(
@@ -66,11 +65,11 @@ class _PatientInfoLineState extends State<PatientInfoLine> {
                             size: 56,
                           ),
                     title: Text(
-                      "${widget.patient.lastName} ${widget.patient.firstName}",
+                      "${patient.lastName} ${patient.firstName}",
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text((widget.patient.lastActiveDate ?? "").isNotEmpty
-                        ? "${context.i18n.lastActiveAt}: ${germanDateFormat.format(englishDateFormat.parse(widget.patient.lastActiveDate!))}"
+                    subtitle: Text((patient.lastActiveDate ?? "").isNotEmpty
+                        ? "${context.i18n.lastActiveAt}: ${germanDateFormat.format(englishDateFormat.parse(patient.lastActiveDate!))}"
                         : context.i18n.inactive.capitalize()),
                   ),
                   SizedBox(height: 10),
@@ -79,10 +78,10 @@ class _PatientInfoLineState extends State<PatientInfoLine> {
                     onPressed: () {
                       context.beamToNamed(
                           RouterService.patientsEditRoute(
-                              patientId: widget.patient.id!,
+                              patientId: patient.id!,
                               institutionId: widget.patientOverview.institution!.id!,
-                              healthcareProfessionalId: widget.patient.healthcareProfessionalId!),
-                          data: {"patient": widget.patient, "healthcareProfessionalId": widget.patient.healthcareProfessionalId});
+                              healthcareProfessionalId: patient.healthcareProfessionalId!),
+                          data: {"patient": patient, "healthcareProfessionalId": patient.healthcareProfessionalId});
                     },
                     child: Text(context.i18n.editPatient.toUpperCase()),
                   ),
@@ -164,13 +163,15 @@ class _PatientInfoLineState extends State<PatientInfoLine> {
                                 text: (activityPercentage >= 0
                                         ? (showThreeWeekState
                                             ? context.i18n.calendarInfoActiveMinutesThreeWeeks(
-                                                activityPercentage, widget.patient.activityPercentageLastThreeWeeksPlanned!)
-                                            : context.i18n.calendarInfoActiveMinutes(activityPercentage))
+                                                activityPercentage, patient.activityPercentageLastThreeWeeksPlanned!)
+                                            : widget.patientOverview.institution?.institutionFocus?.isKlimafit() == true
+                                                ? context.i18n.calendarInfoActiveMinutesKlimafit(activityPercentage)
+                                                : context.i18n.calendarInfoActiveMinutes(activityPercentage))
                                         : (showThreeWeekState
                                             ? context.i18n.calendarInfoActiveMinutesNoTrainingThreeWeeks
                                             : context.i18n.calendarInfoActiveMinutesNoTraining)) +
-                                    (widget.patient.patientState != null && widget.patient.patientState != PatientState.NO_STATE
-                                        ? "\n\n<b>${context.i18n.state}:</b> ${widget.patient.patientState!.getTranslatedText(context)}"
+                                    (patient.patientState != null && patient.patientState != PatientState.NO_STATE
+                                        ? "\n\n<b>${context.i18n.state}:</b> ${patient.patientState!.getTranslatedText(context)}"
                                         : ""),
                                 style: Theme.of(context).textTheme.bodyLarge,
                                 tags: {
@@ -230,9 +231,9 @@ class _PatientInfoLineState extends State<PatientInfoLine> {
                       ),
                     ),
                     onTap: () => context.beamToNamed(
-                      "/patients/${widget.patient.id}/conversation-guide",
+                      "/patients/${patient.id}/conversation-guide",
                       data: {
-                        "notes": widget.patientOverview.user!.patientNotes ?? "",
+                        "notes": patient.patientNotes ?? "",
                         "personalGoals": widget.personalGoals,
                         "institutionFocus": widget.patientOverview.institution!.institutionFocus
                       },
@@ -265,7 +266,7 @@ class _PatientInfoLineState extends State<PatientInfoLine> {
                         ],
                       ),
                     ),
-                    onTap: () => context.beamToNamed("/patients/${widget.patient.id}/final-check"),
+                    onTap: () => context.beamToNamed("/patients/${patient.id}/final-check"),
                   ),
                   InkWell(
                     key: Key(KEY_PATIENT_CALENDAR_BUTTON_MESSAGE),
@@ -295,8 +296,8 @@ class _PatientInfoLineState extends State<PatientInfoLine> {
                       ),
                     ),
                     onTap: () => context.beamToNamed(
-                      "/patients/${widget.patient.id}/message-history",
-                      data: {"patientName": "${widget.patient.lastName} ${widget.patient.firstName}"},
+                      "/patients/${patient.id}/message-history",
+                      data: {"patientName": "${patient.lastName} ${patient.firstName}"},
                     ),
                   ),
                 ],

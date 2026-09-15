@@ -5,7 +5,7 @@
 import 'package:apt_api/api.dart';
 ```
 
-All URIs are relative to *https://aktivplan-plus.ap-stage.at*
+All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -16,6 +16,7 @@ Method | HTTP request | Description
 [**createStrengtheningExercise**](ExerciseControllerApi.md#createstrengtheningexercise) | **POST** /exercises/STRENGTHENING | createStrengtheningExercise
 [**createTask**](ExerciseControllerApi.md#createtask) | **POST** /exercises/TASK | createTask
 [**deleteExercise**](ExerciseControllerApi.md#deleteexercise) | **DELETE** /exercises/{id} | deleteExercise
+[**deleteExerciseVideoById**](ExerciseControllerApi.md#deleteexercisevideobyid) | **DELETE** /exercises/video/{id} | deleteExerciseVideoById
 [**getExercises**](ExerciseControllerApi.md#getexercises) | **GET** /exercises/{type} | 
 [**updateEnduranceExercise**](ExerciseControllerApi.md#updateenduranceexercise) | **PUT** /exercises/ENDURANCE/{id} | updateEnduranceExercise
 [**updateHypertrophyExercise**](ExerciseControllerApi.md#updatehypertrophyexercise) | **PUT** /exercises/HYPERTROPHY/{id} | updateHypertrophyExercise
@@ -23,6 +24,7 @@ Method | HTTP request | Description
 [**updateOtherExercise**](ExerciseControllerApi.md#updateotherexercise) | **PUT** /exercises/OTHER/{id} | updateOtherExercise
 [**updateStrengtheningExercise**](ExerciseControllerApi.md#updatestrengtheningexercise) | **PUT** /exercises/STRENGTHENING/{id} | updateStrengtheningExercise
 [**updateTask**](ExerciseControllerApi.md#updatetask) | **PUT** /exercises/TASK/{id} | updateTask
+[**uploadExerciseVideoById**](ExerciseControllerApi.md#uploadexercisevideobyid) | **POST** /exercises/video/{id} | uploadExerciseVideoById
 
 
 # **createEnduranceExercise**
@@ -350,6 +352,53 @@ void (empty response body)
 
  - **Content-Type**: Not defined
  - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **deleteExerciseVideoById**
+> bool deleteExerciseVideoById(id)
+
+deleteExerciseVideoById
+
+ADMINISTRATOR | INSTITUTION_ADMINISTRATOR | HEALTHCARE_PROFESSIONAL
+
+### Example
+```dart
+import 'package:apt_api/api.dart';
+// TODO Configure API key authorization: apiKey
+//defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKey = 'YOUR_API_KEY';
+// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKeyPrefix = 'Bearer';
+
+final api_instance = ExerciseControllerApi();
+final id = id_example; // String | 
+
+try {
+    final result = api_instance.deleteExerciseVideoById(id);
+    print(result);
+} catch (e) {
+    print('Exception when calling ExerciseControllerApi->deleteExerciseVideoById: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
+
+### Return type
+
+**bool**
+
+### Authorization
+
+[apiKey](../README.md#apiKey)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -688,6 +737,55 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
  - **Content-Type**: application/json
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **uploadExerciseVideoById**
+> FileGetDTO uploadExerciseVideoById(id, videoFile)
+
+uploadExerciseVideoById
+
+ADMINISTRATOR | INSTITUTION_ADMINISTRATOR | HEALTHCARE_PROFESSIONAL
+
+### Example
+```dart
+import 'package:apt_api/api.dart';
+// TODO Configure API key authorization: apiKey
+//defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKey = 'YOUR_API_KEY';
+// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKeyPrefix = 'Bearer';
+
+final api_instance = ExerciseControllerApi();
+final id = id_example; // String | 
+final videoFile = BINARY_DATA_HERE; // MultipartFile | 
+
+try {
+    final result = api_instance.uploadExerciseVideoById(id, videoFile);
+    print(result);
+} catch (e) {
+    print('Exception when calling ExerciseControllerApi->uploadExerciseVideoById: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
+ **videoFile** | **MultipartFile**|  | 
+
+### Return type
+
+[**FileGetDTO**](FileGetDTO.md)
+
+### Authorization
+
+[apiKey](../README.md#apiKey)
+
+### HTTP request headers
+
+ - **Content-Type**: multipart/form-data
  - **Accept**: */*
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

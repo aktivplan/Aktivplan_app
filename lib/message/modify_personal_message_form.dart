@@ -154,10 +154,11 @@ class _ModifyPersonalMessageFormState extends State<ModifyPersonalMessageForm> {
 
   updatePicture(TranslationLanguage language) async {
     try {
-      final List<PlatformFile> _paths = (await FilePicker.platform.pickFiles(
+      final List<PlatformFile> _paths = (await FilePicker.pickFiles(
             type: FileType.custom,
             allowMultiple: false,
             allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            withData: true,
           ))
               ?.files ??
           [];
@@ -543,8 +544,9 @@ class _ModifyPersonalMessageFormState extends State<ModifyPersonalMessageForm> {
                   : null,
               style: OutlinedButton.styleFrom(
                 side: BorderSide(width: 1, color: widget.scheduledMessage != null ? primaryColor : infoIconColor),
-                backgroundColor:
-                    sendToType == MessageSendToType.ALL ? (widget.scheduledMessage != null ? primaryColor : infoIconColor).withOpacity(.2) : null,
+                backgroundColor: sendToType == MessageSendToType.ALL
+                    ? (widget.scheduledMessage != null ? primaryColor : infoIconColor).withValues(alpha: .2)
+                    : null,
               ),
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
@@ -565,8 +567,9 @@ class _ModifyPersonalMessageFormState extends State<ModifyPersonalMessageForm> {
                   : null,
               style: OutlinedButton.styleFrom(
                 side: BorderSide(width: 1, color: widget.scheduledMessage != null ? primaryColor : infoIconColor),
-                backgroundColor:
-                    sendToType == MessageSendToType.SOME ? (widget.scheduledMessage != null ? primaryColor : infoIconColor).withOpacity(.2) : null,
+                backgroundColor: sendToType == MessageSendToType.SOME
+                    ? (widget.scheduledMessage != null ? primaryColor : infoIconColor).withValues(alpha: .2)
+                    : null,
               ),
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
@@ -719,7 +722,7 @@ class _ModifyPersonalMessageFormState extends State<ModifyPersonalMessageForm> {
                     : null,
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(width: 1, color: widget.scheduledMessage != null ? primaryColor : infoIconColor),
-                  backgroundColor: isSendNow ? (widget.scheduledMessage != null ? primaryColor : infoIconColor).withOpacity(.2) : null,
+                  backgroundColor: isSendNow ? (widget.scheduledMessage != null ? primaryColor : infoIconColor).withValues(alpha: .2) : null,
                 ),
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),

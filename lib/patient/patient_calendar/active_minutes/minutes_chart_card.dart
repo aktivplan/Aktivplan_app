@@ -25,6 +25,7 @@ class MinutesChartCard extends StatelessWidget {
   final TimeData time;
   final PatientGetDTO patient;
   final double chartHeight;
+  final bool isEmbedded;
 
   MinutesChartCard({
     Key? key,
@@ -32,35 +33,50 @@ class MinutesChartCard extends StatelessWidget {
     required this.time,
     required this.patient,
     required this.chartHeight,
+    this.isEmbedded = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
     int activeMinutes = minutes.durationMinutesActive ?? 0;
     int totalMinutes = minutes.durationMinutes ?? 0;
     String statusValueText = "";
     String statusDetailText = "";
     if (time.timeframe == ActiveMinutesType.WEEK) {
       statusValueText = activeMinutes == 0 && totalMinutes == 0 ? "-" : "$activeMinutes";
-      statusDetailText = "/$totalMinutes ${context.i18n.minutes}";
+      statusDetailText = "/$totalMinutes ${minutes.klimafit ?? false ? context.i18n.minutesKlimafit : context.i18n.minutes}";
     } else {
       statusValueText = (minutes.averageMinutesPerWeek ?? 0) <= 0 ? "-" : "Ø ${minutes.averageMinutesPerWeek}";
       statusDetailText = context.i18n.perWeek;
     }
 
+    List<Map<Color, String>> legendEntries = minutes.klimafit ?? false
+        ? [
+            {predefinedActivityColor: context.i18n.activity_PREDEFINED_ACTIVITY},
+            {predefinedActiveMobilityColor: context.i18n.activity_PREDEFINED_ACTIVE_MOBILITY},
+          ]
+        : [
+            {plannedActivityColor: context.i18n.plannedActivityPlural},
+            {extraActivityColor: context.i18n.extraActivityPlural},
+          ];
+
+    final double horizontalPadding = isEmbedded ? 5 : 40;
+    final double contentWidth = MediaQuery.of(context).size.width - horizontalPadding * 2;
+
     return Padding(
-      padding: const EdgeInsets.only(left: 40, right: 40),
+      padding: EdgeInsets.only(left: horizontalPadding, right: horizontalPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SelectableText(
-            context.i18n.activeMinutes,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: lightTextColor, letterSpacing: 1.1),
-          ),
-          SelectableText(statusValueText, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.black, fontSize: 30)),
-          SelectableText(statusDetailText, style: Theme.of(context).textTheme.titleSmall?.copyWith(color: lightTextColor, letterSpacing: 1.1)),
-          SizedBox(height: 50),
+          if (!isEmbedded) ...[
+            SelectableText(
+              minutes.klimafit! ? context.i18n.activeMinutesKlimafit : context.i18n.activeMinutes,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: lightTextColor, letterSpacing: 1.1),
+            ),
+            SelectableText(statusValueText, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.black, fontSize: 30)),
+            SelectableText(statusDetailText, style: Theme.of(context).textTheme.titleSmall?.copyWith(color: lightTextColor, letterSpacing: 1.1)),
+          ],
+          SizedBox(height: isEmbedded ? 40 : 50),
           SizedBox(
             height: chartHeight,
             child: BarChart(
@@ -76,60 +92,60 @@ class MinutesChartCard extends StatelessWidget {
                         tooltipPadding: EdgeInsets.zero,
                         tooltipMargin: 0,
                         getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                          if (minutes.klimafit ?? false) {
+                            return BarTooltipItem(
+                              rod.toY > 0 ? "${rod.toY.toInt()}\n${context.i18n.durationValuePointsShort}" : "",
+                              Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black, fontSize: 10),
+                            );
+                          }
                           return BarTooltipItem(
                             rod.toY > 0 ? "${rod.toY.toInt()} min" : "",
                             Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.black, fontSize: 12),
                           );
                         })),
-                barGroups: getBarChartGroupData(context, min(width, 600)),
+                barGroups: getBarChartGroupData(context, contentWidth),
                 titlesData: FlTitlesData(
                   show: true,
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 30,
-                      getTitlesWidget: (value, meta) => SideTitleWidget(child: Text(getBarTitle(context, value.toInt())), axisSide: meta.axisSide),
-                    ),
-                  ),
                   leftTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  topTitles: AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
                   ),
                   rightTitles: AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
                   ),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 30,
+                      getTitlesWidget: (value, meta) => Text(getBarTitle(context, value.toInt())),
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                width: 18,
-                height: 18,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: plannedActivityColor),
-              ),
-              SizedBox(width: 15),
-              SelectableText(context.i18n.plannedActivityPlural, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 20)),
-            ],
-          ),
           SizedBox(height: 5),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                width: 18,
-                height: 18,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: extraActivityColor),
-              ),
-              SizedBox(width: 15),
-              SelectableText(context.i18n.extraActivityPlural, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 20)),
-            ],
-          ),
+          ...legendEntries
+              .map(
+                (e) => Padding(
+                  padding: EdgeInsets.only(top: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 16,
+                        height: 16,
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: e.keys.first),
+                      ),
+                      SizedBox(width: 10),
+                      SelectableText(e.values.first, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 14)),
+                    ],
+                  ),
+                ),
+              )
+              .toList(),
         ],
       ),
     );
@@ -179,6 +195,33 @@ class MinutesChartCard extends StatelessWidget {
     }
 
     return keysToUse.map((key) {
+      if (minutes.klimafit ?? false) {
+        int predefinedActivityPoints = minutes.activeMinutes[key]?.activityPointsPredefinedActivity ?? 0;
+        int predefinedActiveMobilityPoints = minutes.activeMinutes[key]?.activityPointsActiveMobility ?? 0;
+        double barWidth = width / (keysToUse.length + 2) / 3;
+        return BarChartGroupData(
+          x: keysToUse.indexOf(key),
+          barRods: [
+            if (predefinedActivityPoints > 0)
+              BarChartRodData(
+                  toY: (predefinedActivityPoints).toDouble(),
+                  rodStackItems: [
+                    BarChartRodStackItem(0, predefinedActivityPoints.toDouble(), predefinedActivityColor),
+                  ],
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+                  width: barWidth),
+            if (predefinedActiveMobilityPoints > 0)
+              BarChartRodData(
+                  toY: (predefinedActiveMobilityPoints).toDouble(),
+                  rodStackItems: [
+                    BarChartRodStackItem(0, predefinedActiveMobilityPoints.toDouble(), predefinedActiveMobilityColor),
+                  ],
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+                  width: barWidth),
+          ],
+          showingTooltipIndicators: [0, 1],
+        );
+      }
       int plannedMinutes = minutes.activeMinutes[key]?.durationMinutes ?? 0;
       int extraMinutes = minutes.activeMinutes[key]?.durationMinutesExtra ?? 0;
       return BarChartGroupData(
@@ -213,7 +256,7 @@ class MinutesChartCard extends StatelessWidget {
           SizedBox(
             height: 10,
           ),
-          SelectableText("/$totalMinutes ${context.i18n.minutes}",
+          SelectableText("/$totalMinutes ${minutes.klimafit ?? false ? context.i18n.minutesKlimafit : context.i18n.minutes}",
               style: Theme.of(context).textTheme.titleSmall?.copyWith(color: lightTextColor, letterSpacing: 1.1)),
           SizedBox(
             height: 20,

@@ -8,6 +8,7 @@
 // https://commonsclause.com/).
 
 import 'package:aptapp/authentication/user_repository.dart';
+import 'package:aptapp/firebase_options.dart';
 import 'package:aptapp/message/bloc/message_bloc.dart';
 import 'package:aptapp/utils/trace_helpers.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -83,15 +84,20 @@ class PushNotificationsManager {
       if (notficationSetting.authorizationStatus != AuthorizationStatus.denied &&
           notficationSetting.authorizationStatus != AuthorizationStatus.notDetermined) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        FirebaseMessaging.instance.getToken().then((token) {
-          assert(token != null);
-          _firebaseToken = token ?? "";
-          if (prefs.getKeys().contains("firebaseToken") && prefs.getString("firebaseToken") != _firebaseToken) {
-            KiwiContainer().resolve<UserRepository>().revokeFirebaseToken(prefs.getString("firebaseToken") ?? "");
-          }
-          prefs.setString("firebaseToken", _firebaseToken);
-          KiwiContainer().resolve<UserRepository>().storeFirebaseToken();
-        });
+        String? token;
+        if (DefaultFirebaseOptions.currentPlatform == DefaultFirebaseOptions.web) {
+          token = await FirebaseMessaging.instance.getToken(
+            vapidKey: "BOlQ6Uxy9RaahdNcygvbXuyo5m1CxwbljoKAhSxglp2MCywZTEFTEd-j1I14k-wIaCGknUuQDcYd3TSmJfSuBms",
+          );
+        } else {
+          token = await FirebaseMessaging.instance.getToken();
+        }
+        _firebaseToken = token ?? "";
+        if (prefs.getKeys().contains("firebaseToken") && prefs.getString("firebaseToken") != _firebaseToken) {
+          KiwiContainer().resolve<UserRepository>().revokeFirebaseToken(prefs.getString("firebaseToken") ?? "");
+        }
+        prefs.setString("firebaseToken", _firebaseToken);
+        KiwiContainer().resolve<UserRepository>().storeFirebaseToken();
       }
 
       _initialized = true;

@@ -23,7 +23,7 @@ List<BeamGuard> guards = [
     pathPatterns: ['/login'],
     guardNonMatching: true,
     check: (context, location) {
-      return userRepository.currentUser != null || location is ResetPasswordLocation || location is ImprintLocation;
+      return userRepository.currentUser != null || location is ResetPasswordLocation || location is ImprintLocation || location is OnboardingLocation;
     },
     replaceCurrentStack: true,
     beamToNamed: (from, to) => '/login',

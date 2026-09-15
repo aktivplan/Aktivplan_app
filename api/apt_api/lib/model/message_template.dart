@@ -26,6 +26,7 @@ class MessageTemplate {
     this.institutionId,
     this.importId,
     this.type,
+    this.restriction,
     this.title = const {},
     this.text = const {},
     this.pictureId = const {},
@@ -63,6 +64,14 @@ class MessageTemplate {
   ///
   MessageType? type;
 
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  MessageRestriction? restriction;
+
   Map<String, String> title;
 
   Map<String, String> text;
@@ -77,6 +86,7 @@ class MessageTemplate {
           other.institutionId == institutionId &&
           other.importId == importId &&
           other.type == type &&
+          other.restriction == restriction &&
           _deepEquality.equals(other.title, title) &&
           _deepEquality.equals(other.text, text) &&
           _deepEquality.equals(other.pictureId, pictureId);
@@ -88,13 +98,14 @@ class MessageTemplate {
       (institutionId == null ? 0 : institutionId!.hashCode) +
       (importId == null ? 0 : importId!.hashCode) +
       (type == null ? 0 : type!.hashCode) +
+      (restriction == null ? 0 : restriction!.hashCode) +
       (title.hashCode) +
       (text.hashCode) +
       (pictureId.hashCode);
 
   @override
   String toString() =>
-      'MessageTemplate[id=$id, institutionId=$institutionId, importId=$importId, type=$type, title=$title, text=$text, pictureId=$pictureId]';
+      'MessageTemplate[id=$id, institutionId=$institutionId, importId=$importId, type=$type, restriction=$restriction, title=$title, text=$text, pictureId=$pictureId]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -117,6 +128,11 @@ class MessageTemplate {
       json[r'type'] = this.type;
     } else {
       json[r'type'] = null;
+    }
+    if (this.restriction != null) {
+      json[r'restriction'] = this.restriction;
+    } else {
+      json[r'restriction'] = null;
     }
     json[r'title'] = this.title;
     json[r'text'] = this.text;
@@ -149,6 +165,7 @@ class MessageTemplate {
         institutionId: mapValueOfType<String>(json, r'institutionId'),
         importId: mapValueOfType<String>(json, r'importId'),
         type: MessageType.fromJson(json[r'type']),
+        restriction: MessageRestriction.fromJson(json[r'restriction']),
         title: mapCastOfType<String, String>(json, r'title') ?? const {},
         text: mapCastOfType<String, String>(json, r'text') ?? const {},
         pictureId:

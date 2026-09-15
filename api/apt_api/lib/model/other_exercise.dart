@@ -29,6 +29,7 @@ class OtherExercise {
     this.hint = const {},
     this.name = const {},
     this.youTubeUrl = const {},
+    this.videoFileKey,
     this.exerciseIntensityPercentageStart,
     this.exerciseIntensityPercentageEnd,
     this.exerciseTrainingHeartRateLowerLimit,
@@ -73,6 +74,14 @@ class OtherExercise {
   Map<String, String> name;
 
   Map<String, String> youTubeUrl;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? videoFileKey;
 
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
@@ -125,6 +134,7 @@ class OtherExercise {
           _deepEquality.equals(other.hint, hint) &&
           _deepEquality.equals(other.name, name) &&
           _deepEquality.equals(other.youTubeUrl, youTubeUrl) &&
+          other.videoFileKey == videoFileKey &&
           other.exerciseIntensityPercentageStart ==
               exerciseIntensityPercentageStart &&
           other.exerciseIntensityPercentageEnd ==
@@ -145,6 +155,7 @@ class OtherExercise {
       (hint.hashCode) +
       (name.hashCode) +
       (youTubeUrl.hashCode) +
+      (videoFileKey == null ? 0 : videoFileKey!.hashCode) +
       (exerciseIntensityPercentageStart == null
           ? 0
           : exerciseIntensityPercentageStart!.hashCode) +
@@ -161,7 +172,7 @@ class OtherExercise {
 
   @override
   String toString() =>
-      'OtherExercise[id=$id, institutionId=$institutionId, importId=$importId, type=$type, hint=$hint, name=$name, youTubeUrl=$youTubeUrl, exerciseIntensityPercentageStart=$exerciseIntensityPercentageStart, exerciseIntensityPercentageEnd=$exerciseIntensityPercentageEnd, exerciseTrainingHeartRateLowerLimit=$exerciseTrainingHeartRateLowerLimit, exerciseTrainingHeartRateUpperLimit=$exerciseTrainingHeartRateUpperLimit, exerciseDurationSeconds=$exerciseDurationSeconds]';
+      'OtherExercise[id=$id, institutionId=$institutionId, importId=$importId, type=$type, hint=$hint, name=$name, youTubeUrl=$youTubeUrl, videoFileKey=$videoFileKey, exerciseIntensityPercentageStart=$exerciseIntensityPercentageStart, exerciseIntensityPercentageEnd=$exerciseIntensityPercentageEnd, exerciseTrainingHeartRateLowerLimit=$exerciseTrainingHeartRateLowerLimit, exerciseTrainingHeartRateUpperLimit=$exerciseTrainingHeartRateUpperLimit, exerciseDurationSeconds=$exerciseDurationSeconds]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -188,6 +199,11 @@ class OtherExercise {
     json[r'hint'] = this.hint;
     json[r'name'] = this.name;
     json[r'youTubeUrl'] = this.youTubeUrl;
+    if (this.videoFileKey != null) {
+      json[r'videoFileKey'] = this.videoFileKey;
+    } else {
+      json[r'videoFileKey'] = null;
+    }
     if (this.exerciseIntensityPercentageStart != null) {
       json[r'exerciseIntensityPercentageStart'] =
           this.exerciseIntensityPercentageStart;
@@ -249,6 +265,7 @@ class OtherExercise {
         name: mapCastOfType<String, String>(json, r'name') ?? const {},
         youTubeUrl:
             mapCastOfType<String, String>(json, r'youTubeUrl') ?? const {},
+        videoFileKey: mapValueOfType<String>(json, r'videoFileKey'),
         exerciseIntensityPercentageStart:
             mapValueOfType<int>(json, r'exerciseIntensityPercentageStart'),
         exerciseIntensityPercentageEnd:

@@ -248,6 +248,7 @@ class PatientsActivityLocation extends BeamLocation<BeamState> {
         key: ValueKey('patients-${state.pathParameters['id']}-add-activity'),
         child: CreateActivityPage(
           patient: stateData['patient'],
+          patientId: state.pathParameters['id']!,
           chosenDate: stateData['chosenDate'] ?? DateTime.now(),
           editActivity: stateData['editActivity'],
           progressLevel: stateData['progressLevel'] ?? 0,

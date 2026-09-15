@@ -12,6 +12,9 @@ Name | Type | Description | Notes
 **notes** | **Map<String, String>** |  | [optional] [default to const {}]
 **exercises** | [**List<StrengtheningExercisePostDTO>**](StrengtheningExercisePostDTO.md) |  | [optional] [default to const []]
 **youTubeUrl** | **Map<String, String>** |  | [optional] [default to const {}]
+**videoFileKey** | **String** |  | [optional] 
+**videoWaitBetweenExercisesSeconds** | **int** |  | [optional] 
+**waitTimeText** | **String** |  | [optional] 
 **exerciseDurationSeconds** | **int** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

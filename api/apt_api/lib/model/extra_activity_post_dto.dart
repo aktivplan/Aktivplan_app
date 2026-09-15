@@ -23,6 +23,8 @@ class ExtraActivityPostDTO {
   /// Returns a new [ExtraActivityPostDTO] instance.
   ExtraActivityPostDTO({
     this.date,
+    this.time,
+    this.endTime,
     this.name,
     this.heartrate,
     this.durationMinutes,
@@ -38,6 +40,22 @@ class ExtraActivityPostDTO {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? date;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? time;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? endTime;
 
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
@@ -92,6 +110,8 @@ class ExtraActivityPostDTO {
       identical(this, other) ||
       other is ExtraActivityPostDTO &&
           other.date == date &&
+          other.time == time &&
+          other.endTime == endTime &&
           other.name == name &&
           other.heartrate == heartrate &&
           other.durationMinutes == durationMinutes &&
@@ -103,6 +123,8 @@ class ExtraActivityPostDTO {
   int get hashCode =>
       // ignore: unnecessary_parenthesis
       (date == null ? 0 : date!.hashCode) +
+      (time == null ? 0 : time!.hashCode) +
+      (endTime == null ? 0 : endTime!.hashCode) +
       (name == null ? 0 : name!.hashCode) +
       (heartrate == null ? 0 : heartrate!.hashCode) +
       (durationMinutes == null ? 0 : durationMinutes!.hashCode) +
@@ -112,7 +134,7 @@ class ExtraActivityPostDTO {
 
   @override
   String toString() =>
-      'ExtraActivityPostDTO[date=$date, name=$name, heartrate=$heartrate, durationMinutes=$durationMinutes, done=$done, note=$note, rating=$rating]';
+      'ExtraActivityPostDTO[date=$date, time=$time, endTime=$endTime, name=$name, heartrate=$heartrate, durationMinutes=$durationMinutes, done=$done, note=$note, rating=$rating]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -120,6 +142,16 @@ class ExtraActivityPostDTO {
       json[r'date'] = this.date;
     } else {
       json[r'date'] = null;
+    }
+    if (this.time != null) {
+      json[r'time'] = this.time;
+    } else {
+      json[r'time'] = null;
+    }
+    if (this.endTime != null) {
+      json[r'endTime'] = this.endTime;
+    } else {
+      json[r'endTime'] = null;
     }
     if (this.name != null) {
       json[r'name'] = this.name;
@@ -176,6 +208,8 @@ class ExtraActivityPostDTO {
 
       return ExtraActivityPostDTO(
         date: mapValueOfType<String>(json, r'date'),
+        time: mapValueOfType<String>(json, r'time'),
+        endTime: mapValueOfType<String>(json, r'endTime'),
         name: mapValueOfType<String>(json, r'name'),
         heartrate: mapValueOfType<int>(json, r'heartrate'),
         durationMinutes: mapValueOfType<int>(json, r'durationMinutes'),

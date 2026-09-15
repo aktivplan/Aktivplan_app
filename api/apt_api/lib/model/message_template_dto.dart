@@ -24,6 +24,7 @@ class MessageTemplateDTO {
   MessageTemplateDTO({
     this.title = const {},
     this.text = const {},
+    this.restriction,
     this.id,
     this.pictureId = const {},
   });
@@ -31,6 +32,14 @@ class MessageTemplateDTO {
   Map<String, String> title;
 
   Map<String, String> text;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  MessageRestriction? restriction;
 
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
@@ -48,6 +57,7 @@ class MessageTemplateDTO {
       other is MessageTemplateDTO &&
           _deepEquality.equals(other.title, title) &&
           _deepEquality.equals(other.text, text) &&
+          other.restriction == restriction &&
           other.id == id &&
           _deepEquality.equals(other.pictureId, pictureId);
 
@@ -56,17 +66,23 @@ class MessageTemplateDTO {
       // ignore: unnecessary_parenthesis
       (title.hashCode) +
       (text.hashCode) +
+      (restriction == null ? 0 : restriction!.hashCode) +
       (id == null ? 0 : id!.hashCode) +
       (pictureId.hashCode);
 
   @override
   String toString() =>
-      'MessageTemplateDTO[title=$title, text=$text, id=$id, pictureId=$pictureId]';
+      'MessageTemplateDTO[title=$title, text=$text, restriction=$restriction, id=$id, pictureId=$pictureId]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     json[r'title'] = this.title;
     json[r'text'] = this.text;
+    if (this.restriction != null) {
+      json[r'restriction'] = this.restriction;
+    } else {
+      json[r'restriction'] = null;
+    }
     if (this.id != null) {
       json[r'id'] = this.id;
     } else {
@@ -99,6 +115,7 @@ class MessageTemplateDTO {
       return MessageTemplateDTO(
         title: mapCastOfType<String, String>(json, r'title') ?? const {},
         text: mapCastOfType<String, String>(json, r'text') ?? const {},
+        restriction: MessageRestriction.fromJson(json[r'restriction']),
         id: mapValueOfType<String>(json, r'id'),
         pictureId:
             mapCastOfType<String, String>(json, r'pictureId') ?? const {},

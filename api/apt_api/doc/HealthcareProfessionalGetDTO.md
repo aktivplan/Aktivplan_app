@@ -13,6 +13,7 @@ Name | Type | Description | Notes
 **firstName** | **String** |  | [optional] 
 **lastName** | **String** |  | [optional] 
 **jobName** | **String** |  | [optional] 
+**hasSelfSignIn** | **bool** |  | [optional] 
 **id** | **String** |  | [optional] 
 **registerDate** | **String** |  | [optional] 
 **lastActiveDate** | **String** |  | [optional] 

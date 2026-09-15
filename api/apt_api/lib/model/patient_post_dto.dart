@@ -22,6 +22,15 @@ part of openapi.api;
 class PatientPostDTO {
   /// Returns a new [PatientPostDTO] instance.
   PatientPostDTO({
+    this.homeLocation,
+    this.homeLocationAddress,
+    this.workLocation,
+    this.workLocationAddress,
+    this.heatTolerance,
+    this.mobilityPreferences = const [],
+    this.dislikedMobilityPreferences = const [],
+    this.preferredActivities = const [],
+    this.dislikedActivities = const [],
     this.email,
     this.institutionId,
     this.healthcareProfessionalId,
@@ -37,7 +46,58 @@ class PatientPostDTO {
     this.maximumOxygenConsumption,
     this.diseases,
     this.medication,
+    this.participantId,
+    this.surgeryDate,
+    this.surgeryTime,
   });
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  LocationDTO? homeLocation;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? homeLocationAddress;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  LocationDTO? workLocation;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? workLocationAddress;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  HeatTolerance? heatTolerance;
+
+  List<MobilityPreference> mobilityPreferences;
+
+  List<MobilityPreference> dislikedMobilityPreferences;
+
+  List<PredefinedActivityType> preferredActivities;
+
+  List<PredefinedActivityType> dislikedActivities;
 
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
@@ -159,10 +219,46 @@ class PatientPostDTO {
   ///
   String? medication;
 
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? participantId;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? surgeryDate;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? surgeryTime;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is PatientPostDTO &&
+          other.homeLocation == homeLocation &&
+          other.homeLocationAddress == homeLocationAddress &&
+          other.workLocation == workLocation &&
+          other.workLocationAddress == workLocationAddress &&
+          other.heatTolerance == heatTolerance &&
+          _deepEquality.equals(
+              other.mobilityPreferences, mobilityPreferences) &&
+          _deepEquality.equals(
+              other.dislikedMobilityPreferences, dislikedMobilityPreferences) &&
+          _deepEquality.equals(
+              other.preferredActivities, preferredActivities) &&
+          _deepEquality.equals(other.dislikedActivities, dislikedActivities) &&
           other.email == email &&
           other.institutionId == institutionId &&
           other.healthcareProfessionalId == healthcareProfessionalId &&
@@ -177,11 +273,23 @@ class PatientPostDTO {
           other.maximumPerformance == maximumPerformance &&
           other.maximumOxygenConsumption == maximumOxygenConsumption &&
           other.diseases == diseases &&
-          other.medication == medication;
+          other.medication == medication &&
+          other.participantId == participantId &&
+          other.surgeryDate == surgeryDate &&
+          other.surgeryTime == surgeryTime;
 
   @override
   int get hashCode =>
       // ignore: unnecessary_parenthesis
+      (homeLocation == null ? 0 : homeLocation!.hashCode) +
+      (homeLocationAddress == null ? 0 : homeLocationAddress!.hashCode) +
+      (workLocation == null ? 0 : workLocation!.hashCode) +
+      (workLocationAddress == null ? 0 : workLocationAddress!.hashCode) +
+      (heatTolerance == null ? 0 : heatTolerance!.hashCode) +
+      (mobilityPreferences.hashCode) +
+      (dislikedMobilityPreferences.hashCode) +
+      (preferredActivities.hashCode) +
+      (dislikedActivities.hashCode) +
       (email == null ? 0 : email!.hashCode) +
       (institutionId == null ? 0 : institutionId!.hashCode) +
       (healthcareProfessionalId == null
@@ -200,14 +308,46 @@ class PatientPostDTO {
           ? 0
           : maximumOxygenConsumption!.hashCode) +
       (diseases == null ? 0 : diseases!.hashCode) +
-      (medication == null ? 0 : medication!.hashCode);
+      (medication == null ? 0 : medication!.hashCode) +
+      (participantId == null ? 0 : participantId!.hashCode) +
+      (surgeryDate == null ? 0 : surgeryDate!.hashCode) +
+      (surgeryTime == null ? 0 : surgeryTime!.hashCode);
 
   @override
   String toString() =>
-      'PatientPostDTO[email=$email, institutionId=$institutionId, healthcareProfessionalId=$healthcareProfessionalId, firstName=$firstName, lastName=$lastName, birthDate=$birthDate, height=$height, weight=$weight, activityClass=$activityClass, maximumHeartRate=$maximumHeartRate, maximumBloodPressure=$maximumBloodPressure, maximumPerformance=$maximumPerformance, maximumOxygenConsumption=$maximumOxygenConsumption, diseases=$diseases, medication=$medication]';
+      'PatientPostDTO[homeLocation=$homeLocation, homeLocationAddress=$homeLocationAddress, workLocation=$workLocation, workLocationAddress=$workLocationAddress, heatTolerance=$heatTolerance, mobilityPreferences=$mobilityPreferences, dislikedMobilityPreferences=$dislikedMobilityPreferences, preferredActivities=$preferredActivities, dislikedActivities=$dislikedActivities, email=$email, institutionId=$institutionId, healthcareProfessionalId=$healthcareProfessionalId, firstName=$firstName, lastName=$lastName, birthDate=$birthDate, height=$height, weight=$weight, activityClass=$activityClass, maximumHeartRate=$maximumHeartRate, maximumBloodPressure=$maximumBloodPressure, maximumPerformance=$maximumPerformance, maximumOxygenConsumption=$maximumOxygenConsumption, diseases=$diseases, medication=$medication, participantId=$participantId, surgeryDate=$surgeryDate, surgeryTime=$surgeryTime]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
+    if (this.homeLocation != null) {
+      json[r'homeLocation'] = this.homeLocation;
+    } else {
+      json[r'homeLocation'] = null;
+    }
+    if (this.homeLocationAddress != null) {
+      json[r'homeLocationAddress'] = this.homeLocationAddress;
+    } else {
+      json[r'homeLocationAddress'] = null;
+    }
+    if (this.workLocation != null) {
+      json[r'workLocation'] = this.workLocation;
+    } else {
+      json[r'workLocation'] = null;
+    }
+    if (this.workLocationAddress != null) {
+      json[r'workLocationAddress'] = this.workLocationAddress;
+    } else {
+      json[r'workLocationAddress'] = null;
+    }
+    if (this.heatTolerance != null) {
+      json[r'heatTolerance'] = this.heatTolerance;
+    } else {
+      json[r'heatTolerance'] = null;
+    }
+    json[r'mobilityPreferences'] = this.mobilityPreferences;
+    json[r'dislikedMobilityPreferences'] = this.dislikedMobilityPreferences;
+    json[r'preferredActivities'] = this.preferredActivities;
+    json[r'dislikedActivities'] = this.dislikedActivities;
     if (this.email != null) {
       json[r'email'] = this.email;
     } else {
@@ -283,6 +423,21 @@ class PatientPostDTO {
     } else {
       json[r'medication'] = null;
     }
+    if (this.participantId != null) {
+      json[r'participantId'] = this.participantId;
+    } else {
+      json[r'participantId'] = null;
+    }
+    if (this.surgeryDate != null) {
+      json[r'surgeryDate'] = this.surgeryDate;
+    } else {
+      json[r'surgeryDate'] = null;
+    }
+    if (this.surgeryTime != null) {
+      json[r'surgeryTime'] = this.surgeryTime;
+    } else {
+      json[r'surgeryTime'] = null;
+    }
     return json;
   }
 
@@ -307,6 +462,21 @@ class PatientPostDTO {
       }());
 
       return PatientPostDTO(
+        homeLocation: LocationDTO.fromJson(json[r'homeLocation']),
+        homeLocationAddress:
+            mapValueOfType<String>(json, r'homeLocationAddress'),
+        workLocation: LocationDTO.fromJson(json[r'workLocation']),
+        workLocationAddress:
+            mapValueOfType<String>(json, r'workLocationAddress'),
+        heatTolerance: HeatTolerance.fromJson(json[r'heatTolerance']),
+        mobilityPreferences:
+            MobilityPreference.listFromJson(json[r'mobilityPreferences']),
+        dislikedMobilityPreferences: MobilityPreference.listFromJson(
+            json[r'dislikedMobilityPreferences']),
+        preferredActivities:
+            PredefinedActivityType.listFromJson(json[r'preferredActivities']),
+        dislikedActivities:
+            PredefinedActivityType.listFromJson(json[r'dislikedActivities']),
         email: mapValueOfType<String>(json, r'email'),
         institutionId: mapValueOfType<String>(json, r'institutionId'),
         healthcareProfessionalId:
@@ -325,6 +495,9 @@ class PatientPostDTO {
             mapValueOfType<double>(json, r'maximumOxygenConsumption'),
         diseases: mapValueOfType<String>(json, r'diseases'),
         medication: mapValueOfType<String>(json, r'medication'),
+        participantId: mapValueOfType<String>(json, r'participantId'),
+        surgeryDate: mapValueOfType<String>(json, r'surgeryDate'),
+        surgeryTime: mapValueOfType<String>(json, r'surgeryTime'),
       );
     }
     return null;

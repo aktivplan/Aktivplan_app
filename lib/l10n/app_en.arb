@@ -3,7 +3,9 @@
   "achieveUntil": "Achieve until",
   "active": "active",
   "activeMinutes": "Active minutes",
+  "activeMinutesKlimafit": "Activity points",
   "activeMinutesHide": "Hide active minutes",
+  "activeMinutesHideKlimafit": "Hide activity points",
   "activeMinutesInCalendarWeek": "Active minutes in calendar week {calendarWeek}",
   "@activeMinutesInCalendarWeek": {
     "placeholders": {
@@ -13,8 +15,17 @@
       }
     }
   },
-  "activeMinutesLc": "active minutes",
+  "activeMinutesInCalendarWeekKlimafit": "Activity points in calendar week {calendarWeek}",
+  "@activeMinutesInCalendarWeekKlimafit": {
+    "placeholders": {
+      "calendarWeek": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
   "activeMinutesPerWeek": "Active minutes per week",
+  "activeMinutesPerWeekKlimafit": "Activity points per week",
   "activeMinutesPerWeekAmount": "{amount} active minutes per week",
   "@activeMinutesPerWeekAmount": {
     "placeholders": {
@@ -24,7 +35,17 @@
       }
     }
   },
+  "activeMinutesPerWeekAmountKlimafit": "{amount} activity points per week",
+  "@activeMinutesPerWeekAmountKlimafit": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
   "activeMinutesShow": "Show active minutes",
+  "activeMinutesShowKlimafit": "Show activity points",
   "activities": "Activities",
   "activity": "Activity",
   "activity_APPOINTMENT": "Appointment",
@@ -33,6 +54,8 @@
   "activity_HYPERTROPHY": "Hypertrophy training",
   "activity_INTERVAL": "Interval endurance",
   "activity_OTHER": "Other activity",
+  "activity_PREDEFINED_ACTIVE_MOBILITY": "Active mobility",
+  "activity_PREDEFINED_ACTIVITY": "Sport",
   "activity_STRENGTHENING": "Strength endurance",
   "activity_TASK": "Task",
   "activity_WORKOUT": "Workout",
@@ -71,14 +94,18 @@
   "activityClass_10_frequency": "Daily",
   "activityClass_10_duration": "More than 15 hours",
   "activityClasses": "Activity classes",
+  "activityDataCheckQuestion": "Are the following details correct?",
   "activityMoveHint": "Long press on an activity to drag and drop it to another day.",
   "activityMoveWarning": "Note: Due to moving this activity, it is no longer part of the appointment series.",
   "activityPlanStep1": "Select type of activity",
   "activityPlanStep1Short": "Select activity",
   "activityPlanStep2": "Adapt activity",
   "activityPlanStep2Appointment": "Adapt appointment",
+  "activityPlanStep2Task": "Adapt task",
   "activityPlanStep3": "Plan activity",
   "activityPlanStep3Appointment": "Plan appointment",
+  "activityPlanStep3Task": "Plan task",
+  "activityPreference": "Activity preference",
   "activityRepeat_BIWEEKLY": "Every 2 weeks",
   "activityRepeat_NEVER": "No repetition",
   "activityRepeat_WEEKLY": "Weekly repetition",
@@ -143,6 +170,7 @@
   "amount": "Number",
   "amountRepeats": "Number of repetitions",
   "appTitle": "aktivplan+",
+  "apply": "Apply",
   "back": "Back",
   "birthdate": "Date of birth",
   "bodyHeight": "Height",
@@ -150,8 +178,18 @@
   "bodyWeight": "Body weight",
   "bodyWeightWithUnit": "Body weight (kg)",
   "browseGallery": "Browse Gallery",
+  "calendarEntry": "Calendar entry",
   "calendarInfoActiveMinutes": "Has completed <color>{percentage}%</color> of the planned active minutes in the last four weeks.",
   "@calendarInfoActiveMinutes": {
+    "placeholders": {
+      "percentage": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "calendarInfoActiveMinutesKlimafit": "Has completed <color>{percentage}%</color> of the planned activity points in the last four weeks.",
+  "@calendarInfoActiveMinutesKlimafit": {
     "placeholders": {
       "percentage": {
         "type": "int",
@@ -248,6 +286,7 @@
   "deleteActivity": "Delete activity",
   "deleteAll": "Delete all",
   "deleteImage": "Delete image",
+  "deleteVideo": "Delete video",
   "deletedApp": "App successfully deleted",
   "deletedExercise_ENDURANCE": "Endurance training successfully deleted",
   "deletedExercise_HYPERTROPHY": "Hypertrophy training successfully deleted",
@@ -384,12 +423,16 @@
   "descriptionShort": "Short description",
   "details": "Details",
   "detailsToMessage": "Details to message",
+  "dislikedActivityPreference": "Disliked activity",
+  "dislikedMobilityPreference": "Disliked mobility",
   "documentation": "Documentation",
   "documentTitle": "Title of document",
   "csvExport": "CSV Export",
   "duplicate": "Duplicate",
   "duration": "Duration",
   "durationValueMinutes": "min",
+  "durationValuePoints": "points",
+  "durationValuePointsShort": "pts.",
   "durationValueSeconds": "sec",
   "edit": "Edit",
   "editActivity": "Edit activity",
@@ -406,6 +449,8 @@
   "emailSent": "E-Mail sent",
   "emailSentError": "E-mail could not be sent.",
   "enableSocialFeatures": "Enable social features",
+  "endLocation": "End location",
+  "endTime": "End time",
   "englishTranslationNote": "(english translation)",
   "englishTranslationOptional": "English translation (optional)",
   "error": "Unfortunately, something went wrong. Try again later.",
@@ -567,17 +612,50 @@
   "german": "German",
   "goal": "Goal",
   "handOver": "Hand over",
+  "heatTolerance": " Subjective heat tolerance",
+  "heatTolerance_AVERAGE": "Average",
+  "heatTolerance_GOOD": "Good",
+  "heatTolerance_POOR": "Poor",
   "healthcareProfessional": "Health expert",
   "healthcareProfessionals": "Health experts",
   "help": "Help",
   "helpOnboardingGuide": "<a>Onboarding Guide &gt;</a>",
   "helpTextProblems": "In case of questions or problems with aktivplan, please contact us.",
-  "helpUserGuideExperts": "<a href='https://resources.lbi-dhp.at/aktivplan/consent/docs/userguide_experts.pdf'>User guide &gt;</a>",
-  "helpUserGuidePatients": "<a href='https://resources.lbi-dhp.at/aktivplan/consent/docs/userguide_patients.pdf'>User guide &gt;</a>",
+  "helpUserGuideExperts": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/userguide_experts.pdf'>User guide &gt;</a>",
+  "helpUserGuidePatients": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/userguide_patients.pdf'>User guide &gt;</a>",
   "hintRequiredFields": "* Mandatory fields",
+  "homeLocation": "Home location",
   "id": "ID",
   "identificator": "Identificator",
   "inactive": "inactive",
+  "importPatientsFromCsv": "Import patients from CSV",
+  "importSummaryCreated": "Created: {count}",
+  "@importSummaryCreated": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "importSummaryUpdated": "Updated: {count}",
+  "@importSummaryUpdated": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "importSummarySkipped": "Skipped: {count}",
+  "@importSummarySkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "0"
+      }
+    }
+  },
   "institution": "Institute",
   "institutionAdministrator": "Institute administrator",
   "institutionAvailabilityPhone": "Availability by phone (e.g. Montag - Freitag, 9.00 - 15.00 Uhr)",
@@ -585,7 +663,11 @@
   "institutionEmailUserQueries": "E-Mail for user queries",
   "institutionFocus": "Institute focus",
   "institutionFocus_CARDIOVASCULAR_REHABILITATION": "Cardiovascular rehabilitation",
+  "institutionFocus_KLIMAFIT": "Klimafit",
+  "institutionFocus_KLIMAFIT_LIGHT": "Klimafit Light",
+  "institutionFocus_PREHAB_TO_REHAB": "Prehab2Rehab",
   "institutionFocus_PROMOTING_A_HEALTHY_LIFESTYLE": "Promoting a healthy lifestyle",
+  "institutionFocusP2RFocus_GENERAL": "General",
   "institutionGetInTouchNotes": "Notes on how to get in touch (e.g. Wir bemühen uns, alle Anfragen innerhalb von 24 Stunden zu bearbeiten.)",
   "institutionGetInTouchNotesEnglish": "Notes on how to get in touch (e.g. We strive to process all requests within 24 hours.)",
   "institutionOverview": "Overview of institutes",
@@ -640,8 +722,8 @@
   "legalNoticeCompanyName": "Ludwig Boltzmann Institute for Digital Health and Prevention",
   "legalNoticeDataProtection": "Data Protection",
   "legalNoticeMoreInformation": "<a href='https://dhp.lbg.ac.at/imprint/?lang=en'>Further information &gt;</a>",
-  "legalNoticePrivacyPolicy": "<a href='https://resources.lbi-dhp.at/aktivplan/consent/docs/Privacy_Policy_v2.html'>Privacy Policy &gt;</a>",
-  "legalNoticeTermsAndConditions": "<a href='https://resources.lbi-dhp.at/aktivplan/consent/docs/Terms_and_Conditions_v2.pdf'>Terms and Conditions &gt;</a>",
+  "legalNoticePrivacyPolicy": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/Privacy_Policy_v2.html'>Privacy Policy &gt;</a>",
+  "legalNoticeTermsAndConditions": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/Terms_and_Conditions_v2.pdf'>Terms and Conditions &gt;</a>",
   "legalNoticeTermsAndConditionsMenu": "Imprint & data protection",
   "less": "less",
   "letsGo": "Let's go!",
@@ -665,6 +747,10 @@
   "message": "Message",
   "messageHistoryHint": "This function is intended for messages to multiple people. Messages to individual people can be sent through the user profile.",
   "messageHistoryHintPatient": "Messages can be sent to multiple people via the \"Messages\" menu.",
+  "messageRestriction": "Restriction",
+  "messageRestriction_AFTER_SURGERY": "After surgery",
+  "messageRestriction_BEFORE_SURGERY": "Before surgery",
+  "messageRestriction_NO_RESTRICTION": "No restriction",
   "messages": "Messages",
   "messagesHint": "Messages on this list should be informative or motivational. Before adding a new message, please note that it will be sent to all users (at different, random times) and should therefore address all users.",
   "messagesScheduledFor": "Messages scheduled for {name}",
@@ -678,7 +764,14 @@
   },
   "messageSendToType_ALL": "All users",
   "messageSendToType_SOME": "Selected recipients",
+  "minimumDaysBetweenInformationMessages": "Minimum days between information messages",
   "minutes": "minutes",
+  "minutesKlimafit": "Activity points",
+  "mobilityPreference": "Mobility preference",
+  "mobilityPreference_BIKE": "Bike",
+  "mobilityPreference_CAR": "Car",
+  "mobilityPreference_FOOT": "Foot",
+  "mobilityPreference_PUBLIC_TRANSPORT": "Public transport",
   "month": "Month",
   "more": "more",
   "muscleGroup_ABDOMINAL": "Abdomen",
@@ -708,6 +801,15 @@
     }
   },
   "next": "Next",
+  "nextExercise": "Next exercise: {name}",
+  "@nextExercise": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Squats"
+      }
+    }
+  },
   "nextPlannedActivity": "Next planned activity",
   "no": "No",
   "noApps": "No apps added yet.",
@@ -722,6 +824,7 @@
   "noPatients": "No users recorded yet.",
   "noPersonalGoals": "No goals set yet",
   "noPlannedActivities": "No activities planned",
+  "noRecommendations": "No recommendations for the current week.",
   "noTasks": "No tasks created yet",
   "noTrainingPlans": "No exercise plans created yet.",
   "notExecuted": "Not executed yet",
@@ -739,16 +842,19 @@
   "onboardingText1": "<h1>Welcome!</h1>\n\nWe are delighted that you decided to use the <b>aktiv</b>plan App.\n\nWould you like to get a short overview of the most important functionalities of the app?",
   "onboardingText2": "<h1>Your training plan</h1>\n\nKeep track of your planned activities and document execution details.\n\nTo get additional information about an activity, click on it. When you have completed an activity, click on the circle to check it off.",
   "onboardingText3": "<h1>Active minutes</h1>\n\nMeet your goal each week and monitor your progress.\n\nYou collect active minutes by performing activities and checking them off.\n\nTo see more details about your progress over time, click on the graph.",
+  "onboardingText3Klimafit": "<h1>Activity points</h1>\n\nMeet your goal each week and monitor your progress.\n\nYou collect activity points by performing activities and checking them off.\n\nTo see more details about your progress over time, click on the graph.",
   "onboardingText4": "<h1>Adherence to training plan</h1>\n\nAlways try to stick to the training plan developed with your health care professional and perform the activities as planned.\n\nThis graph shows you at a glance how well you are doing.",
   "onboardingText5": "<h1>Personal goals</h1>\n\nYour personal goals are displayed in the calendar for the respective day and at the bottom of the training plan page.\n\nTo see more details about a goal, click on it. To mark a goal as achieved, click on the circle.",
   "onboardingText6": "<h1>Your user profile</h1>\n\nIn your user profile you can view your data and request changes.\n\nYou can also set a &quot;Special Status&quot; which will be shown to your health care professional.",
   "onboardingText7": "<h1>Have fun being active!</h1>\n\nDiscover more functions via the menu.\n\nIf something is still unclear, you can find a comprehensive user manual under the menu item &quot;Help&quot;.",
+  "openInBrowser": "Open in Browser",
   "or": "or",
   "orSendLater": "or send later",
   "overwriteDataIrreversibly": "Overwrite data irreversibly",
   "overwriteDatabase": "Overwrite database",
   "overwriteDatabaseText": "By transferring the database, any changes (adjustments/deletions/additions) that an institution may have made will be irreversibly overwritten. Please select which data you would like to overwrite:",
   "password": "Password",
+  "participantId": "Participant ID",
   "patient": "User",
   "patientHandover": "User handover",
   "patientHandoverComplete": "Handover complete",
@@ -793,6 +899,7 @@
     }
   },
   "patientsInfoActiveMinutes": "Has completed <trafficLight1/> <b>at least 80%</b> <trafficLight2/> <b>50% to 79%</b> <trafficLight3/> <b>less than 50%</b> of the planned active minutes in the last four weeks.",
+  "patientsInfoActiveMinutesKlimafit": "Has completed <trafficLight1/> <b>at least 80%</b> <trafficLight2/> <b>50% to 79%</b> <trafficLight3/> <b>less than 50%</b> of the planned activity points in the last four weeks.",
   "patientsInfoActiveMinutesThreeWeeks": "Has completed <trafficLight1/> <b>at least 80%</b> <trafficLight2/> <b>50% to 79%</b> <trafficLight3/> <b>less than 50%</b> of the active minutes in the last three weeks.",
   "patientState_INAPPROPRIATE_TRAINING_PLAN": "Inappropriate plan",
   "patientState_NO_STATE": "Plan suitable",
@@ -815,6 +922,7 @@
   "patientStateFourWeekState": "Four-week-state",
   "patientStateNotification": "State notification",
   "patientStatePlannedActiveMinutes": "Planned active minutes state",
+  "patientStatePlannedActiveMinutesKlimafit": "Planned activity points state",
   "patientOverview": "User overview",
   "patients": "Users",
   "performedOn": "Performed on",
@@ -824,6 +932,12 @@
   "personalGoalReachedPart2earlier": "achieved ahead of schedule.",
   "personalGoals": "Personal goals",
   "perWeek": "per week",
+  "pesiQuestion": "How do you perceive the temperature?",
+  "pesiValue_1": "Comfortable",
+  "pesiValue_2": "Slightly warm",
+  "pesiValue_3": "Warm",
+  "pesiValue_4": "Hot",
+  "pesiValue_5": "Very hot",
   "phone": "Phone",
   "picture": "Picture",
   "plan": "Plan",
@@ -844,7 +958,7 @@
   "planOnDays": "Plan on the following days",
   "pleaseAcceptTerms": "Please accept privacy policy.",
   "postImageTitle": "Add images to your story",
-  "postImageText" : "Choose an image file from your gallery\nor capture a photo using the camera",
+  "postImageText": "Choose an image file from your gallery\nor capture a photo using the camera",
   "postStatus": "Post Status",
   "postStatusTextHint": "Type your message here...",
   "postedStatusMessage": "Status succesfully updated",
@@ -853,19 +967,101 @@
   "postedHoursAgo": "hrs.",
   "postedItemRemoved": "Story Item successfully removed",
   "postedItemRemovedError": "Story Item could not be removed",
+  "predefinedActivityType_CAR_WALKING": "Car & walking",
+  "predefinedActivityType_CYCLING": "Cycling",
+  "predefinedActivityType_E_BIKING": "E-bike",
+  "predefinedActivityType_FAST_WALKING": "Fast walking",
+  "predefinedActivityType_HIKING": "Hiking",
+  "predefinedActivityType_NORDIC_WALKING": "Nordic walking",
+  "predefinedActivityType_OTHER": "Other",
+  "predefinedActivityType_PUBLIC_TRANSPORT_WALKING": "Public transport & walking",
+  "predefinedActivityType_RUNNING": "Running",
+  "predefinedActivityType_STRENGTH_TRAINING": "Strength training",
+  "predefinedActivityType_SWIMMING": "Swimming",
+  "predefinedActivityType_WALKING": "Walking",
+  "prehab2RehabFocus": "Prehab2Rehab Focus",
   "privacySettings": "Privacy settings",
   "qrCodeDescription": "Your QR code is private. If you share it with someone, they can scan it using the aktivplan+ App to add you as a contact.",
   "qrCodeUnsupported": "Scan the QR code with the <b>aktiv</b>plan+ App to add a contact. To do this, download the <b>aktiv</b>plan+ App to your phone or tablet:",
   "rating": "Exertion",
   "ratingQuestion": "How strenuous was this activity for you?",
-  "ratingValue_6_8": "very, very light",
-  "ratingValue_9_12": "very light",
-  "ratingValue_13_14": "somewhat hard",
-  "ratingValue_15_16": "hard",
-  "ratingValue_17_18": "very hard",
-  "ratingValue_19_20": "very, very hard",
+  "ratingValue_0_1": "extremely easy",
+  "ratingValue_2_3": "easy",
+  "ratingValue_4_5": "somewhat easy",
+  "ratingValue_6_7": "somewhat hard",
+  "ratingValue_8_9": "hard",
+  "ratingValue_10": "extremely hard",
   "recipient": "Recipient",
   "recipients": "Recipients",
+  "recommendationMoveActivity": "Move activity",
+  "recommendationMoveActivityRoute": "Route proposal",
+  "recommendationMoveActivityToRoute": "Activity {name} will be moved from {startLocation} to {endLocation}.",
+  "@recommendationMoveActivityToRoute": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Cycling"
+      },
+      "startLocation": {
+        "type": "String",
+        "example": "Salzburg"
+      },
+      "endLocation": {
+        "type": "String",
+        "example": "Vienna"
+      }
+    }
+  },
+  "recommendationMoveActivityToTime": "Activity {name} will be moved to {time}.",
+  "@recommendationMoveActivityToTime": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Cycling"
+      },
+      "time": {
+        "type": "String",
+        "example": "15:30"
+      }
+    }
+  },
+  "recommendationReason_ACTIVE_MOBILITY_UNFEASIBLE": "Activity not feasible",
+  "recommendationReason_ACTIVITY_LEVEL": "Activity level",
+  "recommendationReason_ADDITIONAL_OPPORTUNITY": "Additional activity",
+  "recommendationReason_HEAT": "Heat",
+  "recommendationReason_PRECIPITATION": "Precipitation",
+  "recommendationReason_SEVERE_WEATHER": "Severe weather",
+  "recommendations": "Recommendations",
+  "recommendationWarningDay": "{warning} for {date}",
+  "@recommendationWarningDay": {
+    "placeholders": {
+      "warning": {
+        "type": "String",
+        "example": "Heat"
+      },
+      "date": {
+        "type": "String",
+        "example": "01.01.2021"
+      }
+    }
+  },
+  "recommendationWarningDays": "{warning} from {startDate} to {endDate}",
+  "@recommendationWarningDays": {
+    "placeholders": {
+      "warning": {
+        "type": "String",
+        "example": "Heat"
+      },
+      "startDate": {
+        "type": "String",
+        "example": "01.01.2021"
+      },
+      "endDate": {
+        "type": "String",
+        "example": "07.01.2021"
+      }
+    }
+  },
   "recordedDuration": "Recorded duration",
   "register": "Register",
   "reminderActivity": "Reminder activity",
@@ -937,7 +1133,9 @@
   "scanCode": "Scan code",
   "scanCodeDescription": "Scan the QR code to add a new contact.",
   "scheduledMessage": "Message saved successfully",
+  "select": "Select",
   "selectAll": "Select all",
+  "selectLocationFromMap": "Select location from map",
   "send": "Send",
   "sendDate": "Send date",
   "sendInvitationMailAgain": "Resend invitation",
@@ -966,12 +1164,19 @@
   "skip": "Skip",
   "start": "Start",
   "startDate": "Start date",
+  "startLocation": "Start location",
+  "startNavigation": "Start navigation",
+  "startTime": "Start time",
   "startTour": "Start tour",
+  "startTourAgain": "Start tour again",
   "state": "State",
   "statusMessage": "Status message (only visible to contacts)",
   "subject": "Subject",
+  "surgeryDate": "Surgery date",
+  "surgeryTime": "Surgery time",
   "switchLanguage": "Change language to German",
-  "taskNotes": "Task notes",
+  "taskNotes": "Description",
+  "tapToExpand": "Tap to expand",
   "till": "until",
   "time": "Time",
   "tipsAndInfos": "Tips & Infos",
@@ -1029,6 +1234,7 @@
   "uploadImage": "Upload image",
   "uploadImageErrorTooBig": "Image is too big, maximum file size: 10 MB",
   "uploadProfilePicture": "Upload profile picture",
+  "uploadVideo": "Upload video",
   "validationDefaultLength": "Input must be between 2 and 100 characters long.",
   "validationDuplicateEmail": "An account already exists for this email address.",
   "validationEmail": "Please enter a valid email address.",
@@ -1039,10 +1245,16 @@
   "validationPasswordsNotEqual": "Passwords do not match.",
   "validationWrongCredentials": "Login data not correct.",
   "validationWrongPassword": "Password not correct.",
+  "video": "Video",
+  "videoWaitBetweenExercisesSeconds": "Wait time between exercises (seconds)",
+  "waitTimeAfterExerciseSeconds": "Wait time after exercise (seconds)",
+  "waitTimeText": "Additional wait time text",
   "week": "Week",
   "weeks": "Weeks",
   "weight": "Weight",
   "weightKg": "Weight (kg)",
+  "wholeDay": "Whole day",
+  "workLocation": "Work location",
   "workout": "Workout",
   "workoutDurationHint": "Workout duration is automatically calculated from the sum of the durations of the individual exercises.",
   "workouts": "Workouts",

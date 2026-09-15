@@ -8,20 +8,27 @@
 // https://commonsclause.com/).
 
 import 'package:apt_api/api.dart';
+import 'package:aptapp/beamer/institutsadmin_locations.dart';
 import 'package:aptapp/colors.dart';
+import 'package:aptapp/exercises/widgets/time_picker_row.dart';
 import 'package:aptapp/l10n/i18n.dart';
 import 'package:aptapp/patient/patient_calendar/active_minutes/percent_indicator.dart';
 import 'package:aptapp/patient/patient_calendar/done_slider.dart';
 import 'package:aptapp/patient/share_button.dart';
 import 'package:aptapp/patient/training_videos_page.dart';
 import 'package:aptapp/theme.dart';
+import 'package:aptapp/utils/activity_helpers.dart';
 import 'package:aptapp/utils/constants.dart';
 import 'package:aptapp/utils/enums.dart';
+import 'package:aptapp/utils/exercise_time_data.dart';
 import 'package:aptapp/utils/keys.dart';
 import 'package:aptapp/utils/trace_helpers.dart';
 import 'package:aptapp/utils/translation_helper.dart';
+import 'package:aptapp/widget/apt_route_preview.dart';
 import 'package:aptapp/widget/delete_button.dart';
 import 'package:aptapp/widget/form_field_padding.dart';
+import 'package:aptapp/widget/location_picker.dart';
+import 'package:aptapp/widget/video_player_activity.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +36,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -46,18 +54,20 @@ class ActivityDialog extends StatefulWidget {
   final ActivityOverviewDTO activity;
   final ActiveMinutesOverviewDTO activeMinutes;
   final bool rateActivity;
-  final bool allowRescheduleActivities;
-  final Function(String, ActivityType) deleteActivity;
+  final InstitutionDTO institution;
+  final Function() deleteActivity;
+  final DatahubResponseRecommendationsInner? recommendation;
 
-  const ActivityDialog(
-      {Key? key,
-      required this.patient,
-      required this.activity,
-      required this.activeMinutes,
-      required this.rateActivity,
-      required this.deleteActivity,
-      required this.allowRescheduleActivities})
-      : super(key: key);
+  const ActivityDialog({
+    Key? key,
+    required this.patient,
+    required this.activity,
+    required this.activeMinutes,
+    required this.rateActivity,
+    required this.deleteActivity,
+    required this.institution,
+    this.recommendation,
+  }) : super(key: key);
 
   static Future<void> showUndoRatingDialog(
     BuildContext context,
@@ -65,8 +75,8 @@ class ActivityDialog extends StatefulWidget {
     ActivityOverviewDTO activity,
     ActiveMinutesOverviewDTO activeMinutes,
     bool rateActivity,
-    bool allowRescheduleActivities,
-    Function(String, ActivityType) deleteActivity,
+    InstitutionDTO institution,
+    Function() deleteActivity,
   ) {
     final AlertDialog alert = AlertDialog(
       content: SelectableText(context.i18n.undoRatingText),
@@ -93,7 +103,7 @@ class ActivityDialog extends StatefulWidget {
                           activeMinutes: activeMinutes,
                           rateActivity: rateActivity,
                           deleteActivity: deleteActivity,
-                          allowRescheduleActivities: allowRescheduleActivities,
+                          institution: institution,
                         );
                       });
                 }),
@@ -138,7 +148,7 @@ class ActivityDialog extends StatefulWidget {
   }
 
   static Future<void> showActiveMinutesAchieved(
-      BuildContext context, double percentage, int activeMinutes, int durationMinutes, double height) async {
+      BuildContext context, double percentage, int activeMinutes, int durationMinutes, double height, bool isKlimafit) async {
     double containerHeight = height * 0.35;
     final ScreenshotController screenshotController = ScreenshotController();
     return showDialog<void>(
@@ -175,7 +185,9 @@ class ActivityDialog extends StatefulWidget {
               ),
               FittedBox(
                 child: SelectableText(
-                  context.i18n.activeMinutesPerWeekAmount(activeMinutes),
+                  isKlimafit
+                      ? context.i18n.activeMinutesPerWeekAmountKlimafit(activeMinutes)
+                      : context.i18n.activeMinutesPerWeekAmount(activeMinutes),
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Colors.black,
@@ -195,13 +207,17 @@ class ActivityDialog extends StatefulWidget {
                   width: containerHeight * (kIsWeb ? 0.9 : 0.8),
                   child: Screenshot(
                     controller: screenshotController,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: PercentIndicator(
-                        percentage: percentage,
-                        durationMinutesActive: activeMinutes,
-                        durationMinutes: durationMinutes,
-                        cardContainerHeight: 360,
+                    child: Container(
+                      color: Colors.white,
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: PercentIndicator(
+                          percentage: percentage,
+                          durationMinutesActive: activeMinutes,
+                          durationMinutes: durationMinutes,
+                          cardContainerHeight: 360,
+                          isKlimafit: isKlimafit,
+                        ),
                       ),
                     ),
                   ),
@@ -227,10 +243,11 @@ class _ActivityDialogState extends State<ActivityDialog> {
   final _activityFormKey = GlobalKey<FormState>();
   ActivityBloc? activityBloc;
   bool rateActivity = false;
+  double ratingValue = 0;
   final heartrateController = TextEditingController();
   final durationController = TextEditingController();
   final notesController = TextEditingController();
-  final extraActivityNameController = TextEditingController();
+  final nameController = TextEditingController();
   List<bool> workoutShowHints = [];
   DateTime? rateTime;
   Map<String, String> youtubeIdMapping = {};
@@ -241,8 +258,34 @@ class _ActivityDialogState extends State<ActivityDialog> {
   // by default the dialog is for setting activity to done
   bool isDone = true;
   String extraActivityName = "";
+  String time = "";
+  String endTime = "";
+  FocusNode dropDownFocusNode = FocusNode();
 
   List<YoutubePlayerController> playerControllers = [];
+  Map<int, int> workoutExerciseIndexToVideoSourceIndex = {};
+  int initialVideoIndex = 0;
+
+  LocationDTO? location;
+  String locationAddress = "";
+  LocationDTO? endLocation;
+  String endLocationAddress = "";
+  String startLocationErrorText = "";
+
+  PredefinedActivityType? predefinedActivityType;
+
+  // so we can also enable time entry when institution focus changed over time
+  get isKlimafitEntry =>
+      ((widget.activity.type == ActivityType.APPOINTMENT) && widget.institution.institutionFocus?.isKlimafit() == true) ||
+      widget.activity.type == ActivityType.PREDEFINED_ACTIVITY ||
+      widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY;
+
+  get isEdit => widget.activity.activityId?.isNotEmpty ?? false;
+
+  // patient can only edit activity planned by himself or when entering --> isEdit = true
+  get canEditWholeActivity => (userRepository.userRole != UserRole.PATIENT ||
+      (widget.activity.plannedBy ?? "") == (userRepository.user!.patient!.id ?? "") ||
+      (widget.activity.activityId ?? "").isEmpty);
 
   @override
   void initState() {
@@ -259,7 +302,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
       allowedLastMoveDate = DateTime(2100);
     } else {
       allowedFirstMoveDate = Jiffy.parseFromDateTime(moveDate!).startOf(Unit.week).dateTime;
-      allowedLastMoveDate = Jiffy.parseFromDateTime(moveDate!).endOf(Unit.week).subtract(days: 1).dateTime;
+      allowedLastMoveDate = Jiffy.parseFromDateTime(moveDate!).endOf(Unit.week).dateTime;
     }
     if (widget.activity.rating != null) {
       if ((widget.activity.rating?.heartrate ?? 0) > 0) {
@@ -267,20 +310,99 @@ class _ActivityDialogState extends State<ActivityDialog> {
       }
       if (widget.activity.rating?.durationMinutes != null && (widget.activity.rating?.done ?? false)) {
         durationController.text = widget.activity.rating!.durationMinutes!.toString();
-      } else {
+      } else if (widget.activity.durationMinutes != null) {
         durationController.text = widget.activity.durationMinutes.toString();
       }
       notesController.text = widget.activity.rating!.note ?? "";
+
+      if (widget.activity.type == ActivityType.APPOINTMENT && notesController.text.isEmpty) {
+        notesController.text = widget.activity.activity?.appointment?.details ?? "";
+      }
+
+      if ((widget.activity.type == ActivityType.EXTRA ||
+              ((widget.activity.type == ActivityType.PREDEFINED_ACTIVITY || widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY) &&
+                  (widget.activity.activityId ?? "").isEmpty)) &&
+          !(widget.activity.rating?.done ?? false)) {
+        isDone = false;
+      }
+      ratingValue = widget.activity.rating!.rating != null ? widget.activity.rating!.rating!.toDouble() : 0;
     }
     if (widget.activity.type == ActivityType.WORKOUT) {
       workoutShowHints = widget.activity.activity!.workout!.exercises.map((e) => false).toList();
     }
+    time = widget.activity.time ?? "";
+    endTime = widget.activity.endTime ?? "";
+    if (widget.activity.type == ActivityType.APPOINTMENT) {
+      location = widget.activity.rating?.startLocation ?? widget.activity.activity?.appointment?.locationCoordinates ?? null;
+      locationAddress = widget.activity.rating?.startLocationAddress ?? "";
+      if (locationAddress.isEmpty) {
+        locationAddress = widget.activity.activity?.appointment?.locationAddress ?? "";
+      }
+    } else if (widget.activity.type == ActivityType.PREDEFINED_ACTIVITY || widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY) {
+      predefinedActivityType = widget.activity.activity?.predefinedActivity?.predefinedActivityType ?? widget.recommendation?.predefinedActivity;
+      location = widget.activity.rating?.startLocation ??
+          widget.activity.activity?.predefinedActivity?.startLocation ??
+          widget.recommendation?.route?.locOrigin ??
+          widget.recommendation?.proposedRoute?.locOrigin ??
+          null;
+      locationAddress = widget.activity.rating?.startLocationAddress ??
+          widget.recommendation?.route?.locOriginAddr ??
+          widget.recommendation?.proposedRoute?.locOriginAddr ??
+          "";
+      // always show rate dialog, as there is no useful information in adjust dialog
+      rateActivity = true;
+      if (locationAddress.isEmpty) {
+        locationAddress = widget.activity.activity?.predefinedActivity?.startLocationAddress ?? "";
+      }
+      endLocation = widget.activity.rating?.endLocation ??
+          widget.activity.activity?.predefinedActivity?.endLocation ??
+          widget.recommendation?.route?.locDestination ??
+          widget.recommendation?.proposedRoute?.locDestination ??
+          null;
+      endLocationAddress = widget.activity.rating?.endLocationAddress ??
+          widget.recommendation?.route?.locDestinationAddr ??
+          widget.recommendation?.proposedRoute?.locDestinationAddr ??
+          "";
+      if (endLocationAddress.isEmpty) {
+        endLocationAddress = widget.activity.activity?.predefinedActivity?.endLocationAddress ?? "";
+      }
+    }
     Future.delayed(Duration.zero, () {
       initYouTubePlayerControllers();
-      if (widget.activity.type == ActivityType.EXTRA) {
-        extraActivityNameController.text = getTranslatedText(widget.activity.name, context);
+      if (widget.activity.type == ActivityType.EXTRA ||
+          widget.activity.type == ActivityType.APPOINTMENT ||
+          widget.activity.type == ActivityType.PREDEFINED_ACTIVITY ||
+          widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY) {
+        nameController.text = getTranslatedText(widget.activity.name, context);
       }
     });
+
+    // can be entered by patient, so deliver autocomplete suggestions
+    if ([ActivityType.EXTRA, ActivityType.APPOINTMENT, ActivityType.PREDEFINED_ACTIVITY, ActivityType.PREDEFINED_ACTIVE_MOBILITY]
+        .contains(widget.activity.type)) {
+      // autocomplete for new
+      activityBloc!.add(FetchAutocompleteEvent(type: widget.activity.type!));
+    }
+  }
+
+  List<String> getFileKeysForStrengtheningAndHypertrophy(StrengtheningExercisePostDTO exercise) {
+    final String videoFileKey = exercise.videoFileKey ?? "";
+    if (videoFileKey.isEmpty) {
+      return [];
+    }
+    List<String> fileKeys = [];
+    final repeats = math.max(exercise.exerciseRepeatCount ?? 0, 1);
+    final sets = math.max(exercise.exerciseRepeatSets ?? 0, 1);
+    final breakBetweenSets = exercise.exerciseBreakBetweenSetsDurationSeconds ?? 0;
+    for (int currentSet = 0; currentSet < sets; currentSet++) {
+      for (int currentRepeat = 0; currentRepeat < repeats; currentRepeat++) {
+        fileKeys.add(videoFileKey);
+      }
+      if (breakBetweenSets > 0 && currentSet < sets - 1) {
+        fileKeys.add("pause:$breakBetweenSets");
+      }
+    }
+    return fileKeys;
   }
 
   @override
@@ -336,13 +458,14 @@ class _ActivityDialogState extends State<ActivityDialog> {
         playerControllers = [];
         if (youTubeId.isNotEmpty) {
           playerControllers.add(YoutubePlayerController.fromVideoId(
-            videoId: youTubeId,
+              videoId: youTubeId,
               // initialVideoId: youTubeId,
               params: YoutubePlayerParams(
                 // autoPlay: false,
                 // desktopMode: true,
                 showFullscreenButton: true,
                 loop: true,
+                origin: 'https://www.youtube-nocookie.com',
                 // playlist: [youTubeId],
               )));
         }
@@ -351,13 +474,14 @@ class _ActivityDialogState extends State<ActivityDialog> {
             .map((e) {
           String exerciseYouTubeId = getYoutubeVideoIdByURL(getTranslatedText(e.youTubeUrl, context), map: youtubeIdMapping);
           return YoutubePlayerController.fromVideoId(
-            videoId: exerciseYouTubeId,
+              videoId: exerciseYouTubeId,
               // initialVideoId: exerciseYouTubeId,
               params: YoutubePlayerParams(
                 // autoPlay: false,
                 // desktopMode: true,
                 showFullscreenButton: true,
                 loop: true,
+                origin: 'https://www.youtube-nocookie.com',
                 // playlist: [exerciseYouTubeId],
               ));
         }).toList());
@@ -392,13 +516,14 @@ class _ActivityDialogState extends State<ActivityDialog> {
         setState(() {
           playerControllers = [
             YoutubePlayerController.fromVideoId(
-              videoId: youTubeId,
+                videoId: youTubeId,
                 // initialVideoId: youTubeId,
                 params: YoutubePlayerParams(
                   // autoPlay: false,
                   // desktopMode: true,
                   showFullscreenButton: true,
                   loop: true,
+                  origin: 'https://www.youtube-nocookie.com',
                   // playlist: [youTubeId],
                 ))
           ];
@@ -456,8 +581,8 @@ class _ActivityDialogState extends State<ActivityDialog> {
     }
   }
 
-  setActivityToDone(double? value, bool hasInitialValue) {
-    if (!_activityFormKey.currentState!.validate()) {
+  setActivityToDone(double? value, int? pesiValue, bool hasInitialValue) {
+    if (!validateForm()) {
       return;
     }
 
@@ -472,20 +597,35 @@ class _ActivityDialogState extends State<ActivityDialog> {
     var rating = ActivityPatientRatingPostDTO()
       ..done = true
       ..rating = value != null ? value.truncate() : null
+      ..pesiRating = pesiValue
       ..durationMinutes = int.tryParse(durationController.text)
       ..heartrate = int.tryParse(heartrateController.text)
       ..note = notesController.text
-      ..date = englishDateFormat.format(moveDate!);
+      ..date = englishDateFormat.format(moveDate!)
+      ..time = time
+      ..endTime = endTime
+      ..startLocation = location
+      ..startLocationAddress = locationAddress
+      ..endLocation = endLocation
+      ..endLocationAddress = endLocationAddress;
 
     widget.activity.rating!.done = rating.done;
     widget.activity.rating!.rating = rating.rating;
-    activityBloc!.add(UpdateActivityRatingEvent(
+    widget.activity.rating!.pesiRating = rating.pesiRating;
+    final UpdateActivityRatingEvent event = UpdateActivityRatingEvent(
         activityType: widget.activity.type!,
         rating: rating,
-        id: widget.activity.activityId!,
+        id: widget.activity.activityId ?? "",
         date: widget.activity.date!,
         patientId: widget.patient.id!,
-        extraActivityName: extraActivityNameController.text));
+        extraActivityName: nameController.text);
+
+    // when activity not set generally create it, also add rating event to store rating value after creation
+    if (!isEdit) {
+      updateActivity(ratingEvent: event);
+      return;
+    }
+    activityBloc!.add(event);
     Navigator.pop(context);
 
     if (!hasInitialValue) {
@@ -493,8 +633,23 @@ class _ActivityDialogState extends State<ActivityDialog> {
     }
   }
 
-  updateActivity() {
-    if (!_activityFormKey.currentState!.validate()) {
+  bool validateForm() {
+    final bool startLocationInvalid =
+        (widget.activity.type == ActivityType.PREDEFINED_ACTIVITY || widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY) &&
+            location == null;
+    final bool isValid = _activityFormKey.currentState!.validate();
+    setState(() {
+      if (startLocationInvalid) {
+        startLocationErrorText = context.i18n.validationNotEmpty;
+      } else {
+        startLocationErrorText = "";
+      }
+    });
+    return !startLocationInvalid && isValid;
+  }
+
+  updateActivity({UpdateActivityRatingEvent? ratingEvent}) {
+    if (!validateForm()) {
       return;
     }
 
@@ -506,13 +661,110 @@ class _ActivityDialogState extends State<ActivityDialog> {
           value: DateTime.now().difference(rateTime!).inSeconds),
     );
 
+    if (!isEdit && widget.activity.type == ActivityType.EXTRA) {
+      var extraActivity = ExtraActivityPostDTO(
+        date: englishDateFormat.format(moveDate!),
+        time: time,
+        endTime: endTime,
+        done: isDone,
+        durationMinutes: int.tryParse(durationController.text) ?? 0,
+        heartrate: int.tryParse(heartrateController.text) ?? 0,
+        name: nameController.text,
+        note: notesController.text,
+        rating: isDone ? widget.activity.rating?.rating : null,
+      );
+      activityBloc!.add(AddExtraActivityEvent(
+        activity: extraActivity,
+        patientId: widget.patient.id!,
+      ));
+      Navigator.pop(context);
+      checkIfActiveMinutesAchieved(MediaQuery.of(context).size.height);
+      return;
+    }
+
+    if (widget.activity.type == ActivityType.APPOINTMENT) {
+      var activity = ActivityPostDTO(
+          name: getTranslationObjectFromText(nameController.text, nameController.text),
+          startDate: englishDateFormat.format(moveDate!),
+          time: time,
+          endTime: endTime,
+          days: [getDayOfWeekfromDateTime(moveDate!)],
+          repeatCount: 1,
+          repeats: ActivityRepeat.NEVER,
+          appointment: AppointmentPostDTO(
+            name: nameController.text,
+            useLocationCoordinates: true,
+            locationCoordinates: location,
+            locationAddress: locationAddress,
+            details: notesController.text,
+          ));
+
+      if (!isEdit) {
+        activityBloc!
+            .add(AddActivityEvent(activity: activity, patientId: widget.patient.id!, type: ActivityType.APPOINTMENT, ratingEvent: ratingEvent));
+        Navigator.pop(context);
+        if (ratingEvent != null && ratingEvent.rating.done == true) {
+          checkIfActiveMinutesAchieved(MediaQuery.of(context).size.height);
+        }
+        return;
+        // when activity is not planned by patient repetitions are possible, update rating for date
+      } else if (widget.activity.plannedBy == widget.patient.id) {
+        activityBloc!.add(
+            UpdateActivityEvent(activity: activity, id: widget.activity.activityId!, patientId: widget.patient.id!, type: ActivityType.APPOINTMENT));
+        Navigator.pop(context);
+        return;
+      }
+    }
+    final route = widget.recommendation?.route ?? widget.recommendation?.proposedRoute;
+
+    if ((!isEdit || canEditWholeActivity) &&
+        (widget.activity.type == ActivityType.PREDEFINED_ACTIVITY || widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY)) {
+      var activity = ActivityPostDTO(
+          name: getTranslationObjectFromText(nameController.text, nameController.text),
+          startDate: englishDateFormat.format(moveDate!),
+          time: time,
+          endTime: endTime,
+          days: [getDayOfWeekfromDateTime(moveDate!)],
+          repeatCount: 1,
+          repeats: ActivityRepeat.NEVER,
+          predefinedActivity: PredefinedActivityPostDTO(
+            activityType: widget.activity.type,
+            name: nameController.text,
+            predefinedActivityType: predefinedActivityType,
+            startLocation: location,
+            startLocationAddress: locationAddress,
+            endLocation: endLocation,
+            endLocationAddress: endLocationAddress,
+            durationMinutes: int.tryParse(durationController.text) ?? 0,
+          ));
+      if (isEdit) {
+        activityBloc!.add(
+            UpdateActivityEvent(activity: activity, id: widget.activity.activityId!, patientId: widget.patient.id!, type: widget.activity.type!));
+      } else {
+        activityBloc!.add(AddActivityEvent(
+            activity: activity, patientId: widget.patient.id!, type: widget.activity.type!, routeProposal: route, ratingEvent: ratingEvent));
+        Navigator.pop(context);
+        return;
+      }
+    }
+
     var rating = ActivityPatientRatingPostDTO()
       ..done = false
       ..rating = widget.activity.rating?.rating
       ..durationMinutes = int.tryParse(durationController.text)
       ..heartrate = int.tryParse(heartrateController.text)
       ..note = notesController.text
-      ..date = englishDateFormat.format(moveDate!);
+      ..date = englishDateFormat.format(moveDate!)
+      ..time = time
+      ..endTime = endTime
+      ..startLocation = location
+      ..startLocationAddress = locationAddress
+      ..endLocation = endLocation
+      ..endLocationAddress = endLocationAddress;
+
+    if (route != null) {
+      rating.routeProposal = route;
+    }
 
     widget.activity.rating!.done = rating.done;
     widget.activity.rating!.rating = rating.rating;
@@ -522,7 +774,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
         id: widget.activity.activityId!,
         date: widget.activity.date!,
         patientId: widget.patient.id!,
-        extraActivityName: extraActivityNameController.text));
+        extraActivityName: nameController.text));
     Navigator.pop(context);
   }
 
@@ -547,6 +799,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
           widget.activeMinutes.durationMinutesActive! + duration,
           widget.activeMinutes.durationMinutes!,
           height,
+          widget.institution.institutionFocus?.isKlimafit() == true,
         );
     }
   }
@@ -574,7 +827,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
                 children: [
                   if (!rateActivity && widget.activity.rating!.done!) getActivityRatingInfo(context),
                   ...getActivityInfos(widget.activity, context),
-                  if (rateActivity) getActivityRating(context, size)
+                  if (rateActivity) getActivityForm(context, size)
                 ],
               )),
         ),
@@ -583,12 +836,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
   }
 
   getActivityRatingInfo(BuildContext context) {
-    Color backgroundColor = plannedActivityColor;
-    if (widget.activity.type == ActivityType.EXTRA) {
-      backgroundColor = extraActivityColor;
-    } else if (widget.activity.type == ActivityType.TASK) {
-      backgroundColor = plannedTaskColor;
-    }
+    Color backgroundColor = widget.activity.type!.backgroundColor;
     return Padding(
       padding: EdgeInsets.only(top: 6.0, bottom: 6.0),
       child: Container(
@@ -627,70 +875,53 @@ class _ActivityDialogState extends State<ActivityDialog> {
             if (widget.activity.rating!.rating != null)
               Padding(
                 padding: EdgeInsets.only(top: 22),
-                child: SelectableText("(${widget.activity.rating!.rating}) ${getRatingText(widget.activity.rating!.rating!)}"),
+                child: SelectableText("(${widget.activity.rating!.rating}) ${getRatingText(context, widget.activity.rating!.rating!)}"),
+              ),
+            if (isKlimafitEntry && widget.activity.rating!.pesiRating != null)
+              Padding(
+                padding: EdgeInsets.only(top: 4),
+                child: SelectableText(
+                    "(${widget.activity.rating!.pesiRating}) ${getPesiValueText(context, widget.activity.rating!.pesiRating!).toLowerCase()}"),
               ),
             SizedBox(height: 22),
             if ((widget.activity.rating!.heartrate ?? 0) > 0)
               getActivityInfoLine(context.i18n.trainingHeartFrequency, widget.activity.rating!.heartrate!.toString() + " bpm"),
-            getActivityInfoLineWithWidget(
-              context.i18n.notes,
-              SelectableLinkify(
-                text: (widget.activity.rating!.note ?? "").isNotEmpty ? widget.activity.rating!.note! : "-",
-                onOpen: (link) async {
-                  if (await canLaunchUrlString(link.url)) {
-                    String cleanedUrl = link.url;
-                    if (cleanedUrl.endsWith("!")) {
-                      cleanedUrl = cleanedUrl.substring(0, cleanedUrl.length - 1);
-                    }
-                    launchUrlString(cleanedUrl, mode: LaunchMode.externalApplication);
-                  }
+            if (widget.activity.type != ActivityType.PREDEFINED_ACTIVE_MOBILITY && widget.activity.type != ActivityType.PREDEFINED_ACTIVITY)
+              Padding(
+                padding: EdgeInsetsGeometry.only(bottom: 22),
+                child: getActivityInfoLineWithWidget(
+                  context.i18n.notes,
+                  SelectableLinkify(
+                    text: (widget.activity.rating!.note ?? "").isNotEmpty ? widget.activity.rating!.note! : "-",
+                    onOpen: (link) async {
+                      if (await canLaunchUrlString(link.url)) {
+                        String cleanedUrl = link.url;
+                        if (cleanedUrl.endsWith("!")) {
+                          cleanedUrl = cleanedUrl.substring(0, cleanedUrl.length - 1);
+                        }
+                        launchUrlString(cleanedUrl, mode: LaunchMode.externalApplication);
+                      }
+                    },
+                  ),
+                ),
+              ),
+            if ((widget.activity.plannedBy ?? "") != SYSTEM_CREATED)
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    rateActivity = true;
+                  });
                 },
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Text(context.i18n.adjust.toUpperCase())],
+                ),
               ),
-            ),
-            SizedBox(height: 22),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  rateActivity = true;
-                });
-              },
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [Text(context.i18n.adjust.toUpperCase())],
-              ),
-            ),
           ],
         ),
       ),
     );
-  }
-
-  getRatingText(int value) {
-    switch (value) {
-      case 6:
-      case 7:
-      case 8:
-        return context.i18n.ratingValue_6_8;
-      case 9:
-      case 10:
-      case 11:
-      case 12:
-        return context.i18n.ratingValue_9_12;
-      case 13:
-      case 14:
-        return context.i18n.ratingValue_13_14;
-      case 15:
-      case 16:
-        return context.i18n.ratingValue_15_16;
-      case 17:
-      case 18:
-        return context.i18n.ratingValue_17_18;
-      case 19:
-      case 20:
-      default:
-        return context.i18n.ratingValue_19_20;
-    }
   }
 
   Future<Null> _selectMoveDate(BuildContext context) async {
@@ -703,34 +934,109 @@ class _ActivityDialogState extends State<ActivityDialog> {
       });
   }
 
-  getActivityRating(BuildContext context, SizingInformation size) {
+  getActivityForm(BuildContext context, SizingInformation size) {
+    // can change name of activity as it is planned by user
+    final bool canEdit = widget.activity.type == ActivityType.EXTRA ||
+        ((widget.activity.type == ActivityType.APPOINTMENT ||
+                widget.activity.type == ActivityType.PREDEFINED_ACTIVITY ||
+                widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY) &&
+            canEditWholeActivity);
+    String dateLabel = isDone ? context.i18n.performedOn : context.i18n.plannedOn;
+    if (widget.activity.type == ActivityType.APPOINTMENT ||
+        widget.activity.type == ActivityType.PREDEFINED_ACTIVITY ||
+        widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY) {
+      dateLabel = context.i18n.date;
+    }
+    bool canEditPredefinedActivity =
+        canEdit && (widget.activity.type == ActivityType.PREDEFINED_ACTIVITY || widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY);
     return Form(
       key: _activityFormKey,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // can change name of extra activity as it is planned by user
-          if (widget.activity.type == ActivityType.EXTRA)
-            FormFieldPadding(
-              child: TextFormField(
-                controller: extraActivityNameController,
+          if (canEditPredefinedActivity)
+            Padding(
+              padding: EdgeInsets.only(bottom: 0),
+              child: DropdownButtonFormField<PredefinedActivityType>(
+                initialValue: predefinedActivityType,
+                onChanged: (value) {
+                  setState(() {
+                    predefinedActivityType = value!;
+                  });
+                },
+                validator: (value) {
+                  if (value == null) {
+                    return context.i18n.validationNotEmpty;
+                  } else {
+                    return null;
+                  }
+                },
                 decoration: InputDecoration(
-                  hintText: context.i18n.name,
-                  labelText: context.i18n.name,
+                  hintText: widget.activity.type!.getTranslatedText(context),
+                  labelText: widget.activity.type!.getTranslatedText(context) + " *",
                   border: OutlineInputBorder(),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: datatableBorderColor,
-                    ),
-                  ),
                 ),
+                items: widget.activity.type!.getPredefinedActivityTypes(context),
               ),
             ),
-          if (widget.activity.type == ActivityType.EXTRA || widget.allowRescheduleActivities)
+          if (canEdit &&
+              ((widget.activity.type != ActivityType.PREDEFINED_ACTIVITY && widget.activity.type != ActivityType.PREDEFINED_ACTIVE_MOBILITY) ||
+                  predefinedActivityType == PredefinedActivityType.OTHER))
+            BlocBuilder<ActivityBloc, ActivityState>(
+              builder: (context, state) {
+                if (state is AutocompleteState) {
+                  return FormFieldPadding(
+                    child: TypeAheadField<String>(
+                      controller: nameController,
+                      focusNode: dropDownFocusNode,
+                      itemBuilder: (context, suggestion) {
+                        return ListTile(
+                          title: Text(suggestion),
+                        );
+                      },
+                      onSelected: (suggestion) {
+                        dropDownFocusNode.unfocus();
+                        nameController.text = suggestion;
+                      },
+                      suggestionsCallback: (pattern) {
+                        final toReturn =
+                            state.autocomplete.suggestions.where((element) => element.toLowerCase().contains(pattern.toLowerCase())).toList();
+                        return toReturn.isEmpty ? null : toReturn;
+                      },
+                      builder: (context, controller, focusNode) {
+                        return TextFormField(
+                          controller: nameController,
+                          focusNode: focusNode,
+                          decoration: InputDecoration(
+                            hintText: context.i18n.name,
+                            labelText: context.i18n.name + " *",
+                            border: OutlineInputBorder(),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: datatableBorderColor,
+                              ),
+                            ),
+                          ),
+                          validator: (value) {
+                            if ((value ?? "").isEmpty) {
+                              return context.i18n.validationNotEmpty;
+                            }
+                            return null;
+                          },
+                        );
+                      },
+                    ),
+                  );
+                }
+                return SizedBox.shrink();
+              },
+            ),
+          if (canEdit || (widget.institution.allowRescheduleActivities ?? false))
             FormFieldPadding(
               child: TextFormField(
                 controller: moveDateController,
+                keyboardType: TextInputType.number,
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.digitsOnly,
                 ],
@@ -755,8 +1061,8 @@ class _ActivityDialogState extends State<ActivityDialog> {
                   }
                 },
                 decoration: InputDecoration(
-                  hintText: isDone ? context.i18n.performedOn : context.i18n.plannedOn,
-                  labelText: isDone ? context.i18n.performedOn : context.i18n.plannedOn,
+                  hintText: dateLabel,
+                  labelText: dateLabel,
                   border: OutlineInputBorder(),
                   prefixIcon: IconButton(
                     icon: Icon(Icons.date_range),
@@ -766,11 +1072,15 @@ class _ActivityDialogState extends State<ActivityDialog> {
                 ),
               ),
             ),
-          if (widget.activity.type != ActivityType.TASK)
+          if (widget.activity.type != ActivityType.TASK &&
+              widget.activity.type != ActivityType.APPOINTMENT &&
+              widget.activity.type != ActivityType.PREDEFINED_ACTIVE_MOBILITY &&
+              widget.activity.type != ActivityType.PREDEFINED_ACTIVITY)
             Padding(
               padding: EdgeInsets.only(top: 16),
               child: TextFormField(
                 controller: heartrateController,
+                keyboardType: TextInputType.number,
                 inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
                   hintText: context.i18n.trainingHeartFrequencyBpm,
@@ -784,11 +1094,12 @@ class _ActivityDialogState extends State<ActivityDialog> {
                 ),
               ),
             ),
-          if (widget.activity.type != ActivityType.TASK)
+          if (widget.activity.type != ActivityType.TASK && !isKlimafitEntry)
             Padding(
               padding: EdgeInsets.only(top: 16),
               child: TextFormField(
                 controller: durationController,
+                keyboardType: TextInputType.number,
                 inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                 validator: (value) {
                   if ((value ?? "").isEmpty) {
@@ -811,24 +1122,132 @@ class _ActivityDialogState extends State<ActivityDialog> {
                 ),
               ),
             ),
-          Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: TextFormField(
-              controller: notesController,
-              maxLines: 3,
-              decoration: InputDecoration(
-                hintText: context.i18n.note,
-                labelText: context.i18n.note,
-                border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: datatableBorderColor,
+          if (isKlimafitEntry) ...[
+            SizedBox(height: 16),
+            TimePickerRow(
+              initialTime: time,
+              requiredField: true,
+              labelText: context.i18n.startTime,
+              selectTime: (selectedTime) {
+                time = selectedTime;
+                if (endTime.isNotEmpty) {
+                  setState(() {
+                    durationController.text =
+                        ExerciseTypeTimeData.calculateMinutesBetween(startTime: time, endTime: endTime, rating: ratingValue).toString();
+                  });
+                }
+              },
+            ),
+            SizedBox(height: 16),
+            TimePickerRow(
+              initialTime: endTime,
+              requiredField: widget.activity.type != ActivityType.APPOINTMENT,
+              labelText: context.i18n.endTime,
+              selectTime: (selectedTime) {
+                endTime = selectedTime;
+                if (time.isNotEmpty) {
+                  setState(() {
+                    durationController.text =
+                        ExerciseTypeTimeData.calculateMinutesBetween(startTime: time, endTime: endTime, rating: ratingValue).toString();
+                  });
+                }
+              },
+            ),
+            if (durationController.text.isNotEmpty &&
+                (!(widget.institution.institutionFocus?.isKlimafit() ?? false) ||
+                    (widget.activity.type != ActivityType.APPOINTMENT && widget.activity.type != ActivityType.TASK)))
+              Padding(
+                padding: EdgeInsets.only(left: 8.0, top: 2.0),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: lightTextColor,
+                      size: 14,
+                    ),
+                    SizedBox(width: 5),
+                    FittedBox(
+                      child: SelectableText(
+                        getFormattedDurationLine(
+                            int.parse(durationController.text), widget.institution.institutionFocus?.isKlimafit() == true, context),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: lightTextColor,
+                              letterSpacing: 1.1,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+          if (isKlimafitEntry)
+            FormFieldPadding(
+              child: LocationPicker(
+                labelText: widget.activity.type == ActivityType.APPOINTMENT ? context.i18n.location : context.i18n.startLocation + " *",
+                onLocationChanged: (location, address) {
+                  setState(() {
+                    this.location = location;
+                    locationAddress = address;
+                    if (this.location != null) {
+                      startLocationErrorText = "";
+                    }
+                  });
+                },
+                errorText: startLocationErrorText,
+                initialLocation: location,
+                initialLocationAddress: locationAddress,
+                homeLocation: widget.patient.homeLocation,
+                homeLocationAddress: widget.patient.homeLocationAddress,
+                workLocation: widget.patient.workLocation,
+                workLocationAddress: widget.patient.workLocationAddress,
+              ),
+            ),
+          if (isKlimafitEntry && widget.activity.type != ActivityType.APPOINTMENT)
+            FormFieldPadding(
+              child: LocationPicker(
+                labelText: context.i18n.endLocation,
+                onLocationChanged: (location, address) {
+                  setState(() {
+                    endLocation = location;
+                    endLocationAddress = address;
+                  });
+                },
+                initialLocation: endLocation,
+                initialLocationAddress: endLocationAddress,
+                homeLocation: widget.patient.homeLocation,
+                homeLocationAddress: widget.patient.homeLocationAddress,
+                workLocation: widget.patient.workLocation,
+                workLocationAddress: widget.patient.workLocationAddress,
+              ),
+            ),
+          if (widget.activity.rating?.routeProposal != null)
+            Padding(
+              padding: EdgeInsets.only(top: 16),
+              child: AptRoutePreview(
+                route: widget.activity.rating!.routeProposal!,
+              ),
+            ),
+          if (widget.activity.type != ActivityType.PREDEFINED_ACTIVITY && widget.activity.type != ActivityType.PREDEFINED_ACTIVE_MOBILITY)
+            Padding(
+              padding: EdgeInsets.only(top: 16),
+              child: TextFormField(
+                controller: notesController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: widget.activity.type == ActivityType.APPOINTMENT ? context.i18n.details : context.i18n.note,
+                  labelText: widget.activity.type == ActivityType.APPOINTMENT ? context.i18n.details : context.i18n.note,
+                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: datatableBorderColor,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          if (widget.activity.type == ActivityType.EXTRA)
+          if (widget.activity.type == ActivityType.EXTRA ||
+              widget.activity.type == ActivityType.PREDEFINED_ACTIVITY ||
+              widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY)
             Padding(
               padding: EdgeInsets.symmetric(vertical: 10),
               child: CheckboxListTile(
@@ -848,17 +1267,26 @@ class _ActivityDialogState extends State<ActivityDialog> {
                 ),
               ),
             ),
-          if (widget.activity.type != ActivityType.TASK && isDone)
+          if (widget.activity.type != ActivityType.TASK && widget.activity.type != ActivityType.APPOINTMENT && isDone)
             Padding(
               padding: EdgeInsets.only(top: 16),
               child: DoneSlider(
-                  activity: widget.activity,
-                  patientId: widget.patient.id!,
-                  activeMinutes: widget.activeMinutes,
-                  rateActivity: setActivityToDone,
-                  size: size),
+                activity: widget.activity,
+                patientId: widget.patient.id!,
+                activeMinutes: widget.activeMinutes,
+                rateActivity: setActivityToDone,
+                size: size,
+                isKlimafit: isKlimafitEntry,
+                onValueChanged: (value) => setState(() {
+                  ratingValue = value;
+                  if (time.isNotEmpty && endTime.isNotEmpty) {
+                    durationController.text =
+                        ExerciseTypeTimeData.calculateMinutesBetween(startTime: time, endTime: endTime, rating: ratingValue).toString();
+                  }
+                }),
+              ),
             ),
-          if (widget.activity.type != ActivityType.TASK && !isDone)
+          if ((widget.activity.type != ActivityType.TASK && !isDone) || widget.activity.type == ActivityType.APPOINTMENT)
             Padding(
               padding: EdgeInsets.only(top: 16),
               child: ElevatedButton(
@@ -869,7 +1297,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
                 child: Row(
                   mainAxisSize: size.isDesktop ? MainAxisSize.min : MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Text(context.i18n.update.toUpperCase())],
+                  children: [Text(isEdit ? context.i18n.update.toUpperCase() : context.i18n.create.toUpperCase())],
                 ),
               ),
             ),
@@ -878,7 +1306,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
               padding: EdgeInsets.only(top: 16),
               child: ElevatedButton(
                 onPressed: () {
-                  setActivityToDone(null, true);
+                  setActivityToDone(null, null, true);
                 },
                 style: getElevatedButtonStyle(context),
                 child: Row(
@@ -888,7 +1316,13 @@ class _ActivityDialogState extends State<ActivityDialog> {
                 ),
               ),
             ),
-          if (widget.activity.type == ActivityType.EXTRA)
+          if ((widget.activity.type == ActivityType.EXTRA ||
+                  widget.activity.type == ActivityType.APPOINTMENT ||
+                  widget.activity.type == ActivityType.PREDEFINED_ACTIVITY ||
+                  widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY) &&
+              (canEditWholeActivity ||
+                  (widget.activity.type == ActivityType.APPOINTMENT && (widget.institution.institutionFocus?.isKlimafit() ?? false))) &&
+              (widget.activity.activityId ?? "").isNotEmpty)
             Padding(
               padding: EdgeInsets.only(top: 16),
               child: ElevatedButton(
@@ -897,15 +1331,17 @@ class _ActivityDialogState extends State<ActivityDialog> {
                   mainAxisSize: size.isDesktop ? MainAxisSize.min : MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(context.i18n.deleteActivity.toUpperCase()),
+                    Text((widget.activity.type == ActivityType.EXTRA ? context.i18n.deleteActivity : context.i18n.delete).toUpperCase()),
                   ],
                 ),
                 onPressed: () => DeleteButton.showDeleteConfirmationDialog(
                   context,
-                  context.i18n.deleteActivity,
-                  context.i18n.deleteMessageActivity(getTranslatedText(widget.activity.name, context)),
+                  widget.activity.type == ActivityType.EXTRA ? context.i18n.deleteActivity : context.i18n.delete,
+                  widget.activity.type == ActivityType.EXTRA
+                      ? context.i18n.deleteMessageActivity(getTranslatedText(widget.activity.name, context))
+                      : context.i18n.deleteMessageThisAppointment,
                   () {
-                    widget.deleteActivity(widget.activity.activityId!, widget.activity.type!);
+                    widget.deleteActivity();
                     Navigator.of(context).pop();
                   },
                 ),
@@ -917,42 +1353,7 @@ class _ActivityDialogState extends State<ActivityDialog> {
   }
 
   getActivityInfos(ActivityOverviewDTO activity, BuildContext context) {
-    final String timeString = getTranslatedTimeString(activity.time ?? "", context);
-
-    if (activity.type == ActivityType.APPOINTMENT) {
-      return [
-        SizedBox(height: 10),
-        SelectableText(getTranslatedText(activity.name, context),
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black, height: 1)),
-        SizedBox(height: 10),
-        SelectableText("${activity.type!.getTranslatedText(context)}, $timeString"),
-        if ((activity.activity!.appointment!.location ?? "").isNotEmpty || (activity.activity!.appointment!.details ?? "").isNotEmpty)
-          SizedBox(height: 10),
-        if ((activity.activity!.appointment!.location ?? "").isNotEmpty)
-          getActivityInfoLine(context.i18n.location, activity.activity!.appointment!.location!),
-        if ((activity.activity!.appointment!.details ?? "").isNotEmpty)
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SelectableText(context.i18n.details + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-              Flexible(
-                child: SelectableLinkify(
-                  text: activity.activity!.appointment!.details!,
-                  onOpen: (link) async {
-                    if (await canLaunchUrlString(link.url)) {
-                      String cleanedUrl = link.url;
-                      if (cleanedUrl.endsWith("!")) {
-                        cleanedUrl = cleanedUrl.substring(0, cleanedUrl.length - 1);
-                      }
-                      launchUrlString(cleanedUrl, mode: LaunchMode.externalApplication);
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
-      ];
-    }
+    final String timeString = getTranslatedTimeString(activity.time ?? "", activity.endTime ?? "", context);
 
     String typeLine = activity.type!.getTranslatedText(context);
     if (timeString.isNotEmpty) {
@@ -962,13 +1363,36 @@ class _ActivityDialogState extends State<ActivityDialog> {
       typeLine += ", ${activity.durationMinutes} ${context.i18n.durationValueMinutes}";
     }
 
+    String activityName = getActivityName(activity, context);
+    String title = activityName;
+    if (title.isEmpty) {
+      if (widget.activity.type == ActivityType.EXTRA) {
+        title = context.i18n.extraActivity;
+      } else {
+        title = widget.activity.type!.getTranslatedText(context);
+      }
+    }
+
+    SelectableText textLine = SelectableText(typeLine);
+    if (widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY || widget.activity.type == ActivityType.PREDEFINED_ACTIVITY) {
+      textLine = SelectableText(context.i18n.activityDataCheckQuestion,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.01,
+                height: 1.8,
+              ));
+    }
+
     return [
       SizedBox(height: 10),
-      SelectableText(getTranslatedText(activity.name, context),
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black, height: 1)),
+      SelectableText(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black, height: 1)),
+      if (activityName.isNotEmpty) ...[
+        SizedBox(height: 10),
+        textLine,
+      ],
       SizedBox(height: 10),
-      SelectableText(typeLine),
-      SizedBox(height: 10),
+      if (activity.type == ActivityType.PREDEFINED_ACTIVITY || activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY)
+        ...getPredefinedActivityInfos(activity, context),
       if (activity.type == ActivityType.EXTRA) ...getExtraActivityInfos(activity, context),
       if (activity.type == ActivityType.ENDURANCE) ...getEnduranceActivityInfos(activity, context),
       if (activity.type == ActivityType.INTERVAL) ...getIntervalActivityInfos(activity, context),
@@ -984,12 +1408,25 @@ class _ActivityDialogState extends State<ActivityDialog> {
           padding: EdgeInsets.only(top: 20),
           child: getYouTubeWidget(0),
         ),
+      VideoPlayerActivity(
+          activity: activity,
+          initialVideoIndex: initialVideoIndex,
+          updateExerciseToVideoIndex: (value) => setState(() => workoutExerciseIndexToVideoSourceIndex = value)),
       if (activity.type == ActivityType.WORKOUT) ...getWorkoutActivityInfos(activity, context),
+      if (activity.type == ActivityType.APPOINTMENT) ...getAppointmentActivityInfos(activity, context),
     ];
   }
 
+  getPredefinedActivityInfos(ActivityOverviewDTO activity, BuildContext context) {
+    final PredefinedActivityPostDTO? predefinedActivity = activity.activity?.predefinedActivity;
+    if (predefinedActivity == null) {
+      return [];
+    }
+    return [SizedBox(height: 10), ...getExtraActivityInfos(activity, context)];
+  }
+
   getExtraActivityInfos(ActivityOverviewDTO activity, BuildContext context) {
-    if (!(activity.rating?.done ?? false) && !rateActivity) {
+    if (!(activity.rating?.done ?? false) && !rateActivity && (activity.plannedBy ?? "") != SYSTEM_CREATED) {
       return [
         ElevatedButton(
           onPressed: () {
@@ -1117,62 +1554,94 @@ class _ActivityDialogState extends State<ActivityDialog> {
         activityDescription +=
             "\n<b>${context.i18n.trainingHeartFrequency}:</b> ${exercise.exerciseTrainingHeartRateLowerLimit} - ${exercise.exerciseTrainingHeartRateUpperLimit} bpm";
       }
+      bool hasVideo = (exercise.videoFileKey ?? "").isNotEmpty;
       Widget innerText = Container(
         decoration: BoxDecoration(
             border: Border.all(
               color: datatableBorderColor,
             ),
             borderRadius: BorderRadius.all(Radius.circular(6))),
-        padding: EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: StyledText(
-                    text: activityDescription,
-                    tags: {
-                      'b': StyledTextTag(style: TextStyle(fontWeight: FontWeight.bold)),
+        padding: EdgeInsets.zero,
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (!hasVideo) SizedBox(width: 12),
+              if (hasVideo)
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        initialVideoIndex = workoutExerciseIndexToVideoSourceIndex[currentIndex] ?? 0;
+                      });
                     },
-                  ),
-                ),
-                Transform.rotate(
-                  angle: math.pi / 2,
-                  child: Icon(showHint ? Icons.chevron_left : Icons.chevron_right),
-                ),
-              ],
-            ),
-            if (showHint)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  ...getStrengtheningActivityInfos(exercise, context, true),
-                  if (hintText.isNotEmpty)
-                    getActivityInfoLineWithWidget(
-                      context.i18n.notes,
-                      SelectableLinkify(
-                        text: hintText,
-                        onOpen: (link) async {
-                          if (await canLaunchUrlString(link.url)) {
-                            String cleanedUrl = link.url;
-                            if (cleanedUrl.endsWith("!")) {
-                              cleanedUrl = cleanedUrl.substring(0, cleanedUrl.length - 1);
-                            }
-                            launchUrlString(cleanedUrl, mode: LaunchMode.externalApplication);
-                          }
-                        },
+                    borderRadius: const BorderRadius.horizontal(left: Radius.circular(6)),
+                    child: const SizedBox(
+                      width: 48,
+                      child: Center(
+                        child: Icon(Icons.play_arrow, size: 24),
                       ),
                     ),
-                  if (getYoutubeVideoIdByURL(getTranslatedText(exercise.youTubeUrl, context), map: youtubeIdMapping).isNotEmpty &&
-                      youTubeCount < playerControllers.length)
-                    getYouTubeWidget(youTubeCount)
-                ],
+                  ),
+                ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0).copyWith(right: 12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: StyledText(
+                              text: activityDescription,
+                              tags: {
+                                'b': StyledTextTag(style: TextStyle(fontWeight: FontWeight.bold)),
+                              },
+                            ),
+                          ),
+                          Transform.rotate(
+                            angle: math.pi / 2,
+                            child: Icon(showHint ? Icons.chevron_left : Icons.chevron_right),
+                          ),
+                        ],
+                      ),
+                      if (showHint)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            ...getStrengtheningActivityInfos(exercise, context, true),
+                            if (hintText.isNotEmpty)
+                              getActivityInfoLineWithWidget(
+                                context.i18n.notes,
+                                SelectableLinkify(
+                                  text: hintText,
+                                  onOpen: (link) async {
+                                    if (await canLaunchUrlString(link.url)) {
+                                      String cleanedUrl = link.url;
+                                      if (cleanedUrl.endsWith("!")) {
+                                        cleanedUrl = cleanedUrl.substring(0, cleanedUrl.length - 1);
+                                      }
+                                      launchUrlString(cleanedUrl, mode: LaunchMode.externalApplication);
+                                    }
+                                  },
+                                ),
+                              ),
+                            if (getYoutubeVideoIdByURL(getTranslatedText(exercise.youTubeUrl, context), map: youtubeIdMapping).isNotEmpty &&
+                                youTubeCount < playerControllers.length)
+                              getYouTubeWidget(youTubeCount)
+                          ],
+                        ),
+                    ],
+                  ),
+                ),
               ),
-          ],
+            ],
+          ),
         ),
       );
       workoutWidgets.add(Padding(
@@ -1188,6 +1657,73 @@ class _ActivityDialogState extends State<ActivityDialog> {
       ));
     }
     return workoutWidgets;
+  }
+
+  getAppointmentActivityInfos(ActivityOverviewDTO activity, BuildContext context) {
+    final AppointmentPostDTO? appointment = activity.activity?.appointment;
+    if (appointment == null || rateActivity) {
+      return [];
+    }
+    String detailsText = widget.activity.rating?.note ?? "";
+    if (detailsText.isEmpty) {
+      detailsText = appointment.details ?? "";
+    }
+    String locationAddress = widget.activity.rating?.startLocationAddress ?? "";
+    if (locationAddress.isEmpty) {
+      locationAddress = appointment.locationAddress ?? "";
+    }
+    return [
+      if ((appointment.location ?? "").isNotEmpty && !(appointment.useLocationCoordinates ?? false))
+        Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: getActivityInfoLine(context.i18n.location, appointment.location!),
+        ),
+      if (locationAddress.isNotEmpty && (appointment.useLocationCoordinates ?? false))
+        Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: getActivityInfoLine(context.i18n.location, locationAddress),
+        ),
+      if (detailsText.isNotEmpty)
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SelectableText(context.i18n.details + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
+            Flexible(
+              child: SelectableLinkify(
+                text: detailsText,
+                onOpen: (link) async {
+                  if (await canLaunchUrlString(link.url)) {
+                    String cleanedUrl = link.url;
+                    if (cleanedUrl.endsWith("!")) {
+                      cleanedUrl = cleanedUrl.substring(0, cleanedUrl.length - 1);
+                    }
+                    launchUrlString(cleanedUrl, mode: LaunchMode.externalApplication);
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      if ((userRepository.userRole != UserRole.PATIENT ||
+              (widget.activity.plannedBy ?? "") == (userRepository.user!.patient!.id ?? "") ||
+              (widget.institution.institutionFocus?.isKlimafit() ?? false)) &&
+          (widget.activity.plannedBy ?? "") != SYSTEM_CREATED)
+        Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: ElevatedButton(
+            onPressed: () {
+              setState(() {
+                rateActivity = true;
+              });
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [Text(context.i18n.adjust.toUpperCase())],
+            ),
+          ),
+        ),
+    ];
   }
 
   Widget getYouTubeWidget(int index) {

@@ -18,10 +18,13 @@ import 'package:aptapp/utils/constants.dart';
 import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/translation_helper.dart';
 import 'package:aptapp/widget/language_tabs.dart';
+import 'package:aptapp/widget/location_picker.dart';
+import 'package:aptapp/widget/video_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:http/http.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import 'widgets/back_next_buttons.dart';
@@ -33,8 +36,11 @@ class StepTwo extends StatefulWidget {
   final bool isTrainingPlan;
   final String trainingPlanId;
   final Function() back;
-  final Function(dynamic) next;
+  final Function(dynamic, bool, MultipartFile?) next;
   final Function() onCancelled;
+  final InstitutionDTO? institution;
+  final bool didChangeVideoFile;
+  final MultipartFile? videoFile;
 
   StepTwo({
     Key? key,
@@ -46,6 +52,9 @@ class StepTwo extends StatefulWidget {
     required this.onCancelled,
     this.isTrainingPlan = false,
     this.trainingPlanId = "",
+    this.institution,
+    this.didChangeVideoFile = false,
+    this.videoFile,
   }) : super(key: key);
 
   @override
@@ -83,6 +92,10 @@ class _StepTwoState extends State<StepTwo> {
   final nameController = TextEditingController();
   final locationController = TextEditingController();
   final detailsController = TextEditingController();
+  // WORKOUT
+  final videoWaitBetweenExercisesController = TextEditingController();
+  final waitTimeTextController = TextEditingController();
+  bool useLocationCoordinates = false;
   bool needsEquipment = false;
 
   List<StrengtheningExerciseMuscleGroup> muscleGroups = [];
@@ -98,11 +111,39 @@ class _StepTwoState extends State<StepTwo> {
   List<StrengtheningExercisePostDTO> workoutExercises = [];
 
   bool hasChanges = false;
+  bool didChangeVideoFile = false;
+  MultipartFile? videoFile;
 
   FocusNode dropDownExerciseDeFocusNode = FocusNode();
   FocusNode dropDownExerciseEnFocusNode = FocusNode();
   FocusNode dropDownWorkoutDeFocusNode = FocusNode();
   FocusNode dropDownWorkoutEnFocusNode = FocusNode();
+
+  PredefinedActivityType? predefinedActivityType;
+  LocationDTO? startLocation;
+  String startLocationAddress = "";
+  LocationDTO? endLocation;
+  String endLocationAddress = "";
+  String startLocationErrorText = "";
+
+  _getVideoFormField() {
+    return Padding(
+      padding: EdgeInsets.only(bottom: inputSpacing),
+      child: VideoFormField(
+          initialFileKey: plannedActivity?.videoFileKey ?? "",
+          initialVideoFile: widget.videoFile,
+          onUpdateFile: (file) {
+            setState(() {
+              videoFile = file;
+              hasChanges = true;
+              didChangeVideoFile = true;
+              if (file == null) {
+                plannedActivity.videoFileKey = "";
+              }
+            });
+          }),
+    );
+  }
 
   buildExerciseType() {
     var exercise;
@@ -115,7 +156,9 @@ class _StepTwoState extends State<StepTwo> {
           exerciseIntensityPercentageEnd: int.tryParse(intensityEndController.text),
           hint: getTranslationObjectFromController(hintController, hintEnglishController),
           name: getTranslationObjectFromController(exerciseNameController, exerciseNameEnglishController),
-          youTubeUrl: getTranslationObjectFromController(youTubeUrlController, youTubeUrlEnglishController));
+          youTubeUrl: getTranslationObjectFromController(youTubeUrlController, youTubeUrlEnglishController),
+          videoFileKey: plannedActivity?.videoFileKey ?? "");
+
       return exercise;
     } else if (widget.activityType == ActivityType.INTERVAL) {
       exercise = IntervalExercisePostDTO(
@@ -136,6 +179,7 @@ class _StepTwoState extends State<StepTwo> {
         hint: getTranslationObjectFromController(hintController, hintEnglishController),
         name: getTranslationObjectFromController(exerciseNameController, exerciseNameEnglishController),
         youTubeUrl: getTranslationObjectFromController(youTubeUrlController, youTubeUrlEnglishController),
+        videoFileKey: plannedActivity?.videoFileKey ?? "",
       );
       return exercise;
     } else if (widget.activityType == ActivityType.STRENGTHENING || widget.activityType == ActivityType.HYPERTROPHY) {
@@ -153,6 +197,7 @@ class _StepTwoState extends State<StepTwo> {
         hint: getTranslationObjectFromController(hintController, hintEnglishController),
         name: getTranslationObjectFromController(exerciseNameController, exerciseNameEnglishController),
         youTubeUrl: getTranslationObjectFromController(youTubeUrlController, youTubeUrlEnglishController),
+        videoFileKey: plannedActivity?.videoFileKey ?? "",
       );
       return exercise;
     } else if (widget.activityType == ActivityType.WORKOUT) {
@@ -167,7 +212,11 @@ class _StepTwoState extends State<StepTwo> {
         "name": getTranslationObjectFromController(exerciseNameController, exerciseNameEnglishController),
         "exerciseDurationSeconds": (int.tryParse(durationController.text) ?? 0) * MINUTES_TO_SECONDS,
         "youTubeUrl": getTranslationObjectFromController(youTubeUrlController, youTubeUrlEnglishController),
+        "videoFileKey": plannedActivity?.videoFileKey ?? "",
         "notes": getTranslationObjectFromController(hintController, hintEnglishController),
+        "videoWaitBetweenExercisesSeconds":
+            videoWaitBetweenExercisesController.text.isNotEmpty ? int.tryParse(videoWaitBetweenExercisesController.text) : null,
+        "waitTimeText": waitTimeTextController.text,
       };
       exercise = WorkoutPostDTO.fromJson(ex);
       return exercise;
@@ -179,15 +228,31 @@ class _StepTwoState extends State<StepTwo> {
         hint: getTranslationObjectFromController(hintController, hintEnglishController),
         name: getTranslationObjectFromController(exerciseNameController, exerciseNameEnglishController),
         youTubeUrl: getTranslationObjectFromController(youTubeUrlController, youTubeUrlEnglishController),
+        videoFileKey: plannedActivity?.videoFileKey ?? "",
       );
       return exercise;
     } else if (widget.activityType == ActivityType.APPOINTMENT) {
-      return AppointmentPostDTO(name: nameController.text, location: locationController.text, details: detailsController.text);
+      return AppointmentPostDTO(
+          name: nameController.text,
+          location: locationController.text,
+          details: detailsController.text,
+          useLocationCoordinates: useLocationCoordinates,
+          locationCoordinates: startLocation,
+          locationAddress: startLocationAddress);
     } else if (widget.activityType == ActivityType.TASK) {
       return TaskPostDTO(
           name: getTranslationObjectFromController(exerciseNameController, exerciseNameEnglishController),
           youTubeUrl: getTranslationObjectFromController(youTubeUrlController, youTubeUrlEnglishController),
-          hint: getTranslationObjectFromController(hintController, hintEnglishController));
+          hint: getTranslationObjectFromController(hintController, hintEnglishController),
+          videoFileKey: plannedActivity?.videoFileKey ?? "");
+    } else if (widget.activityType == ActivityType.PREDEFINED_ACTIVITY || widget.activityType == ActivityType.PREDEFINED_ACTIVE_MOBILITY) {
+      return PredefinedActivityPostDTO(
+          predefinedActivityType: predefinedActivityType,
+          name: nameController.text,
+          startLocation: startLocation,
+          startLocationAddress: startLocationAddress,
+          endLocation: endLocation,
+          endLocationAddress: endLocationAddress);
     }
   }
 
@@ -208,7 +273,10 @@ class _StepTwoState extends State<StepTwo> {
       "name": exercise.name,
       "needsEquipment": exercise.needsEquipment,
       "weight": exercise.weight,
-      "youTubeUrl": exercise.youTubeUrl
+      "youTubeUrl": exercise.youTubeUrl,
+      "videoFileKey": exercise.videoFileKey,
+      "waitTimeAfterExerciseSeconds": exercise.waitTimeAfterExerciseSeconds,
+      "waitTimeText": exercise.waitTimeText
     };
     return ex;
   }
@@ -227,18 +295,52 @@ class _StepTwoState extends State<StepTwo> {
   }
 
   validate() {
-    if (_exerciseTwoFormKey.currentState!.validate()) {
-      var exercise = buildExerciseType();
-      widget.next(exercise);
+    final bool isValid = _exerciseTwoFormKey.currentState!.validate();
+    final bool startLocationInvalid =
+        (widget.activityType == ActivityType.PREDEFINED_ACTIVITY || widget.activityType == ActivityType.PREDEFINED_ACTIVE_MOBILITY) &&
+            startLocation == null;
+    if (!isValid || startLocationInvalid) {
+      setState(() {
+        if (startLocationInvalid) {
+          startLocationErrorText = context.i18n.validationNotEmpty;
+        } else {
+          startLocationErrorText = "";
+        }
+      });
+      return;
     }
+    var exercise = buildExerciseType();
+    widget.next(exercise, didChangeVideoFile, videoFile);
   }
 
   checkForEdit(bool overrideHeartRate) {
-    if (plannedActivity != null && !widget.isTrainingPlan) {
+    if (widget.activityType == ActivityType.PREDEFINED_ACTIVITY || widget.activityType == ActivityType.PREDEFINED_ACTIVE_MOBILITY) {
+      if (plannedActivity == null) {
+        nameController.text = "";
+        startLocation = widget.patient?.homeLocation;
+        startLocationAddress = widget.patient?.homeLocationAddress ?? "";
+        endLocation = null;
+        endLocationAddress = "";
+      } else {
+        nameController.text = plannedActivity.name;
+        startLocation = plannedActivity.startLocation ?? widget.patient?.homeLocation;
+        startLocationAddress = plannedActivity.startLocationAddress ?? widget.patient?.homeLocationAddress ?? "";
+        endLocation = plannedActivity.endLocation;
+        endLocationAddress = plannedActivity.endLocationAddress;
+        setState(() {
+          predefinedActivityType = plannedActivity.predefinedActivityType;
+        });
+      }
+    } else if (plannedActivity != null && !widget.isTrainingPlan) {
       if (widget.activityType == ActivityType.APPOINTMENT) {
         nameController.text = plannedActivity.name;
         locationController.text = plannedActivity.location;
         detailsController.text = plannedActivity.details;
+        setState(() {
+          useLocationCoordinates = plannedActivity.useLocationCoordinates ?? false;
+          startLocation = plannedActivity.locationCoordinates ?? widget.patient?.homeLocation;
+          startLocationAddress = plannedActivity.locationAddress ?? widget.patient?.homeLocationAddress ?? "";
+        });
         return;
       }
 
@@ -273,6 +375,9 @@ class _StepTwoState extends State<StepTwo> {
           intensityEndController.text =
               plannedActivity.exerciseIntensityPercentageEnd != null ? plannedActivity.exerciseIntensityPercentageEnd.toString() : "";
         }
+      } else {
+        videoWaitBetweenExercisesController.text = plannedActivity.videoWaitBetweenExercisesSeconds?.toString() ?? "";
+        waitTimeTextController.text = plannedActivity.waitTimeText ?? "";
       }
 
       if (widget.activityType == ActivityType.ENDURANCE || widget.activityType == ActivityType.OTHER) {
@@ -371,17 +476,30 @@ class _StepTwoState extends State<StepTwo> {
     }
   }
 
+  bool get hasExerciseTemplate =>
+      widget.activityType != ActivityType.APPOINTMENT &&
+      widget.activityType != ActivityType.PREDEFINED_ACTIVITY &&
+      widget.activityType != ActivityType.PREDEFINED_ACTIVE_MOBILITY;
+
   @override
   void initState() {
     super.initState();
-    if (widget.activityType != ActivityType.WORKOUT && widget.activityType != ActivityType.APPOINTMENT && !widget.isTrainingPlan) {
+    if (widget.activityType != ActivityType.WORKOUT && hasExerciseTemplate && !widget.isTrainingPlan) {
       BlocProvider.of<ExerciseBloc>(context).addTypeEvent(ExerciseType.fromJson(widget.activityType.value)!);
     }
     if (widget.activityType == ActivityType.WORKOUT) {
       BlocProvider.of<ExerciseBloc>(context)..add(FetchWorkoutExerciseEvent());
     }
     plannedActivity = widget.plannedActivity;
+    this.didChangeVideoFile = widget.didChangeVideoFile;
+    this.videoFile = widget.videoFile;
     checkForEdit(false);
+
+    if (widget.activityType == ActivityType.APPOINTMENT && plannedActivity == null && widget.institution?.institutionFocus?.isKlimafit() == true) {
+      setState(() {
+        useLocationCoordinates = true;
+      });
+    }
   }
 
   @override
@@ -436,7 +554,9 @@ class _StepTwoState extends State<StepTwo> {
     if (widget.isTrainingPlan) {
       return ModifyTrainingPlanPage(
         back: widget.back,
-        next: widget.next,
+        next: (TrainingPlanPostDTO trainingPlan) {
+          widget.next(trainingPlan, didChangeVideoFile, videoFile); // TODO check training plan page
+        },
         onCancelled: widget.onCancelled,
         trainingPlanToEdit: plannedActivity,
         trainingPlanId: widget.trainingPlanId,
@@ -467,7 +587,7 @@ class _StepTwoState extends State<StepTwo> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (widget.activityType != ActivityType.APPOINTMENT)
+              if (hasExerciseTemplate)
                 Padding(
                   padding: EdgeInsets.only(top: inputSpacing),
                   child: LanguageTabs(germanFields: [
@@ -495,6 +615,8 @@ class _StepTwoState extends State<StepTwo> {
                               exerciseNameController.text = suggestion.name['DE'] ?? '';
                               setState(() {
                                 plannedActivity = suggestion;
+                                didChangeVideoFile = false;
+                                videoFile = null;
                                 this.hasChanges = true;
                               });
                               checkForEdit(true);
@@ -516,7 +638,6 @@ class _StepTwoState extends State<StepTwo> {
                                     borderSide: BorderSide(
                                       color: datatableBorderColor,
                                     ),
-
                                   ),
                                 ),
                                 validator: (value) {
@@ -611,6 +732,51 @@ class _StepTwoState extends State<StepTwo> {
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                   color: datatableBorderColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                          _getVideoFormField(),
+                          Padding(
+                            padding: EdgeInsets.only(bottom: inputSpacing),
+                            child: TextFormField(
+                              controller: videoWaitBetweenExercisesController,
+                              keyboardType: TextInputType.numberWithOptions(signed: true),
+                              inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                              onChanged: (value) => {
+                                setState(() {
+                                  this.hasChanges = true;
+                                })
+                              },
+                              decoration: InputDecoration(
+                                hintText: context.i18n.videoWaitBetweenExercisesSeconds,
+                                labelText: context.i18n.videoWaitBetweenExercisesSeconds,
+                                border: OutlineInputBorder(),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: datatableBorderColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(bottom: inputSpacing),
+                            child: TextFormField(
+                              controller: waitTimeTextController,
+                              onChanged: (value) => {
+                                setState(() {
+                                  this.hasChanges = true;
+                                })
+                              },
+                              decoration: InputDecoration(
+                                hintText: context.i18n.waitTimeText,
+                                labelText: context.i18n.waitTimeText,
+                                border: OutlineInputBorder(),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: datatableBorderColor,
+                                  ),
                                 ),
                               ),
                             ),
@@ -783,6 +949,8 @@ class _StepTwoState extends State<StepTwo> {
                               exerciseNameController.text = suggestion.name['EN'] ?? '';
                               setState(() {
                                 plannedActivity = suggestion;
+                                didChangeVideoFile = false;
+                                videoFile = null;
                                 workoutExercises = plannedActivity?.exercises;
                                 if (plannedActivity.exerciseDurationSeconds != null) {
                                   durationController.text = Duration(seconds: plannedActivity.exerciseDurationSeconds).inMinutes.toString();
@@ -872,6 +1040,8 @@ class _StepTwoState extends State<StepTwo> {
                   ]),
                 ),
               if (widget.activityType == ActivityType.APPOINTMENT) _buildAppointment(),
+              if (widget.activityType == ActivityType.PREDEFINED_ACTIVITY || widget.activityType == ActivityType.PREDEFINED_ACTIVE_MOBILITY)
+                _buildPredefinedActivity(),
             ],
           ),
         ),
@@ -1637,9 +1807,7 @@ class _StepTwoState extends State<StepTwo> {
             ),
           ),
         ),
-        SizedBox(
-          height: inputSpacing,
-        ),
+        _getVideoFormField(),
         TextFormField(
           textAlign: TextAlign.start,
           textAlignVertical: TextAlignVertical.top,
@@ -2098,7 +2266,7 @@ class _StepTwoState extends State<StepTwo> {
                       Container(
                         width: 80,
                         child: DropdownButtonFormField(
-                          value: selectedIntensityDurationUnit,
+                          initialValue: selectedIntensityDurationUnit,
                           onChanged: (value) {
                             setState(() {
                               selectedIntensityDurationUnit = value?.toString() ?? "min";
@@ -2567,7 +2735,7 @@ class _StepTwoState extends State<StepTwo> {
                       Container(
                         width: 80,
                         child: DropdownButtonFormField(
-                          value: selectedRecoveryDurationUnit,
+                          initialValue: selectedRecoveryDurationUnit,
                           onChanged: (value) {
                             setState(() {
                               selectedRecoveryDurationUnit = value?.toString() ?? "min";
@@ -2665,9 +2833,7 @@ class _StepTwoState extends State<StepTwo> {
             ),
           ),
         ),
-        SizedBox(
-          height: inputSpacing,
-        ),
+        _getVideoFormField(),
         TextFormField(
           textAlign: TextAlign.start,
           controller: hintController,
@@ -3087,9 +3253,7 @@ class _StepTwoState extends State<StepTwo> {
             ),
           ),
         ),
-        SizedBox(
-          height: inputSpacing,
-        ),
+        _getVideoFormField(),
         TextFormField(
           textAlign: TextAlign.start,
           controller: hintController,
@@ -3138,9 +3302,7 @@ class _StepTwoState extends State<StepTwo> {
             ),
           ),
         ),
-        SizedBox(
-          height: inputSpacing,
-        ),
+        _getVideoFormField(),
         TextFormField(
           textAlign: TextAlign.start,
           controller: hintController,
@@ -3169,6 +3331,7 @@ class _StepTwoState extends State<StepTwo> {
   }
 
   _buildAppointment() {
+    bool isKlimafit = widget.institution?.institutionFocus?.isKlimafit() ?? false;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3199,25 +3362,64 @@ class _StepTwoState extends State<StepTwo> {
             ),
           ),
         ),
-        SizedBox(height: inputSpacing),
-        TextFormField(
-          controller: locationController,
-          onChanged: (value) => {
-            setState(() {
-              this.hasChanges = true;
-            })
-          },
-          decoration: InputDecoration(
-            hintText: context.i18n.location,
-            labelText: context.i18n.location,
-            border: OutlineInputBorder(),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: datatableBorderColor,
+        if (!isKlimafit)
+          Padding(
+            padding: EdgeInsetsGeometry.only(top: inputSpacing),
+            child: CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              value: useLocationCoordinates,
+              onChanged: (value) {
+                setState(() {
+                  useLocationCoordinates = value ?? false;
+                  this.hasChanges = true;
+                });
+              },
+              title: Text(
+                context.i18n.selectLocationFromMap,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: lightTextColor,
+                    ),
               ),
             ),
           ),
-        ),
+        SizedBox(height: inputSpacing),
+        if (useLocationCoordinates)
+          LocationPicker(
+            labelText: context.i18n.location,
+            onLocationChanged: (location, address) {
+              setState(() {
+                this.hasChanges = true;
+                startLocation = location;
+                startLocationAddress = address;
+              });
+            },
+            initialLocation: startLocation,
+            initialLocationAddress: startLocationAddress,
+            homeLocation: widget.patient?.homeLocation,
+            homeLocationAddress: widget.patient?.homeLocationAddress,
+            workLocation: widget.patient?.workLocation,
+            workLocationAddress: widget.patient?.workLocationAddress,
+          ),
+        if (!useLocationCoordinates)
+          TextFormField(
+            controller: locationController,
+            onChanged: (value) => {
+              setState(() {
+                this.hasChanges = true;
+              })
+            },
+            decoration: InputDecoration(
+              hintText: context.i18n.location,
+              labelText: context.i18n.location,
+              border: OutlineInputBorder(),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: datatableBorderColor,
+                ),
+              ),
+            ),
+          ),
         SizedBox(height: inputSpacing),
         TextFormField(
           textAlign: TextAlign.start,
@@ -3255,6 +3457,114 @@ class _StepTwoState extends State<StepTwo> {
         SizedBox(
           height: inputSpacing,
         ),
+      ],
+    );
+  }
+
+  _buildPredefinedActivity() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: inputSpacing),
+        DropdownButtonFormField<PredefinedActivityType>(
+          initialValue: predefinedActivityType,
+          onChanged: (value) {
+            setState(() {
+              predefinedActivityType = value!;
+              this.hasChanges = true;
+            });
+          },
+          validator: (value) {
+            if (value == null) {
+              return context.i18n.validationNotEmpty;
+            } else {
+              return null;
+            }
+          },
+          decoration: InputDecoration(
+            hintText: widget.activityType.getTranslatedText(context),
+            labelText: widget.activityType.getTranslatedText(context) + " *",
+            border: OutlineInputBorder(),
+          ),
+          items: widget.activityType.getPredefinedActivityTypes(context),
+        ),
+        if (predefinedActivityType == PredefinedActivityType.OTHER)
+          Padding(
+            padding: EdgeInsets.only(top: inputSpacing),
+            child: TextFormField(
+              controller: nameController,
+              validator: (value) {
+                if ((value ?? "").isEmpty) {
+                  return context.i18n.validationNotEmpty;
+                } else {
+                  return null;
+                }
+              },
+              onChanged: (value) => {
+                setState(() {
+                  this.hasChanges = true;
+                })
+              },
+              decoration: InputDecoration(
+                hintText: context.i18n.name,
+                labelText: context.i18n.name + " *",
+                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: datatableBorderColor,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        SizedBox(height: inputSpacing),
+        LocationPicker(
+          labelText: context.i18n.startLocation + " *",
+          homeLocation: widget.patient?.homeLocation,
+          homeLocationAddress: widget.patient?.homeLocationAddress,
+          workLocation: widget.patient?.workLocation,
+          workLocationAddress: widget.patient?.workLocationAddress,
+          errorText: startLocationErrorText,
+          onLocationChanged: (location, address) {
+            setState(() {
+              this.hasChanges = true;
+              startLocation = location;
+              startLocationAddress = address;
+              if (startLocation != null) {
+                startLocationErrorText = "";
+              }
+            });
+          },
+          initialLocation: startLocation,
+          initialLocationAddress: startLocationAddress,
+        ),
+        SizedBox(height: inputSpacing),
+        LocationPicker(
+          labelText: context.i18n.endLocation,
+          homeLocation: widget.patient?.homeLocation,
+          homeLocationAddress: widget.patient?.homeLocationAddress,
+          workLocation: widget.patient?.workLocation,
+          workLocationAddress: widget.patient?.workLocationAddress,
+          onLocationChanged: (location, address) {
+            setState(() {
+              this.hasChanges = true;
+              endLocation = location;
+              endLocationAddress = address;
+            });
+          },
+          initialLocation: endLocation,
+          initialLocationAddress: endLocationAddress,
+        ),
+        SizedBox(height: inputSpacing),
+        BackNextButtons(
+          back: widget.back,
+          next: validate,
+          nextButtonTitle: context.i18n.next,
+          hasChanges: this.hasChanges,
+          onCancelled: widget.onCancelled,
+        ),
+        SizedBox(height: inputSpacing),
       ],
     );
   }

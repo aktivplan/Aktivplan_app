@@ -24,6 +24,8 @@ class ActiveMinutesDTO {
   ActiveMinutesDTO({
     this.durationMinutes,
     this.durationMinutesExtra,
+    this.activityPointsPredefinedActivity,
+    this.activityPointsActiveMobility,
   });
 
   ///
@@ -42,22 +44,47 @@ class ActiveMinutesDTO {
   ///
   int? durationMinutesExtra;
 
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  int? activityPointsPredefinedActivity;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  int? activityPointsActiveMobility;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ActiveMinutesDTO &&
           other.durationMinutes == durationMinutes &&
-          other.durationMinutesExtra == durationMinutesExtra;
+          other.durationMinutesExtra == durationMinutesExtra &&
+          other.activityPointsPredefinedActivity ==
+              activityPointsPredefinedActivity &&
+          other.activityPointsActiveMobility == activityPointsActiveMobility;
 
   @override
   int get hashCode =>
       // ignore: unnecessary_parenthesis
       (durationMinutes == null ? 0 : durationMinutes!.hashCode) +
-      (durationMinutesExtra == null ? 0 : durationMinutesExtra!.hashCode);
+      (durationMinutesExtra == null ? 0 : durationMinutesExtra!.hashCode) +
+      (activityPointsPredefinedActivity == null
+          ? 0
+          : activityPointsPredefinedActivity!.hashCode) +
+      (activityPointsActiveMobility == null
+          ? 0
+          : activityPointsActiveMobility!.hashCode);
 
   @override
   String toString() =>
-      'ActiveMinutesDTO[durationMinutes=$durationMinutes, durationMinutesExtra=$durationMinutesExtra]';
+      'ActiveMinutesDTO[durationMinutes=$durationMinutes, durationMinutesExtra=$durationMinutesExtra, activityPointsPredefinedActivity=$activityPointsPredefinedActivity, activityPointsActiveMobility=$activityPointsActiveMobility]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -70,6 +97,17 @@ class ActiveMinutesDTO {
       json[r'durationMinutesExtra'] = this.durationMinutesExtra;
     } else {
       json[r'durationMinutesExtra'] = null;
+    }
+    if (this.activityPointsPredefinedActivity != null) {
+      json[r'activityPointsPredefinedActivity'] =
+          this.activityPointsPredefinedActivity;
+    } else {
+      json[r'activityPointsPredefinedActivity'] = null;
+    }
+    if (this.activityPointsActiveMobility != null) {
+      json[r'activityPointsActiveMobility'] = this.activityPointsActiveMobility;
+    } else {
+      json[r'activityPointsActiveMobility'] = null;
     }
     return json;
   }
@@ -98,6 +136,10 @@ class ActiveMinutesDTO {
         durationMinutes: mapValueOfType<int>(json, r'durationMinutes'),
         durationMinutesExtra:
             mapValueOfType<int>(json, r'durationMinutesExtra'),
+        activityPointsPredefinedActivity:
+            mapValueOfType<int>(json, r'activityPointsPredefinedActivity'),
+        activityPointsActiveMobility:
+            mapValueOfType<int>(json, r'activityPointsActiveMobility'),
       );
     }
     return null;

@@ -19,6 +19,7 @@ import 'package:aptapp/external_app/bloc/external_app_bloc.dart';
 import 'package:aptapp/external_app/bloc/external_app_repository.dart';
 import 'package:aptapp/global_apt_cubit.dart';
 import 'package:aptapp/global_apt_state.dart';
+import 'package:aptapp/l10n/app_localizations.dart';
 import 'package:aptapp/l10n/i18n.dart';
 import 'package:aptapp/language_cubit.dart';
 import 'package:aptapp/authentication/auth_listener.dart';
@@ -51,7 +52,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:kiwi/kiwi.dart';
@@ -91,7 +91,7 @@ void main() async {
 
 void launchApp() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
-  await MatomoTracker.instance.initialize(siteId: matomoSiteId, url: '$matomoUrl/matomo.php', contentBaseUrl: basePath);
+  await MatomoTracker.instance.initialize(siteId: matomoSiteId.toString(), url: '$matomoUrl/matomo.php', contentBaseUrl: basePath);
 
   KiwiContainer()
     ..registerSingleton((c) => UserRepository())
@@ -419,6 +419,7 @@ class _APTAppState extends State<APTApp> with WidgetsBindingObserver {
 final basePath = const String.fromEnvironment('BASE_URL', defaultValue: 'https://aktivplan-plus.ap-stage.at');
 final matomoUrl = const String.fromEnvironment('MATOMO_URL', defaultValue: 'https://analytics.ap-dev.at');
 final matomoSiteId = const int.fromEnvironment('MATOMO_SITE_ID', defaultValue: 2);
+final isProduction = const bool.fromEnvironment('IS_PRODUCTION', defaultValue: false);
 
 final String iosStoreUrl = "https://apps.apple.com/us/app/aktivplan/id6484315372";
 final String googlePlayStoreUrl = "https://play.google.com/store/apps/details?id=at.lbidhp.aktivplan";

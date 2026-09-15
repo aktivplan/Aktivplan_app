@@ -1,0 +1,35 @@
+{
+  "format_on_save": "on",
+  "preferred_line_length": 160,
+  "soft_wrap": "bounded",
+  "wrap_guides": [
+    150
+  ],
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.svn",
+    "**/.hg",
+    "**/.jj",
+    "**/CVS",
+    "**/.DS_Store",
+    "**/Thumbs.db",
+    "**/.classpath",
+    "**/.settings",
+    "**/.fvm"
+  ],
+  "lsp": {
+    "dart": {
+      "binary": {
+        "path": "fvm",
+        "arguments": [
+          "dart",
+          "language-server",
+          "--protocol=lsp"
+        ]
+      },
+      "settings": {
+        "lineLength": 150
+      }
+    }
+  }
+}

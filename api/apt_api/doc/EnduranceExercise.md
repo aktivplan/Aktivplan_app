@@ -15,6 +15,7 @@ Name | Type | Description | Notes
 **hint** | **Map<String, String>** |  | [optional] [default to const {}]
 **name** | **Map<String, String>** |  | [optional] [default to const {}]
 **youTubeUrl** | **Map<String, String>** |  | [optional] [default to const {}]
+**videoFileKey** | **String** |  | [optional] 
 **exerciseIntensityPercentageStart** | **int** |  | [optional] 
 **exerciseIntensityPercentageEnd** | **int** |  | [optional] 
 **exerciseTrainingHeartRateLowerLimit** | **int** |  | [optional] 

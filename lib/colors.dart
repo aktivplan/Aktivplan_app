@@ -50,11 +50,15 @@ const Color mobileBackgroundColor = Color(0xffe6eeef);
 const Color datatableBorderColor = const Color(0xFFE0E0E0);
 const Color infoIconColor = Color(0xFF979797);
 const Color lightTextColor = Colors.black54;
-Color selectedDayColor = Color(0xFF018786).withOpacity(0.2);
+Color selectedDayColor = Color(0xFF018786).withValues(alpha: .2);
 const Color plannedActivityColor = Color(0xFF15BAC0);
 const Color plannedTaskColor = Color(0xFF304FA1);
 const Color extraActivityColor = Color(0xFF90617F);
 const Color goalColor = Color(0xFFF8B154);
+
+// klimafit colors
+const Color predefinedActivityColor = Color(0xfff8b443);
+const Color predefinedActiveMobilityColor = Color(0xff33c7ba);
 
 Map<int, Color> prime = {
   50: Color(0xFFF2E7FE),
@@ -84,7 +88,7 @@ Map<int, Color> second = {
 const color = Color(0xFF206D6C);
 // #
 
-//SLIDER COLORS
+// SLIDER COLORS
 MaterialColor baseSwatch = MaterialColor(0xFF5600E8, prime);
 MaterialColor baseSecond = MaterialColor(0xFF5600E8, second);
 Color veryEasy = baseSecond[200]!;

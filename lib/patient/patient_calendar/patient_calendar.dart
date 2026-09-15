@@ -10,6 +10,7 @@
 import 'package:apt_api/api.dart';
 import 'package:aptapp/colors.dart';
 import 'package:aptapp/l10n/i18n.dart';
+import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -163,13 +164,7 @@ class _PatientCalendarState extends State<PatientCalendar> {
         singleMarkerBuilder: (context, day, event) {
           Color shapeColor = plannedActivityColor;
           if (event is ActivityOverviewDTO) {
-            if (event.type == ActivityType.EXTRA) {
-              shapeColor = extraActivityColor;
-            } else if (event.type == ActivityType.APPOINTMENT) {
-              shapeColor = primaryColor;
-            } else if (event.type == ActivityType.TASK) {
-              shapeColor = plannedTaskColor;
-            }
+            shapeColor = event.type!.backgroundColor;
           } else {
             shapeColor = goalColor;
           }

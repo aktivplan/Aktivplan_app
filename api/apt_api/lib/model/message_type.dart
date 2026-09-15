@@ -44,6 +44,7 @@ class MessageType {
   static const INFORMATION = MessageType._(r'INFORMATION');
   static const PERSONAL = MessageType._(r'PERSONAL');
   static const SOCIAL = MessageType._(r'SOCIAL');
+  static const WARNING = MessageType._(r'WARNING');
 
   /// List of all possible values in this [enum][MessageType].
   static const values = <MessageType>[
@@ -57,6 +58,7 @@ class MessageType {
     INFORMATION,
     PERSONAL,
     SOCIAL,
+    WARNING,
   ];
 
   static MessageType? fromJson(dynamic value) =>
@@ -120,6 +122,8 @@ class MessageTypeTypeTransformer {
           return MessageType.PERSONAL;
         case r'SOCIAL':
           return MessageType.SOCIAL;
+        case r'WARNING':
+          return MessageType.WARNING;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');

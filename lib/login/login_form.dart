@@ -16,7 +16,6 @@ import 'package:aptapp/theme.dart';
 import 'package:aptapp/utils/keys.dart';
 import 'package:aptapp/widget/password_form_field.dart';
 import 'package:beamer/beamer.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -65,19 +64,18 @@ class _LoginFormState extends State<LoginForm> {
                       children: [
                         TextFormField(
                           key: Key(KEY_LOGIN_TEXT_EMAIL),
-                          autofillHints: [AutofillHints.email],
                           controller: widget.emailController,
                           textInputAction: TextInputAction.next,
                           validator: (value) {
-                            if ((value ?? "").isEmpty || !EmailValidator.validate((value ?? "").trim())) {
+                            if ((value ?? "").isEmpty) {
                               return context.i18n.validationEmail;
                             } else {
                               return null;
                             }
                           },
                           decoration: InputDecoration(
-                            hintText: context.i18n.email,
-                            labelText: context.i18n.email,
+                            hintText: context.i18n.email + " / " + context.i18n.participantId,
+                            labelText: context.i18n.email + " / " + context.i18n.participantId,
                             border: OutlineInputBorder(),
                           ),
                         ),

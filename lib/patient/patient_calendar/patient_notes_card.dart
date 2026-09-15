@@ -30,7 +30,7 @@ class PatientNotesCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String notes = patientNotes;
-    double cardHeight = isMobile ? 180 : 360;
+    double cardHeight = isMobile ? 180 : 368;
     Widget content = Stack(
       children: [
         Padding(

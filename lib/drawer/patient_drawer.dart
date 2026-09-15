@@ -7,6 +7,7 @@
 // (see https://www.apache.org/licenses/LICENSE-2.0 and
 // https://commonsclause.com/).
 
+import 'package:apt_api/api.dart';
 import 'package:aptapp/activity/bloc/activity_bloc.dart';
 import 'package:aptapp/authentication/user_repository.dart';
 import 'package:aptapp/beamer/router_service.dart';
@@ -19,8 +20,8 @@ import 'package:aptapp/utils/translation_helper.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:kiwi/kiwi.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class PatientDrawer extends StatefulWidget {
@@ -100,25 +101,26 @@ class _PatientDrawerState extends State<PatientDrawer> with LogoutAware {
                 launchUrlString(getTranslatedText(userRepository.currentInstitution!.url, context));
               },
             ),
-          ListTile(
-            key: Key(KEY_BUTTON_VIDEOS),
-            tileColor: RouterService.isActive(context, "/videos") ? primarySwatch[50] : Colors.transparent,
-            leading: Icon(Icons.play_circle_fill, color: primaryColor),
-            title: Text(
-              context.i18n.themeVideos,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: RouterService.isActive(context, "/videos") ? Theme.of(context).primaryColor : lightTextColor,
-                    fontWeight: FontWeight.w600,
-                  ),
+          if (userRepository.currentInstitution?.institutionFocus != InstitutionFocus.KLIMAFIT_LIGHT)
+            ListTile(
+              key: Key(KEY_BUTTON_VIDEOS),
+              tileColor: RouterService.isActive(context, "/videos") ? primarySwatch[50] : Colors.transparent,
+              leading: Icon(Icons.play_circle_fill, color: primaryColor),
+              title: Text(
+                context.i18n.themeVideos,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: RouterService.isActive(context, "/videos") ? Theme.of(context).primaryColor : lightTextColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              onTap: () async {
+                BlocProvider.of<ActivityBloc>(context).add(ResetActivityEvent());
+                context.beamToNamed(
+                  "/videos",
+                  data: {"id": userRepository.currentUser.id},
+                );
+              },
             ),
-            onTap: () async {
-              BlocProvider.of<ActivityBloc>(context).add(ResetActivityEvent());
-              context.beamToNamed(
-                "/videos",
-                data: {"id": userRepository.currentUser.id},
-              );
-            },
-          ),
           if (userRepository.currentInstitution?.enableSocialFeatures ?? false)
             ListTile(
               key: Key(KEY_BUTTON_CONTACTS),

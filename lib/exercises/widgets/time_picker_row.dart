@@ -22,8 +22,18 @@ class TimePickerRow extends StatefulWidget {
   final bool requiredField;
   final bool selected;
   final bool disabled;
+  final bool useDefaultBorder;
+  final String labelText;
 
-  TimePickerRow({Key? key, required this.selectTime, this.initialTime = "", this.requiredField = false, this.selected = false, this.disabled = false})
+  TimePickerRow(
+      {Key? key,
+      required this.selectTime,
+      this.initialTime = "",
+      this.requiredField = false,
+      this.selected = false,
+      this.disabled = false,
+      this.useDefaultBorder = false,
+      this.labelText = ""})
       : super(key: key);
 
   @override
@@ -85,6 +95,7 @@ class _TimePickerRowState extends State<TimePickerRow> {
                     : null,
                 enabled: !widget.disabled,
                 controller: timeController,
+                keyboardType: TextInputType.number,
                 inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(5)],
                 validator: (value) {
                   if ((value ?? "").isEmpty && widget.requiredField) {
@@ -108,10 +119,10 @@ class _TimePickerRowState extends State<TimePickerRow> {
                   }
                 },
                 decoration: InputDecoration(
-                  fillColor: (widget.disabled ? infoIconColor : primaryColor).withOpacity(.2),
+                  fillColor: (widget.disabled ? infoIconColor : primaryColor).withValues(alpha: .2),
                   filled: widget.selected,
-                  hintText: context.i18n.time,
-                  labelText: context.i18n.time + (widget.requiredField ? " *" : ""),
+                  hintText: widget.labelText.isNotEmpty ? widget.labelText : context.i18n.time,
+                  labelText: (widget.labelText.isNotEmpty ? widget.labelText : context.i18n.time) + (widget.requiredField ? " *" : ""),
                   labelStyle: TextStyle(
                     color: widget.selected && !widget.disabled ? primaryColor : lightTextColor,
                   ),
@@ -121,12 +132,14 @@ class _TimePickerRowState extends State<TimePickerRow> {
                     color: widget.selected && !widget.disabled ? primaryColor : lightTextColor,
                     onPressed: () => _selectTime(context),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: widget.selected ? primaryColor : datatableBorderColor,
-                      width: widget.selected ? 2 : 1,
-                    ),
-                  ),
+                  enabledBorder: widget.useDefaultBorder
+                      ? null
+                      : OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: widget.selected ? primaryColor : datatableBorderColor,
+                            width: widget.selected ? 2 : 1,
+                          ),
+                        ),
                 ),
               ),
             ),

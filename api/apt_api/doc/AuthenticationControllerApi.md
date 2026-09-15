@@ -5,12 +5,13 @@
 import 'package:apt_api/api.dart';
 ```
 
-All URIs are relative to *https://aktivplan-plus.ap-stage.at*
+All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**changeUserPassword**](AuthenticationControllerApi.md#changeuserpassword) | **POST** /authentication/change-password | 
 [**createAuthenticationToken**](AuthenticationControllerApi.md#createauthenticationtoken) | **POST** /authentication/login | 
+[**createAuthenticationTokenWithCredentials**](AuthenticationControllerApi.md#createauthenticationtokenwithcredentials) | **POST** /authentication/token | createAuthenticationTokenWithCredentials
 [**forgotPassword**](AuthenticationControllerApi.md#forgotpassword) | **POST** /authentication/forgotPassword | 
 [**getCurrentUser**](AuthenticationControllerApi.md#getcurrentuser) | **GET** /authentication/currentUser | 
 [**refreshAuthenticationToken**](AuthenticationControllerApi.md#refreshauthenticationtoken) | **POST** /authentication/refresh | 
@@ -94,6 +95,53 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **authenticationDTO** | [**AuthenticationDTO**](AuthenticationDTO.md)|  | 
+
+### Return type
+
+[**AccessTokenDTO**](AccessTokenDTO.md)
+
+### Authorization
+
+[apiKey](../README.md#apiKey)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **createAuthenticationTokenWithCredentials**
+> AccessTokenDTO createAuthenticationTokenWithCredentials(tokenRequestDTO)
+
+createAuthenticationTokenWithCredentials
+
+Either authenticate using client-id and client-secret or by using a CAATS token
+
+### Example
+```dart
+import 'package:apt_api/api.dart';
+// TODO Configure API key authorization: apiKey
+//defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKey = 'YOUR_API_KEY';
+// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKeyPrefix = 'Bearer';
+
+final api_instance = AuthenticationControllerApi();
+final tokenRequestDTO = TokenRequestDTO(); // TokenRequestDTO | 
+
+try {
+    final result = api_instance.createAuthenticationTokenWithCredentials(tokenRequestDTO);
+    print(result);
+} catch (e) {
+    print('Exception when calling AuthenticationControllerApi->createAuthenticationTokenWithCredentials: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **tokenRequestDTO** | [**TokenRequestDTO**](TokenRequestDTO.md)|  | 
 
 ### Return type
 

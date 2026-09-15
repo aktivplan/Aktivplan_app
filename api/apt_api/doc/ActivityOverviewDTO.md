@@ -11,6 +11,7 @@ Name | Type | Description | Notes
 **activityId** | **String** |  | [optional] 
 **date** | **String** |  | [optional] 
 **time** | **String** |  | [optional] 
+**endTime** | **String** |  | [optional] 
 **name** | **Map<String, String>** |  | [optional] [default to const {}]
 **durationMinutes** | **int** |  | [optional] 
 **plannedDurationMinutes** | **int** |  | [optional] 

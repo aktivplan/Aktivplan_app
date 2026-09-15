@@ -10,32 +10,50 @@
 import 'package:apt_api/api.dart';
 import 'package:aptapp/main.dart';
 import 'package:aptapp/utils/constants.dart';
+import 'package:http/http.dart';
 
 class ActivityRepository {
   final activityApi = new ActivityControllerApi(apiClient);
+  final datahubApi = new DatahubControllerApi(apiClient);
 
   Future<List<ActivityOverviewDTO>?> getPatientActivities({String? patientId, required DateTime endDate, required DateTime startDate}) async {
     return activityApi.getActivities(englishDateFormat.format(startDate), englishDateFormat.format(endDate), patientId: patientId);
   }
 
-  Future<Activity?> createActivity({required ActivityPostDTO activity}) async {
-    return activityApi.createActivity(activity);
+  Future<Activity?> createActivity({required ActivityPostDTO activity, MultipartFile? videoFile, bool? didChangeVideoFile}) async {
+    var createdActivity = await activityApi.createActivity(activity);
+    if ((didChangeVideoFile ?? false) && videoFile != null) {
+      var createdFile = await activityApi.uploadActivityVideoById(createdActivity!.id!, videoFile);
+      createdActivity.videoFileKey = createdFile?.fileKey ?? "";
+    }
+    return createdActivity;
   }
 
   Future<ActivityOverviewDTO?> createExtraActivity({required ExtraActivityPostDTO activity}) async {
     return activityApi.createExtraActivity(activity);
   }
 
-  Future<Activity?> updateActivity({required String id, required ActivityPostDTO activity}) async {
-    return activityApi.updateActivity(id, activity);
+  Future<Activity?> updateActivity(
+      {required String id, required ActivityPostDTO activity, MultipartFile? videoFile, bool? didChangeVideoFile}) async {
+    var updatedActivity = await activityApi.updateActivity(id, activity);
+    if (didChangeVideoFile ?? false) {
+      if (videoFile != null) {
+        var createdFile = await activityApi.uploadActivityVideoById(updatedActivity!.id!, videoFile);
+        updatedActivity.videoFileKey = createdFile?.fileKey ?? "";
+      } else {
+        await activityApi.deleteActivityVideoById(updatedActivity!.id!);
+        updatedActivity.videoFileKey = "";
+      }
+    }
+    return updatedActivity;
   }
 
   Future<ActivityOverviewDTO?> updateExtraActivity({required String id, required ExtraActivityPutDTO activity}) async {
     return activityApi.updateExtraActivity(id, activity);
   }
 
-  Future<ActivityAutocompleteGetDTO?> fetchAutocomplete() async {
-    return activityApi.getActivityNamesAutocomplete();
+  Future<ActivityAutocompleteGetDTO> fetchAutocomplete({required ActivityType type}) async {
+    return (await activityApi.getActivityNamesAutocomplete(type))!;
   }
 
   Future deleteActivity({required String id}) async {
@@ -81,5 +99,9 @@ class ActivityRepository {
 
   Future<ActivityPercentageDataDTO?> getActivityPercentageData(String date, String patientId) async {
     return activityApi.getActivityPercentageData(date, patientId: patientId);
+  }
+
+  Future<DatahubResponse?> getDatahubRecommendations({required String patientId, required String date}) async {
+    return datahubApi.getRecommendationsForDate(patientId, date);
   }
 }

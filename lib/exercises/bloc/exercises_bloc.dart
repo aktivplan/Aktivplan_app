@@ -16,6 +16,7 @@ import 'package:aptapp/exercises/bloc/workout_repository.dart';
 import 'package:aptapp/utils/trace_helpers.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:http/http.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 
 part 'exercises_event.dart';
@@ -104,27 +105,26 @@ class ExerciseBloc extends Bloc<ExerciseEvent, ExerciseState> {
     on<SaveExerciseEvent>((event, emit) async {
       var exerciseToSave = event.exercise;
       if (exerciseToSave is EnduranceExercisePostDTO) {
-        await exerciseRepository.createEndurance(enduranceExercise: event.exercise);
+        await exerciseRepository.createEndurance(enduranceExercise: event.exercise, videoFile: event.videoFile);
         emit(CreatedEnduranceState());
       } else if (exerciseToSave is IntervalExercisePostDTO) {
-        await exerciseRepository.createInterval(intervalExercise: event.exercise);
+        await exerciseRepository.createInterval(intervalExercise: event.exercise, videoFile: event.videoFile);
         emit(CreatedIntervalState());
       } else if (exerciseToSave is StrengtheningExercisePostDTO) {
-        await exerciseRepository.createStrengthening(strengtheningExercise: event.exercise);
+        await exerciseRepository.createStrengthening(strengtheningExercise: event.exercise, videoFile: event.videoFile);
         if (exerciseToSave.type == ExerciseType.HYPERTROPHY) {
           emit(CreatedHypertrophyState());
         } else {
           emit(CreatedStrengtheningState());
         }
       } else if (exerciseToSave is OtherExercisePostDTO) {
-        await exerciseRepository.createOther(otherExercise: event.exercise);
+        await exerciseRepository.createOther(otherExercise: event.exercise, videoFile: event.videoFile);
         emit(CreatedOtherState());
       } else if (exerciseToSave is TaskPostDTO) {
-        await exerciseRepository.createTask(task: event.exercise);
+        await exerciseRepository.createTask(task: event.exercise, videoFile: event.videoFile);
         emit(CreatedTaskState());
       }
-      MatomoTracker.instance
-          .trackEvent(
+      MatomoTracker.instance.trackEvent(
         eventInfo: EventInfo(category: EVENT_CATEGORY_EXERCISE, name: EVENT_NAME_CREATE, action: "Created Exercise with Type ${event.type}"),
       );
       this.addTypeEvent(event.type); //fetch the updated events
@@ -134,27 +134,31 @@ class ExerciseBloc extends Bloc<ExerciseEvent, ExerciseState> {
     on<UpdateExerciseEvent>((event, emit) async {
       var exerciseToUpdate = event.exercise;
       if (exerciseToUpdate is EnduranceExercisePostDTO) {
-        await exerciseRepository.updateEndurance(id: event.id, enduranceExercise: event.exercise);
+        await exerciseRepository.updateEndurance(
+            id: event.id, enduranceExercise: event.exercise, videoFile: event.videoFile, didChangeVideoFile: event.didChangeVideoFile);
         emit(UpdatedEnduranceState());
       } else if (exerciseToUpdate is IntervalExercisePostDTO) {
-        await exerciseRepository.updateInterval(id: event.id, intervalExercise: event.exercise);
+        await exerciseRepository.updateInterval(
+            id: event.id, intervalExercise: event.exercise, videoFile: event.videoFile, didChangeVideoFile: event.didChangeVideoFile);
         emit(UpdatedIntervalState());
       } else if (exerciseToUpdate is StrengtheningExercisePostDTO) {
-        await exerciseRepository.updateStrengthening(id: event.id, strengtheningExercise: event.exercise);
+        await exerciseRepository.updateStrengthening(
+            id: event.id, strengtheningExercise: event.exercise, videoFile: event.videoFile, didChangeVideoFile: event.didChangeVideoFile);
         if (exerciseToUpdate.type == ExerciseType.HYPERTROPHY) {
           emit(UpdatedHypertrophyState());
         } else {
           emit(UpdatedStrengtheningState());
         }
       } else if (exerciseToUpdate is OtherExercisePostDTO) {
-        await exerciseRepository.updateOther(id: event.id, otherExercise: event.exercise);
+        await exerciseRepository.updateOther(
+            id: event.id, otherExercise: event.exercise, videoFile: event.videoFile, didChangeVideoFile: event.didChangeVideoFile);
         emit(UpdatedOtherState());
       } else if (exerciseToUpdate is TaskPostDTO) {
-        await exerciseRepository.updateTask(id: event.id, task: event.exercise);
+        await exerciseRepository.updateTask(
+            id: event.id, task: event.exercise, videoFile: event.videoFile, didChangeVideoFile: event.didChangeVideoFile);
         emit(UpdatedTaskState());
       }
-      MatomoTracker.instance
-          .trackEvent(
+      MatomoTracker.instance.trackEvent(
         eventInfo: EventInfo(category: EVENT_CATEGORY_EXERCISE, name: EVENT_NAME_UPDATE, action: "Updated Exercise with Type ${event.type}"),
       );
       this.addTypeEvent(event.type); //fetch the updated events
@@ -175,15 +179,14 @@ class ExerciseBloc extends Bloc<ExerciseEvent, ExerciseState> {
       } else if (event.type == ExerciseType.TASK) {
         emit(DeletedTaskState());
       }
-      MatomoTracker.instance
-          .trackEvent(
+      MatomoTracker.instance.trackEvent(
         eventInfo: EventInfo(category: EVENT_CATEGORY_EXERCISE, name: EVENT_NAME_DELETE, action: "Deleted Exercise with Type ${event.type}"),
       );
       this.addTypeEvent(event.type); //fetch the updated events
     });
 
     on<SaveWorkoutEvent>((event, emit) async {
-      await workoutRepository.addWorkout(workout: event.workout);
+      await workoutRepository.addWorkout(workout: event.workout, videoFile: event.videoFile);
       emit(CreatedWorkoutState());
       MatomoTracker.instance.trackEvent(
         eventInfo: EventInfo(category: EVENT_CATEGORY_EXERCISE, name: EVENT_NAME_CREATE, action: "Created Workout"),
@@ -191,7 +194,8 @@ class ExerciseBloc extends Bloc<ExerciseEvent, ExerciseState> {
       this.add(FetchWorkoutExerciseEvent());
     });
     on<UpdateWorkoutEvent>((event, emit) async {
-      await workoutRepository.updateWorkout(id: event.id, workout: event.workout);
+      await workoutRepository.updateWorkout(
+          id: event.id, workout: event.workout, videoFile: event.videoFile, didChangeVideoFile: event.didChangeVideoFile);
       emit(UpdatedWorkoutState());
       MatomoTracker.instance.trackEvent(
         eventInfo: EventInfo(category: EVENT_CATEGORY_EXERCISE, name: EVENT_NAME_UPDATE, action: "Updated Workout"),

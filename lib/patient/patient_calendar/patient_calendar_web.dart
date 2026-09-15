@@ -11,6 +11,7 @@ import 'dart:convert';
 
 import 'package:apt_api/api.dart';
 import 'package:another_flushbar/flushbar.dart';
+import 'package:aptapp/activity/bloc/activity_bloc.dart';
 import 'package:aptapp/apt_layout.dart';
 import 'package:aptapp/authentication/user_repository.dart';
 import 'package:aptapp/beamer/healthcare_professional_locations.dart';
@@ -22,8 +23,10 @@ import 'package:aptapp/patient/patient_calendar/patient_info_line.dart';
 import 'package:aptapp/patient/patient_calendar/patient_notes_card.dart';
 import 'package:aptapp/patient/patient_calendar/patient_chart_card.dart';
 import 'package:aptapp/patient/patient_calendar/personal_goals_card.dart';
+import 'package:aptapp/patient/patient_calendar/recommendations_card.dart';
 import 'package:aptapp/patient/personal_goal_dialog.dart';
 import 'package:aptapp/theme.dart';
+import 'package:aptapp/utils/activity_helpers.dart';
 import 'package:aptapp/utils/constants.dart';
 import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/keys.dart';
@@ -43,41 +46,33 @@ import 'package:week_of_year/week_of_year.dart';
 import '../../beamer/router_service.dart';
 
 class PatientCalendarWeb extends StatefulWidget {
-  final PatientGetDTO patient;
-  final PatientOverviewDTO patientOverview;
-  final ActiveMinutesOverviewDTO activeMinutes;
-  final Function addActivity;
-  final Function(dynamic, ActiveMinutesOverviewDTO, bool) markAsDone;
-  final List<ActivityOverviewDTO> patientActivities;
-  final List<PersonalGoal> personalGoals;
-  final Function showEvents;
-  final Function addExtraActivity;
-  final Function(String, ActivityType) deleteActivity;
+  final FetchedPatientActivitiesState state;
+  final FetchedPatientDatahubRecommendationsState? datahubState;
+  final Function(DateTime) addActivity;
+  final Function(dynamic) markAsDone;
+  final Function(DateTime, ActivityType?) addActivityByType;
+  final Function(DatahubResponseRecommendationsInner) addActivityByRecommendation;
+  final Function(ActivityOverviewDTO) deleteActivity;
   final Function(MoveActivityPostDTO) moveActivity;
   final Function(MovePersonalGoalPostDTO) movePersonalGoal;
   final bool isTablet;
   final bool isDesktop;
   final Function(DateTime) changeMonth;
   final DateTime focusedDay;
-  final FileGetDTO userPicture;
 
   PatientCalendarWeb(
       {Key? key,
-      required this.patient,
-      required this.patientOverview,
+      required this.state,
+      required this.datahubState,
       required this.addActivity,
       required this.markAsDone,
-      required this.patientActivities,
-      required this.activeMinutes,
-      required this.personalGoals,
-      required this.showEvents,
-      required this.addExtraActivity,
+      required this.addActivityByType,
+      required this.addActivityByRecommendation,
       required this.deleteActivity,
       required this.isTablet,
       required this.isDesktop,
       required this.changeMonth,
       required this.focusedDay,
-      required this.userPicture,
       required this.moveActivity,
       required this.movePersonalGoal})
       : super(key: key ?? Key(KEY_PATIENT_CALENDAR_SCROLL_VIEW));
@@ -106,18 +101,13 @@ class _PatientCalendarWebState extends State<PatientCalendarWeb> {
 
   void _onDaySelected(DateTime day) {
     final userRepository = KiwiContainer().resolve<UserRepository>();
-    List events = _events[day] ?? [];
     if (userRepository.userRole != UserRole.PATIENT) {
       widget.addActivity(day);
     } else {
-      try {
-        if (events.isEmpty) {
-          widget.addExtraActivity(day, null, widget.activeMinutes);
-        } else {
-          widget.showEvents(day, events, widget.activeMinutes, widget.patient, widget.deleteActivity);
-        }
-      } on Exception catch (e) {
-        print(e.toString());
+      if (widget.state.patient.institution?.institutionFocus?.isKlimafit() ?? false) {
+        widget.addActivityByType(day, null);
+      } else {
+        widget.addActivityByType(day, ActivityType.EXTRA);
       }
     }
   }
@@ -125,8 +115,8 @@ class _PatientCalendarWebState extends State<PatientCalendarWeb> {
   getActivites() {
     Map<String, List> map = {};
     List patientEvents = [
-      ...widget.patientActivities.map((e) => ActivityOverviewDTO.fromJson(jsonDecode(jsonEncode(e.toJson())))).toList(),
-      ...widget.personalGoals.map((e) => PersonalGoal.fromJson(jsonDecode(jsonEncode(e.toJson())))).toList(),
+      ...widget.state.activities.map((e) => ActivityOverviewDTO.fromJson(jsonDecode(jsonEncode(e.toJson())))).toList(),
+      ...widget.state.personalGoals.map((e) => PersonalGoal.fromJson(jsonDecode(jsonEncode(e.toJson())))).toList(),
     ];
 
     patientEvents.forEach((elem) {
@@ -146,7 +136,8 @@ class _PatientCalendarWebState extends State<PatientCalendarWeb> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    PatientGetDTO patient = widget.patientOverview.user ?? widget.patient;
+    PatientGetDTO patient = widget.state.patient.user!;
+    bool showPersonalGoals = showPersonalGoalsForPatient(widget.state.patient.institution!);
     final userRepository = KiwiContainer().resolve<UserRepository>();
     return AptLayout(
       border: false,
@@ -165,10 +156,9 @@ class _PatientCalendarWebState extends State<PatientCalendarWeb> {
         if (userRepository.userRole == UserRole.ADMINISTRATOR)
           BreadCrumbItem(
             content: TextButton(
-              onPressed: () =>
-                  context.beamToNamed(RouterService.healthcareProfessionalsRoute(institutionId: widget.patientOverview.institution!.id!)),
+              onPressed: () => context.beamToNamed(RouterService.healthcareProfessionalsRoute(institutionId: widget.state.patient.institution!.id!)),
               child: Text(
-                widget.patientOverview.institution!.name ?? "",
+                widget.state.patient.institution!.name ?? "",
                 style: getBreadCrumbStyle(context)?.copyWith(decoration: TextDecoration.underline),
               ),
             ),
@@ -188,12 +178,11 @@ class _PatientCalendarWebState extends State<PatientCalendarWeb> {
             content: TextButton(
               key: Key(KEY_PATIENT_CALENDAR_BREAD_CRUMB_HEALTHCARE_PROFESSIONAL),
               onPressed: () => context.beamToNamed(RouterService.patientsRoute(
-                  healthcareProfessionalId: widget.patientOverview.healthcareProfessional!.id!,
-                  institutionId: widget.patientOverview.institution!.id!)),
+                  healthcareProfessionalId: widget.state.patient.healthcareProfessional!.id!, institutionId: widget.state.patient.institution!.id!)),
               child: Text(
                 userRepository.userRole == UserRole.HEALTHCARE_PROFESSIONAL
                     ? context.i18n.patientOverview
-                    : "${widget.patientOverview.healthcareProfessional!.lastName ?? ""} ${widget.patientOverview.healthcareProfessional!.firstName ?? ""}",
+                    : "${widget.state.patient.healthcareProfessional!.lastName ?? ""} ${widget.state.patient.healthcareProfessional!.firstName ?? ""}",
                 style: getBreadCrumbStyle(context)?.copyWith(decoration: TextDecoration.underline),
               ),
             ),
@@ -209,61 +198,69 @@ class _PatientCalendarWebState extends State<PatientCalendarWeb> {
       children: [
         if (userRepository.userRole != UserRole.PATIENT)
           PatientInfoLine(
-            patient: patient,
-            patientOverview: widget.patientOverview,
-            personalGoals: widget.personalGoals,
-            userPicture: widget.userPicture,
+            patientOverview: widget.state.patient,
+            personalGoals: widget.state.personalGoals,
+            userPicture: widget.state.userPicture,
           ),
         ResponsiveGridRow(
           children: [
             ResponsiveGridCol(
-              lg: 2,
+              lg: showPersonalGoals ? 2 : 4,
               md: 12,
               child: Padding(
                 padding: EdgeInsets.all(4),
                 child: ActiveMinutesCard(
-                  activeMinutes: widget.activeMinutes,
-                  patient: widget.patient,
+                  activeMinutes: widget.state.activeMinutes,
+                  patient: patient,
                   startDate: Jiffy.now(),
                 ),
               ),
             ),
-            if (userRepository.userRole == UserRole.PATIENT)
+            if (userRepository.userRole == UserRole.PATIENT && widget.state.patient.institution?.institutionFocus != InstitutionFocus.KLIMAFIT_LIGHT)
+              ResponsiveGridCol(
+                lg: showPersonalGoals ? 5 : 8,
+                md: showPersonalGoals ? 6 : 12,
+                sm: 12,
+                child: Padding(
+                  padding: EdgeInsets.all(4),
+                  child: widget.state.patient.institution?.institutionFocus?.isKlimafit() ?? false
+                      ? RecommendationsCard(
+                          recommendations: widget.datahubState?.datahubRecommendations?.recommendations ?? [],
+                          activities: widget.state.activities,
+                          loading: widget.datahubState == null,
+                          patientId: widget.state.patient.user!.id!,
+                          onAddActivity: (recommendation) => widget.addActivityByRecommendation(recommendation),
+                        )
+                      : PatientChartCard(
+                          patientOverview: widget.state.patient,
+                          height: 340,
+                          startDate: Jiffy.now(),
+                        ),
+                ),
+              ),
+            if (showPersonalGoals)
               ResponsiveGridCol(
                 lg: 5,
                 md: 6,
                 sm: 12,
                 child: Padding(
                   padding: EdgeInsets.all(4),
-                  child: PatientChartCard(
-                    patientOverview: widget.patientOverview,
-                    height: 340,
-                    startDate: Jiffy.now(),
+                  child: PersonalGoalsCard(
+                    patientId: patient.id!,
+                    institution: widget.state.patient.institution!,
                   ),
                 ),
               ),
-            ResponsiveGridCol(
-              lg: 5,
-              md: 6,
-              sm: 12,
-              child: Padding(
-                padding: EdgeInsets.all(4),
-                child: PersonalGoalsCard(
-                  patientId: widget.patient.id!,
-                  institution: widget.patientOverview.institution!,
-                ),
-              ),
-            ),
             if (userRepository.userRole != UserRole.PATIENT)
               ResponsiveGridCol(
-                lg: 5,
-                md: 6,
+                lg: showPersonalGoals ? 5 : 8,
+                md: showPersonalGoals ? 6 : 12,
                 sm: 12,
                 child: Padding(
-                  padding: EdgeInsets.all(4),
+                  padding: EdgeInsets.only(left: 4, right: 4),
                   child: PatientNotesCard(
-                    patientId: widget.patient.id!,
-                    patientNotes: widget.patientOverview.user!.patientNotes ?? "",
+                    patientId: patient.id!,
+                    patientNotes: patient.patientNotes ?? "",
                     isMobile: false,
                   ),
                 ),
@@ -460,20 +457,16 @@ class _PatientCalendarWebState extends State<PatientCalendarWeb> {
               Color backgroundColor = plannedActivityColor;
               String descriptionText = "";
               if (event is ActivityOverviewDTO) {
-                final String timeString = getTranslatedTimeString(event.time ?? "", context);
+                backgroundColor = event.type!.backgroundColor;
+                final String timeString = getTranslatedTimeString(event.time ?? "", event.endTime ?? "", context);
                 if (event.type == ActivityType.APPOINTMENT) {
-                  backgroundColor = primaryColor;
-                  descriptionText = timeString;
+                  descriptionText = timeString.isEmpty ? context.i18n.wholeDay : timeString;
                 } else if (event.type == ActivityType.TASK) {
-                  backgroundColor = plannedTaskColor;
                   descriptionText = ActivityType.TASK.getTranslatedText(context);
                   if (timeString.isNotEmpty) {
                     descriptionText += ", $timeString";
                   }
                 } else {
-                  if (event.type == ActivityType.EXTRA) {
-                    backgroundColor = extraActivityColor;
-                  }
                   descriptionText = "";
                   int duration = event.durationMinutes ?? 0;
                   if (timeString.isNotEmpty) {
@@ -483,7 +476,10 @@ class _PatientCalendarWebState extends State<PatientCalendarWeb> {
                     }
                   }
                   if (duration > 0) {
-                    descriptionText += "$duration min";
+                    String durationUnit = event.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY || event.type == ActivityType.PREDEFINED_ACTIVITY
+                        ? context.i18n.durationValuePoints
+                        : context.i18n.durationValueMinutes;
+                    descriptionText += "$duration $durationUnit";
                   }
                 }
               } else {
@@ -507,7 +503,7 @@ class _PatientCalendarWebState extends State<PatientCalendarWeb> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                event is ActivityOverviewDTO ? getTranslatedText(event.name, context) : event.description,
+                                event is ActivityOverviewDTO ? getActivityName(event, context) : event.description,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
@@ -566,16 +562,16 @@ class _PatientCalendarWebState extends State<PatientCalendarWeb> {
                         barrierDismissible: true,
                         builder: (BuildContext context) {
                           return ActivityDialog(
-                            patient: widget.patient,
+                            patient: widget.state.patient.user!,
                             activity: event,
-                            activeMinutes: widget.activeMinutes,
+                            activeMinutes: widget.state.activeMinutes,
                             rateActivity: false,
-                            deleteActivity: widget.deleteActivity,
-                            allowRescheduleActivities: widget.patientOverview.institution?.allowRescheduleActivities ?? false,
+                            deleteActivity: () => widget.deleteActivity(event),
+                            institution: widget.state.patient.institution!,
                           );
                         });
                   } else {
-                    widget.markAsDone(event, widget.activeMinutes, widget.patientOverview.institution?.allowRescheduleActivities ?? false);
+                    widget.markAsDone(event);
                   }
                 },
                 child: userRepository.userRole == UserRole.PATIENT || (event is ActivityOverviewDTO && (event.rating!.done ?? false))

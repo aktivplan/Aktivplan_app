@@ -21,11 +21,22 @@ class AddActivityEvent extends ActivityEvent {
   final ActivityPostDTO activity;
   final String patientId;
   final ActivityType type;
+  final bool didChangeVideoFile;
+  final MultipartFile? videoFile;
+  final RouteProposal? routeProposal;
+  final UpdateActivityRatingEvent? ratingEvent;
 
-  AddActivityEvent({required this.activity, required this.patientId, required this.type});
+  AddActivityEvent(
+      {required this.activity,
+      required this.patientId,
+      required this.type,
+      this.didChangeVideoFile = false,
+      this.videoFile,
+      this.routeProposal,
+      this.ratingEvent});
 
   @override
-  List<Object> get props => [activity, patientId];
+  List<Object> get props => [activity, patientId, didChangeVideoFile];
 }
 
 class AddPersonalGoalEvent extends ActivityEvent {
@@ -81,17 +92,23 @@ class UpdateActivityEvent extends ActivityEvent {
   final String id;
   final String patientId;
   final ActivityType type;
+  final bool didChangeVideoFile;
+  final MultipartFile? videoFile;
 
-  UpdateActivityEvent({required this.activity, required this.id, required this.patientId, required this.type});
+  UpdateActivityEvent(
+      {required this.activity, required this.id, required this.patientId, required this.type, this.didChangeVideoFile = false, this.videoFile});
 
   @override
-  List<Object> get props => [activity, id, patientId];
+  List<Object> get props => [activity, id, patientId, didChangeVideoFile];
 }
 
 class FetchAutocompleteEvent extends ActivityEvent {
-  FetchAutocompleteEvent();
+  final ActivityType type;
 
-  List<Object> get props => [];
+  FetchAutocompleteEvent({required this.type});
+
+  @override
+  List<Object> get props => [type];
 }
 
 class DeleteActivityEvent extends ActivityEvent {
@@ -112,6 +129,16 @@ class FetchPatientActivitiesEvent extends ActivityEvent {
   final bool setDate;
 
   FetchPatientActivitiesEvent({required this.patientId, required this.date, this.setDate = false});
+
+  @override
+  List<Object> get props => [patientId, date];
+}
+
+class FetchPatientDatahubRecommendationsEvent extends ActivityEvent {
+  final String patientId;
+  final DateTime date;
+
+  FetchPatientDatahubRecommendationsEvent({required this.patientId, required this.date});
 
   @override
   List<Object> get props => [patientId, date];

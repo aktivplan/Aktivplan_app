@@ -19,6 +19,7 @@ class PercentIndicator extends StatelessWidget {
   final int durationMinutesActive;
   final int durationMinutes;
   final double cardContainerHeight;
+  final bool isKlimafit;
 
   PercentIndicator({
     Key? key,
@@ -26,6 +27,7 @@ class PercentIndicator extends StatelessWidget {
     required this.durationMinutesActive,
     required this.durationMinutes,
     required this.cardContainerHeight,
+    required this.isKlimafit,
   }) : super(key: key);
 
   @override
@@ -40,7 +42,7 @@ class PercentIndicator extends StatelessWidget {
           : size.isTablet
               ? lineWidth * 3.6
               : lineWidth * 3.6;
-      double descriptionSize = 35;
+      double descriptionSize = isKlimafit ? 25 : 35;
       double minuteSize = 80;
       return Container(
         width: indicatorHeight * 1.2,
@@ -88,7 +90,7 @@ class PercentIndicator extends StatelessWidget {
                     FittedBox(
                       fit: BoxFit.fitWidth,
                       child: Text(
-                        "/ $durationMinutes ${context.i18n.minutes}",
+                        "/ $durationMinutes ${isKlimafit ? context.i18n.minutesKlimafit : context.i18n.minutes}",
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: lightTextColor,
                               fontSize: descriptionSize,

@@ -11,6 +11,7 @@ import 'package:apt_api/api.dart';
 import 'package:aptapp/colors.dart';
 import 'package:aptapp/exercises/bloc/exercises_bloc.dart';
 import 'package:aptapp/l10n/i18n.dart';
+import 'package:aptapp/main.dart';
 import 'package:aptapp/utils/constants.dart';
 import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/translation_helper.dart';
@@ -18,6 +19,7 @@ import 'package:aptapp/widget/cancel_button.dart';
 import 'package:aptapp/widget/form_field_padding.dart';
 import 'package:aptapp/widget/language_tabs.dart';
 import 'package:aptapp/widget/save_button.dart';
+import 'package:aptapp/widget/video_player_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -86,6 +88,10 @@ class _EditWorkoutExerciseState extends State<EditWorkoutExercise> {
   int recoveryIntenseMin = 0;
   int recoveryIntenseMax = 0;
   bool hasChanges = false;
+  String videoSource = "";
+  final FileControllerApi fileControllerApi = FileControllerApi(apiClient);
+  final waitTimeAfterExerciseSecondsController = TextEditingController();
+  final waitTimeTextController = TextEditingController();
 
   buildExerciseType() {
     var exercise;
@@ -112,6 +118,9 @@ class _EditWorkoutExerciseState extends State<EditWorkoutExercise> {
     exercise.needsEquipment = needsEquipment;
     exercise.weight = int.tryParse(weightController.text) ?? 0;
     exercise.muscleGroups = muscleGroups;
+    exercise.videoFileKey = widget.exercise?.videoFileKey ?? plannedActivity?.videoFileKey ?? "";
+    exercise.waitTimeAfterExerciseSeconds = int.tryParse(waitTimeAfterExerciseSecondsController.text);
+    exercise.waitTimeText = waitTimeTextController.text;
     return exercise;
   }
 
@@ -186,6 +195,18 @@ class _EditWorkoutExerciseState extends State<EditWorkoutExercise> {
       String weightText = widget.exercise?.weight?.toString() ?? "";
       weightController.text = weightText == "0" ? "" : weightText;
       needsEquipment = widget.exercise?.needsEquipment;
+      waitTimeAfterExerciseSecondsController.text = widget.exercise?.waitTimeAfterExerciseSeconds?.toString() ?? "";
+      waitTimeTextController.text = widget.exercise?.waitTimeText ?? "";
+
+      if ((widget.exercise?.videoFileKey ?? "").isNotEmpty) {
+        fileControllerApi.getFile(widget.exercise!.videoFileKey!).then((response) {
+          setState(() {
+            videoSource = response?.url ?? "";
+          });
+        }).catchError((error) {
+          print("Error fetching initial video file: $error");
+        });
+      }
     }
     if (plannedActivity != null) {
       final strengtheningExercise = plannedActivity as StrengtheningExercise;
@@ -232,6 +253,17 @@ class _EditWorkoutExerciseState extends State<EditWorkoutExercise> {
       }
       weightController.text = plannedActivity.weight.toString() == "0" ? "" : plannedActivity.weight.toString();
       needsEquipment = plannedActivity.needsEquipment;
+      waitTimeAfterExerciseSecondsController.text = plannedActivity.waitTimeAfterExerciseSeconds?.toString() ?? "";
+      waitTimeTextController.text = plannedActivity.waitTimeText ?? "";
+      if ((plannedActivity.videoFileKey ?? "").isNotEmpty) {
+        fileControllerApi.getFile(plannedActivity.videoFileKey!).then((response) {
+          setState(() {
+            videoSource = response?.url ?? "";
+          });
+        }).catchError((error) {
+          print("Error fetching initial video file: $error");
+        });
+      }
     }
   }
 
@@ -260,6 +292,8 @@ class _EditWorkoutExerciseState extends State<EditWorkoutExercise> {
     breakBetweenSetsController.dispose();
     weightController.dispose();
     hintController.dispose();
+    waitTimeAfterExerciseSecondsController.dispose();
+    waitTimeTextController.dispose();
     super.dispose();
   }
 
@@ -1359,7 +1393,55 @@ class _EditWorkoutExerciseState extends State<EditWorkoutExercise> {
             ),
           ),
         ),
-
+        SizedBox(
+          height: height * 0.02,
+        ),
+        if (videoSource.isNotEmpty)
+          Padding(
+            padding: EdgeInsets.only(bottom: height * 0.02),
+            child: VideoPlayerPreview(sources: [videoSource]),
+          ),
+        TextFormField(
+          controller: waitTimeAfterExerciseSecondsController,
+          keyboardType: TextInputType.numberWithOptions(signed: true),
+          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+          onChanged: (value) => {
+            setState(() {
+              this.hasChanges = true;
+            })
+          },
+          decoration: InputDecoration(
+            hintText: context.i18n.waitTimeAfterExerciseSeconds,
+            labelText: context.i18n.waitTimeAfterExerciseSeconds,
+            border: OutlineInputBorder(),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: datatableBorderColor,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          height: height * 0.02,
+        ),
+        TextFormField(
+          controller: waitTimeTextController,
+          onChanged: (value) => {
+            setState(() {
+              this.hasChanges = true;
+            })
+          },
+          decoration: InputDecoration(
+            hintText: context.i18n.waitTimeText,
+            labelText: context.i18n.waitTimeText,
+            border: OutlineInputBorder(),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: datatableBorderColor,
+              ),
+            ),
+          ),
+        ),
         SizedBox(
           height: height * 0.02,
         ),

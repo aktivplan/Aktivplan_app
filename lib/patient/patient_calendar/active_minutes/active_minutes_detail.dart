@@ -31,6 +31,8 @@ class ActiveMinutesDetail extends StatefulWidget {
   final PatientGetDTO patient;
   final double parentHeight;
   final Jiffy selectedDate;
+  final bool isKlimafit;
+  final bool isEmbedded;
 
   ActiveMinutesDetail({
     Key? key,
@@ -38,6 +40,8 @@ class ActiveMinutesDetail extends StatefulWidget {
     required this.patient,
     required this.parentHeight,
     required this.selectedDate,
+    required this.isKlimafit,
+    this.isEmbedded = false,
   }) : super(key: key);
 
   @override
@@ -55,6 +59,10 @@ class _ActiveMinutesDetailState extends State<ActiveMinutesDetail> {
   void initState() {
     super.initState();
     activityBloc = BlocProvider.of<ActivityBloc>(context);
+    fetchInitialData();
+  }
+
+  void fetchInitialData() {
     initializeTimes();
     var startingDate = start;
     var endingDate = end;
@@ -69,6 +77,14 @@ class _ActiveMinutesDetailState extends State<ActiveMinutesDetail> {
       type: widget.timeframe,
       patientId: widget.patient.id!,
     ));
+  }
+
+  @override
+  void didUpdateWidget(covariant ActiveMinutesDetail oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedDate != widget.selectedDate) {
+      fetchInitialData();
+    }
   }
 
   updateTimes(bool getBefore) {
@@ -198,37 +214,39 @@ class _ActiveMinutesDetailState extends State<ActiveMinutesDetail> {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
-        SizedBox(height: 15),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              icon: Icon(
-                Icons.keyboard_arrow_left,
-              ),
-              onPressed: hasPreviousEntry ? () => updateTimes(true) : null,
-            ),
-            Column(
-              children: [
-                SelectableText(
-                  getTimeTitle(),
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                      ),
+        if (!widget.isEmbedded) ...[
+          SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                icon: Icon(
+                  Icons.keyboard_arrow_left,
                 ),
-                SelectableText(dates, style: Theme.of(context).textTheme.titleSmall?.copyWith(color: lightTextColor)),
-              ],
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.keyboard_arrow_right,
+                onPressed: hasPreviousEntry ? () => updateTimes(true) : null,
               ),
-              onPressed: hasNextEntry ? () => updateTimes(false) : null,
-            ),
-          ],
-        ),
-        SizedBox(height: 15),
+              Column(
+                children: [
+                  SelectableText(
+                    getTimeTitle(),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        ),
+                  ),
+                  SelectableText(dates, style: Theme.of(context).textTheme.titleSmall?.copyWith(color: lightTextColor)),
+                ],
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.keyboard_arrow_right,
+                ),
+                onPressed: hasNextEntry ? () => updateTimes(false) : null,
+              ),
+            ],
+          ),
+          SizedBox(height: 15),
+        ],
         content,
         if (showShareButton)
           Padding(
@@ -240,7 +258,7 @@ class _ActiveMinutesDetailState extends State<ActiveMinutesDetail> {
 
   @override
   Widget build(BuildContext context) {
-    double windowHeight = widget.parentHeight - (kIsWeb ? 200 : 300);
+    double windowHeight = widget.parentHeight - (widget.isEmbedded ? 0 : (kIsWeb ? 200 : 300));
     return SingleChildScrollView(
       child: ResponsiveBuilder(
         builder: (context, size) {
@@ -248,10 +266,10 @@ class _ActiveMinutesDetailState extends State<ActiveMinutesDetail> {
             builder: (context, state) {
               if (state is FetchedActiveMinutesState) {
                 return getActiveMinutesHeader(
-                    Container(
-                      color: Colors.white,
-                      child: Screenshot(
-                        controller: screenshotController,
+                    Screenshot(
+                      controller: screenshotController,
+                      child: Container(
+                        color: Colors.white,
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
                           children: [
@@ -259,7 +277,8 @@ class _ActiveMinutesDetailState extends State<ActiveMinutesDetail> {
                               minutes: state.activeMinutes,
                               patient: widget.patient,
                               time: TimeData(start: start!, end: end!, timeframe: widget.timeframe),
-                              chartHeight: windowHeight - 180,
+                              chartHeight: windowHeight - (widget.isKlimafit && !widget.isEmbedded ? 100 : 180),
+                              isEmbedded: widget.isEmbedded,
                             ),
                           ],
                         ),

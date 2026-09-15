@@ -26,6 +26,7 @@ class MessageDTO {
     this.sendDate,
     this.subject,
     this.text,
+    this.language,
     this.senderId,
     this.senderName,
     this.sentToAll,
@@ -64,6 +65,14 @@ class MessageDTO {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? text;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  TranslationLanguage? language;
 
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
@@ -113,6 +122,7 @@ class MessageDTO {
           other.sendDate == sendDate &&
           other.subject == subject &&
           other.text == text &&
+          other.language == language &&
           other.senderId == senderId &&
           other.senderName == senderName &&
           other.sentToAll == sentToAll &&
@@ -126,6 +136,7 @@ class MessageDTO {
       (sendDate == null ? 0 : sendDate!.hashCode) +
       (subject == null ? 0 : subject!.hashCode) +
       (text == null ? 0 : text!.hashCode) +
+      (language == null ? 0 : language!.hashCode) +
       (senderId == null ? 0 : senderId!.hashCode) +
       (senderName == null ? 0 : senderName!.hashCode) +
       (sentToAll == null ? 0 : sentToAll!.hashCode) +
@@ -134,7 +145,7 @@ class MessageDTO {
 
   @override
   String toString() =>
-      'MessageDTO[type=$type, sendDate=$sendDate, subject=$subject, text=$text, senderId=$senderId, senderName=$senderName, sentToAll=$sentToAll, pictureId=$pictureId, linkToProfile=$linkToProfile]';
+      'MessageDTO[type=$type, sendDate=$sendDate, subject=$subject, text=$text, language=$language, senderId=$senderId, senderName=$senderName, sentToAll=$sentToAll, pictureId=$pictureId, linkToProfile=$linkToProfile]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -157,6 +168,11 @@ class MessageDTO {
       json[r'text'] = this.text;
     } else {
       json[r'text'] = null;
+    }
+    if (this.language != null) {
+      json[r'language'] = this.language;
+    } else {
+      json[r'language'] = null;
     }
     if (this.senderId != null) {
       json[r'senderId'] = this.senderId;
@@ -211,6 +227,7 @@ class MessageDTO {
         sendDate: mapValueOfType<String>(json, r'sendDate'),
         subject: mapValueOfType<String>(json, r'subject'),
         text: mapValueOfType<String>(json, r'text'),
+        language: TranslationLanguage.fromJson(json[r'language']),
         senderId: mapValueOfType<String>(json, r'senderId'),
         senderName: mapValueOfType<String>(json, r'senderName'),
         sentToAll: mapValueOfType<bool>(json, r'sentToAll'),

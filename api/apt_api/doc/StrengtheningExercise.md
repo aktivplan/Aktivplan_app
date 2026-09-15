@@ -15,6 +15,7 @@ Name | Type | Description | Notes
 **hint** | **Map<String, String>** |  | [optional] [default to const {}]
 **name** | **Map<String, String>** |  | [optional] [default to const {}]
 **youTubeUrl** | **Map<String, String>** |  | [optional] [default to const {}]
+**videoFileKey** | **String** |  | [optional] 
 **exerciseIntensityPercentageStart** | **int** |  | [optional] 
 **exerciseIntensityPercentageEnd** | **int** |  | [optional] 
 **exerciseTrainingHeartRateLowerLimit** | **int** |  | [optional] 
@@ -27,6 +28,8 @@ Name | Type | Description | Notes
 **weight** | **int** |  | [optional] 
 **needsEquipment** | **bool** |  | [optional] 
 **hasRepeatCount** | **bool** |  | [optional] 
+**waitTimeAfterExerciseSeconds** | **int** |  | [optional] 
+**waitTimeText** | **String** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

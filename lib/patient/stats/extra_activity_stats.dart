@@ -184,8 +184,8 @@ class _ExtraActivityStatsState extends State<ExtraActivityStats> {
                     ),
                   ],
                 ),
-                SelectableText("6 = ${context.i18n.ratingValue_6_8}", style: Theme.of(context).textTheme.bodyLarge),
-                SelectableText("20 = ${context.i18n.ratingValue_19_20}", style: Theme.of(context).textTheme.bodyLarge),
+                SelectableText("0 = ${context.i18n.ratingValue_0_1}", style: Theme.of(context).textTheme.bodyLarge),
+                SelectableText("10 = ${context.i18n.ratingValue_10}", style: Theme.of(context).textTheme.bodyLarge),
                 SizedBox(
                   height: height * 0.1,
                 ),

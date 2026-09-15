@@ -161,6 +161,7 @@ class _DesktopAppBarState extends State<_DesktopAppBar> with LogoutAware {
                 child: Text(context.i18n.messages),
               ),
             ),
+          // when no current institution user is super admin, on klimafit there are no predefined trainings
           if (userRepository.userRole != UserRole.PATIENT)
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
@@ -173,7 +174,8 @@ class _DesktopAppBarState extends State<_DesktopAppBar> with LogoutAware {
                 child: Text(context.i18n.activities),
               ),
             ),
-          if (userRepository.userRole != UserRole.PATIENT)
+          if (userRepository.userRole != UserRole.PATIENT &&
+              (userRepository.currentInstitution == null || userRepository.currentInstitution!.institutionFocus != InstitutionFocus.KLIMAFIT_LIGHT))
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: TextButton(
@@ -185,7 +187,8 @@ class _DesktopAppBarState extends State<_DesktopAppBar> with LogoutAware {
                 child: Text(context.i18n.tipsAndInfos),
               ),
             ),
-          if (userRepository.userRole != UserRole.PATIENT)
+          if (userRepository.userRole != UserRole.PATIENT &&
+              (userRepository.currentInstitution == null || userRepository.currentInstitution!.institutionFocus != InstitutionFocus.KLIMAFIT_LIGHT))
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: TextButton(

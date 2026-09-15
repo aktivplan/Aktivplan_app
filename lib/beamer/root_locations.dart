@@ -14,6 +14,7 @@ import 'package:aptapp/login/login_page.dart';
 import 'package:aptapp/login/reset_password_page.dart';
 import 'package:aptapp/notFound/not_found_page.dart';
 import 'package:aptapp/legal_notice_page.dart';
+import 'package:aptapp/patient/onboarding_page.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 
@@ -84,6 +85,27 @@ class HelpLocation extends BeamLocation<BeamState> {
   }
 }
 
+class OnboardingLocation extends BeamLocation<BeamState> {
+  @override
+  List<String> get pathPatterns => [
+        '/onboarding',
+      ];
+
+  @override
+  List<BeamPage> buildPages(BuildContext context, BeamState state) {
+    return [
+      AptBeamPage(
+        context: context,
+        key: ValueKey('onboarding'),
+        child: OnboardingPage(
+          isKlimafit: state.queryParameters['klimafit'] == 'true',
+          isSinglePage: true,
+        ),
+      ),
+    ];
+  }
+}
+
 class NotFoundLocation extends BeamLocation<BeamState> {
   @override
   List<String> get pathPatterns => ['/not-found'];
@@ -102,5 +124,6 @@ final rootLocations = [
   ResetPasswordLocation(),
   ImprintLocation(),
   HelpLocation(),
+  OnboardingLocation(),
   NotFoundLocation(),
 ];

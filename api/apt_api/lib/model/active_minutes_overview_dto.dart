@@ -30,6 +30,9 @@ class ActiveMinutesOverviewDTO {
     this.durationMinutesActive,
     this.durationMinutes,
     this.averageMinutesPerWeek,
+    this.activityPointsPredefinedActivity,
+    this.activityPointsActiveMobility,
+    this.klimafit,
   });
 
   /// WEEK: key values are DayOfWeek-Enum-Keys, MONTH: key values are calendar week numbers, ALL: key values are month numbers
@@ -91,6 +94,30 @@ class ActiveMinutesOverviewDTO {
   ///
   int? averageMinutesPerWeek;
 
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  int? activityPointsPredefinedActivity;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  int? activityPointsActiveMobility;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  bool? klimafit;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -102,7 +129,11 @@ class ActiveMinutesOverviewDTO {
           other.endDate == endDate &&
           other.durationMinutesActive == durationMinutesActive &&
           other.durationMinutes == durationMinutes &&
-          other.averageMinutesPerWeek == averageMinutesPerWeek;
+          other.averageMinutesPerWeek == averageMinutesPerWeek &&
+          other.activityPointsPredefinedActivity ==
+              activityPointsPredefinedActivity &&
+          other.activityPointsActiveMobility == activityPointsActiveMobility &&
+          other.klimafit == klimafit;
 
   @override
   int get hashCode =>
@@ -114,11 +145,18 @@ class ActiveMinutesOverviewDTO {
       (endDate == null ? 0 : endDate!.hashCode) +
       (durationMinutesActive == null ? 0 : durationMinutesActive!.hashCode) +
       (durationMinutes == null ? 0 : durationMinutes!.hashCode) +
-      (averageMinutesPerWeek == null ? 0 : averageMinutesPerWeek!.hashCode);
+      (averageMinutesPerWeek == null ? 0 : averageMinutesPerWeek!.hashCode) +
+      (activityPointsPredefinedActivity == null
+          ? 0
+          : activityPointsPredefinedActivity!.hashCode) +
+      (activityPointsActiveMobility == null
+          ? 0
+          : activityPointsActiveMobility!.hashCode) +
+      (klimafit == null ? 0 : klimafit!.hashCode);
 
   @override
   String toString() =>
-      'ActiveMinutesOverviewDTO[activeMinutes=$activeMinutes, hasPreviousEntry=$hasPreviousEntry, hasNextEntry=$hasNextEntry, startDate=$startDate, endDate=$endDate, durationMinutesActive=$durationMinutesActive, durationMinutes=$durationMinutes, averageMinutesPerWeek=$averageMinutesPerWeek]';
+      'ActiveMinutesOverviewDTO[activeMinutes=$activeMinutes, hasPreviousEntry=$hasPreviousEntry, hasNextEntry=$hasNextEntry, startDate=$startDate, endDate=$endDate, durationMinutesActive=$durationMinutesActive, durationMinutes=$durationMinutes, averageMinutesPerWeek=$averageMinutesPerWeek, activityPointsPredefinedActivity=$activityPointsPredefinedActivity, activityPointsActiveMobility=$activityPointsActiveMobility, klimafit=$klimafit]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -158,6 +196,22 @@ class ActiveMinutesOverviewDTO {
     } else {
       json[r'averageMinutesPerWeek'] = null;
     }
+    if (this.activityPointsPredefinedActivity != null) {
+      json[r'activityPointsPredefinedActivity'] =
+          this.activityPointsPredefinedActivity;
+    } else {
+      json[r'activityPointsPredefinedActivity'] = null;
+    }
+    if (this.activityPointsActiveMobility != null) {
+      json[r'activityPointsActiveMobility'] = this.activityPointsActiveMobility;
+    } else {
+      json[r'activityPointsActiveMobility'] = null;
+    }
+    if (this.klimafit != null) {
+      json[r'klimafit'] = this.klimafit;
+    } else {
+      json[r'klimafit'] = null;
+    }
     return json;
   }
 
@@ -192,6 +246,11 @@ class ActiveMinutesOverviewDTO {
         durationMinutes: mapValueOfType<int>(json, r'durationMinutes'),
         averageMinutesPerWeek:
             mapValueOfType<int>(json, r'averageMinutesPerWeek'),
+        activityPointsPredefinedActivity:
+            mapValueOfType<int>(json, r'activityPointsPredefinedActivity'),
+        activityPointsActiveMobility:
+            mapValueOfType<int>(json, r'activityPointsActiveMobility'),
+        klimafit: mapValueOfType<bool>(json, r'klimafit'),
       );
     }
     return null;

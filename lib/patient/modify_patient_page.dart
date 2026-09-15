@@ -11,17 +11,21 @@ import 'dart:io';
 
 import 'package:apt_api/api.dart';
 import 'package:aptapp/authentication/user_repository.dart';
+import 'package:aptapp/exercises/widgets/time_picker_row.dart';
 import 'package:aptapp/institution/bloc/institution_repository.dart';
 import 'package:aptapp/l10n/i18n.dart';
 import 'package:aptapp/mixins/traceable_page_mixin.dart';
 import 'package:aptapp/patient/activity_classes_page.dart';
 import 'package:aptapp/user/bloc/user_bloc.dart';
 import 'package:aptapp/user/user_controller_repository.dart';
+import 'package:aptapp/utils/activity_helpers.dart';
 import 'package:aptapp/utils/constants.dart';
+import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/keys.dart';
 import 'package:aptapp/widget/cancel_button.dart';
 import 'package:aptapp/widget/delete_button.dart';
 import 'package:aptapp/widget/image_form_field.dart';
+import 'package:aptapp/widget/location_picker.dart';
 import 'package:aptapp/widget/save_button.dart';
 import 'package:beamer/beamer.dart';
 import 'package:email_validator/email_validator.dart';
@@ -34,6 +38,7 @@ import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:http/http.dart';
 import 'package:kiwi/kiwi.dart';
+import 'package:multi_dropdown/multi_dropdown.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:styled_text/styled_text.dart';
 
@@ -68,10 +73,13 @@ class ModifyPatientPage extends StatefulWidget {
 
 class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePageMixin {
   final _addPatientFormKey = GlobalKey<FormState>();
+  final participantIdController = TextEditingController();
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final emailController = TextEditingController();
   final birthdayController = MaskedTextController(mask: "00.00.0000");
+  final surgeryDateController = MaskedTextController(mask: "00.00.0000");
+  String surgeryTime = "";
   final heightController = TextEditingController(); //numeric
   final weightController = TextEditingController(); //numeric
   int? activityValue = 0;
@@ -94,6 +102,22 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
   final userApi = new UserControllerApi(apiClient);
   PatientGetDTO? patient;
 
+  LocationDTO? homeLocation;
+  String homeLocationAddress = "";
+  LocationDTO? workLocation;
+  String workLocationAddress = "";
+  HeatTolerance heatTolerance = HeatTolerance.AVERAGE;
+  MultiSelectController<MobilityPreference> mobilityPreferencesController = MultiSelectController();
+  MultiSelectController<MobilityPreference> dislikedMobilityPreferencesController = MultiSelectController();
+  List<DropdownItem<MobilityPreference>> mobilityPreferencesItems = [];
+  List<DropdownItem<MobilityPreference>> dislikedMobilityPreferencesItems = [];
+  bool syncingMobilityProperties = false;
+  MultiSelectController<PredefinedActivityType> preferredActivityTypesController = MultiSelectController();
+  MultiSelectController<PredefinedActivityType> dislikedActivityTypesController = MultiSelectController();
+  List<DropdownItem<PredefinedActivityType>> preferredActivityTypesItems = [];
+  List<DropdownItem<PredefinedActivityType>> dislikedActivityTypesItems = [];
+  bool syncingPredefinedActivityProperties = false;
+
   static const int MIN_HEIGHT = 100;
   static const int MAX_HEIGHT = 230;
   static const int MIN_WEIGHT = 30;
@@ -109,6 +133,7 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
   static const int MIN_OXYGEN = 10;
   static const int MAX_OXYGEN = 100;
 
+  String homeLocationErrorLabel = "";
   bool hasChanges = false;
 
   @override
@@ -125,15 +150,21 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
     } else {
       institution = userRepository.user!.institution!;
     }
-    getPatient();
+
+    // delay to gather the context for translations
+    Future.delayed(Duration.zero, () {
+      getPatient();
+    });
   }
 
   @override
   void dispose() {
+    participantIdController.dispose();
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();
     birthdayController.dispose();
+    surgeryDateController.dispose();
     heightController.dispose();
     weightController.dispose();
     heartrateController.dispose();
@@ -146,28 +177,6 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
     super.dispose();
   }
 
-  getDescription(int? value) {
-    switch (value) {
-      case 0:
-        return context.i18n.trainingValue_0;
-      case 1:
-      case 2:
-      case 3:
-        return context.i18n.trainingValue_1_3;
-      case 4:
-      case 5:
-      case 6:
-      case 7:
-        return context.i18n.trainingValue_4_7;
-      case 8:
-      case 9:
-      case 10:
-        return context.i18n.trainingValue_8_10;
-      default:
-        return context.i18n.trainingValue_0;
-    }
-  }
-
   List<int> validValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   addPatient() async {
@@ -178,27 +187,43 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
     setState(() {
       duplicateMail = exists;
     });
+    if (isKlimafit() && homeLocation == null) {
+      setState(() {
+        homeLocationErrorLabel = context.i18n.validationNotEmpty;
+      });
+      return;
+    }
     if (_addPatientFormKey.currentState!.validate()) {
       final userRepository = KiwiContainer().resolve<UserRepository>();
-      Map<String, dynamic> user = {
-        "activityClass": activityValue,
-        "birthDate": birthdayController.text,
-        "diseases": diseaseController.text,
-        "email": emailController.text,
-        "firstName": firstNameController.text,
-        "healthcareProfessionalId": widget.healthcareProfessionalId ?? userRepository.currentUser.id,
-        "height": int.tryParse(heightController.text) ?? 0,
-        "lastName": lastNameController.text,
-        "maximumBloodPressure": bloodPressureController.text,
-        "maximumHeartRate": int.tryParse(heartrateController.text) ?? 0,
-        "maximumOxygenConsumption": double.tryParse(oxygenController.text) ?? "",
-        "maximumPerformance": double.tryParse(performanceController.text) ?? "",
-        "medication": medicationController.text,
-        "userPictureUrl": photoController.text,
-        "weight": int.tryParse(weightController.text) ?? 0,
-      };
+      PatientGetDTO patient = PatientGetDTO(
+        activityClass: activityValue,
+        birthDate: birthdayController.text.isNotEmpty ? englishDateFormat.format(germanDateFormat.parse(birthdayController.text)) : null,
+        surgeryDate: surgeryDateController.text.isNotEmpty ? englishDateFormat.format(germanDateFormat.parse(surgeryDateController.text)) : null,
+        surgeryTime: surgeryTime,
+        diseases: diseaseController.text,
+        email: emailController.text,
+        participantId: participantIdController.text,
+        firstName: firstNameController.text,
+        healthcareProfessionalId: widget.healthcareProfessionalId ?? userRepository.currentUser.id,
+        height: int.tryParse(heightController.text) ?? 0,
+        lastName: lastNameController.text,
+        maximumBloodPressure: bloodPressureController.text,
+        maximumHeartRate: int.tryParse(heartrateController.text) ?? 0,
+        maximumOxygenConsumption: double.tryParse(oxygenController.text) ?? 0,
+        maximumPerformance: double.tryParse(performanceController.text) ?? 0,
+        medication: medicationController.text,
+        weight: int.tryParse(weightController.text) ?? 0,
+        homeLocation: homeLocation,
+        homeLocationAddress: homeLocationAddress,
+        workLocation: workLocation,
+        workLocationAddress: workLocationAddress,
+        heatTolerance: heatTolerance,
+        mobilityPreferences: mobilityPreferencesController.selectedItems.map((entry) => entry.value).toList(),
+        dislikedMobilityPreferences: dislikedMobilityPreferencesController.selectedItems.map((entry) => entry.value).toList(),
+        preferredActivities: preferredActivityTypesController.selectedItems.map((entry) => entry.value).toList(),
+        dislikedActivities: dislikedActivityTypesController.selectedItems.map((entry) => entry.value).toList(),
+      );
 
-      var patient = PatientGetDTO.fromJson(user);
       userBloc!.add(AddUserEvent(newUser: patient, picture: profilePicture));
       goBack();
     }
@@ -212,27 +237,43 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
     setState(() {
       duplicateMail = exists;
     });
+    if (isKlimafit() && homeLocation == null) {
+      setState(() {
+        homeLocationErrorLabel = context.i18n.validationNotEmpty;
+      });
+      return;
+    }
     if (_addPatientFormKey.currentState!.validate()) {
-      Map<String, dynamic> user = {
-        "activityClass": activityValue,
-        "birthDate": birthdayController.text,
-        "diseases": diseaseController.text,
-        "email": emailController.text,
-        "firstName": firstNameController.text,
-        "healthcareProfessionalId": widget.healthcareProfessionalId ?? this.patient!.healthcareProfessionalId,
-        "height": int.tryParse(heightController.text) ?? 0,
-        "id": this.patient!.id,
-        "lastName": lastNameController.text,
-        "maximumBloodPressure": bloodPressureController.text,
-        "maximumHeartRate": int.tryParse(heartrateController.text) ?? 0,
-        "maximumOxygenConsumption": double.tryParse(oxygenController.text) ?? "",
-        "maximumPerformance": double.tryParse(performanceController.text) ?? "",
-        "medication": medicationController.text,
-        "userPictureUrl": photoController.text,
-        "weight": int.tryParse(weightController.text) ?? 0,
-      };
+      this.patient = PatientGetDTO(
+        activityClass: activityValue,
+        birthDate: birthdayController.text.isNotEmpty ? englishDateFormat.format(germanDateFormat.parse(birthdayController.text)) : null,
+        surgeryDate: surgeryDateController.text.isNotEmpty ? englishDateFormat.format(germanDateFormat.parse(surgeryDateController.text)) : null,
+        surgeryTime: surgeryTime,
+        diseases: diseaseController.text,
+        email: emailController.text,
+        participantId: participantIdController.text,
+        firstName: firstNameController.text,
+        healthcareProfessionalId: widget.healthcareProfessionalId ?? this.patient!.healthcareProfessionalId,
+        height: int.tryParse(heightController.text) ?? 0,
+        id: this.patient!.id,
+        lastName: lastNameController.text,
+        maximumBloodPressure: bloodPressureController.text,
+        maximumHeartRate: int.tryParse(heartrateController.text) ?? 0,
+        maximumOxygenConsumption: double.tryParse(oxygenController.text) ?? 0,
+        maximumPerformance: double.tryParse(performanceController.text) ?? 0,
+        medication: medicationController.text,
+        weight: int.tryParse(weightController.text) ?? 0,
+        homeLocation: homeLocation,
+        homeLocationAddress: homeLocationAddress,
+        workLocation: workLocation,
+        workLocationAddress: workLocationAddress,
+        heatTolerance: heatTolerance,
+        mobilityPreferences: mobilityPreferencesController.selectedItems.map((entry) => entry.value).toList(),
+        dislikedMobilityPreferences: dislikedMobilityPreferencesController.selectedItems.map((entry) => entry.value).toList(),
+        preferredActivities: preferredActivityTypesController.selectedItems.map((entry) => entry.value).toList(),
+        dislikedActivities: dislikedActivityTypesController.selectedItems.map((entry) => entry.value).toList(),
+      );
 
-      this.patient = PatientGetDTO.fromJson(user);
       userBloc!.add(UpdateUserEvent(id: patient!.id!, user: patient, picture: profilePicture));
       final userRepository = KiwiContainer().resolve<UserRepository>();
       var userRole = userRepository.userRole;
@@ -264,10 +305,11 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
 
   void _openFileExplorer() async {
     try {
-      final List<PlatformFile> _paths = (await FilePicker.platform.pickFiles(
+      final List<PlatformFile> _paths = (await FilePicker.pickFiles(
             type: FileType.custom,
             allowMultiple: false,
             allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            withData: true,
           ))
               ?.files ??
           [];
@@ -343,7 +385,7 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
     _openFileExplorer();
   }
 
-  getPatient() async {
+  void getPatient() async {
     final UserControllerRepository userControllerRepository = KiwiContainer().resolve<UserControllerRepository>();
 
     if (widget.edit) {
@@ -354,10 +396,12 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
       } else {
         patient = (await userControllerRepository.getPatientbyId(id: widget.userId!))!.user;
       }
+      participantIdController.text = patient!.participantId ?? "";
       firstNameController.text = patient!.firstName ?? "";
       lastNameController.text = patient!.lastName ?? "";
       emailController.text = patient!.email ?? "";
-      birthdayController.text = patient!.birthDate ?? "";
+      birthdayController.text = patient!.birthDate?.isNotEmpty ?? false ? germanDateFormat.format(DateTime.parse(patient!.birthDate!)) : "";
+      surgeryDateController.text = patient!.surgeryDate?.isNotEmpty ?? false ? germanDateFormat.format(DateTime.parse(patient!.surgeryDate!)) : "";
       activityValue = patient!.activityClass;
       heightController.text = patient!.height?.toString() ?? "";
       weightController.text = patient!.weight?.toString() ?? "";
@@ -368,12 +412,115 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
       diseaseController.text = patient!.diseases ?? "-";
       medicationController.text = patient!.medication ?? "-";
       final pictureValue = await userControllerRepository.getUserPicture(id: patient!.id!, userRole: UserRole.PATIENT);
-      if (this.mounted) {
-        setState(() {
-          userPicture = pictureValue;
-        });
-      }
+      setState(() {
+        surgeryTime = patient!.surgeryTime ?? "";
+        userPicture = pictureValue;
+        homeLocation = patient!.homeLocation;
+        homeLocationAddress = patient!.homeLocationAddress ?? "";
+        workLocation = patient!.workLocation;
+        workLocationAddress = patient!.workLocationAddress ?? "";
+        heatTolerance = patient!.heatTolerance ?? HeatTolerance.AVERAGE;
+      });
     }
+
+    final newMobilityPreferencesItems = MobilityPreference.values
+        .map((e) => DropdownItem(
+              label: e.getTranslatedText(context),
+              value: e,
+              selected: patient?.mobilityPreferences.contains(e) ?? false,
+            ))
+        .toList();
+    final newDislikedMobilityPreferencesItems = MobilityPreference.values
+        .map((e) => DropdownItem(
+              label: e.getTranslatedText(context),
+              value: e,
+              selected: patient?.dislikedMobilityPreferences.contains(e) ?? false,
+            ))
+        .toList();
+    final newPreferredActivityTypesItems = PredefinedActivityType.values
+        .where((e) => e != PredefinedActivityType.OTHER)
+        .map((e) => DropdownItem(
+              label: e.getTranslatedText(context),
+              value: e,
+              selected: patient?.preferredActivities.contains(e) ?? false,
+            ))
+        .toList();
+    final newDislikedActivityTypesItems = PredefinedActivityType.values
+        .where((e) => e != PredefinedActivityType.OTHER)
+        .map((e) => DropdownItem(
+              label: e.getTranslatedText(context),
+              value: e,
+              selected: patient?.dislikedActivities.contains(e) ?? false,
+            ))
+        .toList();
+
+    setState(() {
+      mobilityPreferencesItems = newMobilityPreferencesItems;
+      dislikedMobilityPreferencesItems = newDislikedMobilityPreferencesItems;
+      preferredActivityTypesItems = newPreferredActivityTypesItems;
+      dislikedActivityTypesItems = newDislikedActivityTypesItems;
+    });
+
+    mobilityPreferencesController.setItems(mobilityPreferencesItems);
+    dislikedMobilityPreferencesController.setItems(dislikedMobilityPreferencesItems);
+    preferredActivityTypesController.setItems(preferredActivityTypesItems);
+    dislikedActivityTypesController.setItems(dislikedActivityTypesItems);
+  }
+
+  bool isKlimafit() {
+    return institution?.institutionFocus?.isKlimafit() ?? false;
+  }
+
+  void _syncDislikedMobilityProperties() {
+    if (syncingMobilityProperties) {
+      return;
+    }
+    syncingMobilityProperties = true;
+    final selectedPreferredValues = mobilityPreferencesController.selectedItems.map((e) => e.value).toSet();
+
+    setState(() {
+      dislikedMobilityPreferencesController.unselectWhere((item) => selectedPreferredValues.contains(item.value));
+    });
+    syncingMobilityProperties = false;
+  }
+
+  void _syncDislikedActivityProperties() {
+    if (syncingPredefinedActivityProperties) {
+      return;
+    }
+    syncingPredefinedActivityProperties = true;
+    final selectedPreferredValues = preferredActivityTypesController.selectedItems.map((e) => e.value).toSet();
+
+    setState(() {
+      dislikedActivityTypesController.unselectWhere((item) => selectedPreferredValues.contains(item.value));
+    });
+    syncingPredefinedActivityProperties = false;
+  }
+
+  void _syncPreferredMobilityProperties() {
+    if (syncingMobilityProperties) {
+      return;
+    }
+    syncingMobilityProperties = true;
+    final selectedDislikedValues = dislikedMobilityPreferencesController.selectedItems.map((e) => e.value).toSet();
+
+    setState(() {
+      mobilityPreferencesController.unselectWhere((item) => selectedDislikedValues.contains(item.value));
+    });
+    syncingMobilityProperties = false;
+  }
+
+  void _syncPreferredActivityProperties() {
+    if (syncingPredefinedActivityProperties) {
+      return;
+    }
+    syncingPredefinedActivityProperties = true;
+    final selectedDislikedValues = dislikedActivityTypesController.selectedItems.map((e) => e.value).toSet();
+
+    setState(() {
+      preferredActivityTypesController.unselectWhere((item) => selectedDislikedValues.contains(item.value));
+    });
+    syncingPredefinedActivityProperties = false;
   }
 
   @override
@@ -381,6 +528,14 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
     double width = MediaQuery.of(context).size.width;
     final userRepository = KiwiContainer().resolve<UserRepository>();
     var userRole = userRepository.userRole;
+    bool isPrehabToRehab = institution?.institutionFocus == InstitutionFocus.PREHAB_TO_REHAB;
+
+    final dropdownDecoration = DropdownDecoration(borderRadius: BorderRadius.zero, backgroundColor: Colors.white);
+    final chipDecoration = ChipDecoration(
+      backgroundColor: primaryColor,
+      labelStyle: TextStyle(color: Colors.white),
+      deleteIcon: Icon(Icons.close, color: Colors.white, size: 16),
+    );
 
     return AptLayout(
       border: false,
@@ -413,10 +568,104 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                           children: [
                             FormFieldPadding(
                               child: TextFormField(
+                                controller: participantIdController,
+                                readOnly: userRole == UserRole.PATIENT,
+                                validator: (value) {
+                                  if (!isPrehabToRehab) {
+                                    return null;
+                                  }
+                                  if ((value ?? "").isEmpty) {
+                                    return context.i18n.validationNotEmpty;
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                onChanged: (value) => {
+                                  setState(() {
+                                    this.hasChanges = true;
+                                  })
+                                },
+                                decoration: InputDecoration(
+                                  hintText: context.i18n.participantId,
+                                  labelText: context.i18n.participantId + (isPrehabToRehab ? ' *' : ''),
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            if (isPrehabToRehab) ...[
+                              FormFieldPadding(
+                                child: TextFormField(
+                                  controller: surgeryDateController,
+                                  readOnly: userRole == UserRole.PATIENT,
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  validator: (value) {
+                                    if ((value ?? "").isEmpty) {
+                                      return null;
+                                    } else if (value!.length != 10) {
+                                      return context.i18n.validationInvalidValue;
+                                    } else {
+                                      final day = int.parse(value.substring(0, 2));
+                                      final month = int.parse(value.substring(3, 5));
+                                      final year = int.parse(value.substring(6));
+                                      if (day < 0 || day > 31 || month < 1 || month > 12 || year < 1900) {
+                                        return context.i18n.validationInvalidValue;
+                                      }
+                                      return null;
+                                    }
+                                  },
+                                  onChanged: (value) => {
+                                    setState(() {
+                                      this.hasChanges = true;
+                                    })
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: "01.01.1950",
+                                    labelText: context.i18n.surgeryDate,
+                                    prefixIcon: IconButton(
+                                      icon: Icon(Icons.date_range),
+                                      onPressed: () async {
+                                        final date = await showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime(1900),
+                                            lastDate: DateTime(DateTime.now().year + 5));
+                                        if (date != null) {
+                                          setState(() {
+                                            surgeryDateController.text = germanDateFormat.format(date);
+                                            this.hasChanges = true;
+                                          });
+                                        }
+                                      },
+                                    ),
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                              FormFieldPadding(
+                                child: TimePickerRow(
+                                  initialTime: surgeryTime,
+                                  labelText: context.i18n.surgeryTime,
+                                  useDefaultBorder: true,
+                                  selectTime: (selectedTime) {
+                                    setState(() {
+                                      surgeryTime = selectedTime;
+                                      hasChanges = true;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                            FormFieldPadding(
+                              child: TextFormField(
                                 controller: firstNameController,
                                 readOnly: userRole == UserRole.PATIENT,
                                 validator: (value) {
                                   if ((value ?? "").isEmpty) {
+                                    if (isPrehabToRehab || isKlimafit()) {
+                                      return null;
+                                    }
                                     return context.i18n.validationNotEmpty;
                                   } else if (value!.length < 2 || value.length > 100) {
                                     return context.i18n.validationDefaultLength;
@@ -431,7 +680,7 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                 },
                                 decoration: InputDecoration(
                                   hintText: context.i18n.firstName,
-                                  labelText: context.i18n.firstName + ' *',
+                                  labelText: context.i18n.firstName + (isPrehabToRehab || isKlimafit() ? '' : ' *'),
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -442,6 +691,9 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                 readOnly: userRole == UserRole.PATIENT,
                                 validator: (value) {
                                   if ((value ?? "").isEmpty) {
+                                    if (isPrehabToRehab || isKlimafit()) {
+                                      return null;
+                                    }
                                     return context.i18n.validationNotEmpty;
                                   } else if (value!.length < 2 || value.length > 100) {
                                     return context.i18n.validationDefaultLength;
@@ -456,7 +708,7 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                 },
                                 decoration: InputDecoration(
                                   hintText: context.i18n.lastName,
-                                  labelText: context.i18n.lastName + ' *',
+                                  labelText: context.i18n.lastName + (isPrehabToRehab || isKlimafit() ? '' : ' *'),
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -466,6 +718,9 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                 controller: emailController,
                                 readOnly: userRole == UserRole.PATIENT,
                                 validator: (value) {
+                                  if (isPrehabToRehab) {
+                                    return null;
+                                  }
                                   if ((value ?? "").isEmpty || !EmailValidator.validate((value ?? "").trim())) {
                                     return context.i18n.validationEmail;
                                   } else if (duplicateMail) {
@@ -481,7 +736,7 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                 },
                                 decoration: InputDecoration(
                                   hintText: context.i18n.email,
-                                  labelText: context.i18n.email + ' *',
+                                  labelText: context.i18n.email + (isPrehabToRehab ? '' : ' *'),
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -495,6 +750,9 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                 ],
                                 validator: (value) {
                                   if ((value ?? "").isEmpty) {
+                                    if (isPrehabToRehab) {
+                                      return null;
+                                    }
                                     return context.i18n.validationNotEmpty;
                                   } else if (value!.length != 10 || germanDateFormat.parse(value).isAfter(DateTime.now())) {
                                     return context.i18n.validationInvalidValue;
@@ -515,7 +773,7 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                 },
                                 decoration: InputDecoration(
                                   hintText: "01.01.1950",
-                                  labelText: context.i18n.birthdate + ' *',
+                                  labelText: context.i18n.birthdate + (isPrehabToRehab ? '' : ' *'),
                                   prefixIcon: IconButton(
                                     icon: Icon(Icons.date_range),
                                     onPressed: () async {
@@ -541,6 +799,9 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                 inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                                 validator: (value) {
                                   if ((value ?? "").isEmpty) {
+                                    if (isPrehabToRehab || isKlimafit()) {
+                                      return null;
+                                    }
                                     return context.i18n.validationNotEmpty;
                                   } else if (int.parse(value!) < MIN_HEIGHT || int.parse(value) > MAX_HEIGHT) {
                                     return context.i18n.validationInvalidValue;
@@ -555,7 +816,7 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                 },
                                 decoration: InputDecoration(
                                   hintText: context.i18n.bodyHeightWithUnit,
-                                  labelText: context.i18n.bodyHeightWithUnit + ' *',
+                                  labelText: context.i18n.bodyHeightWithUnit + (isPrehabToRehab || isKlimafit() ? '' : ' *'),
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -568,6 +829,9 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                 inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                                 validator: (value) {
                                   if ((value ?? "").isEmpty) {
+                                    if (isPrehabToRehab || isKlimafit()) {
+                                      return null;
+                                    }
                                     return context.i18n.validationNotEmpty;
                                   } else if (int.parse(value!) < MIN_WEIGHT || int.parse(value) > MAX_WEIGHT) {
                                     return context.i18n.validationInvalidValue;
@@ -582,7 +846,7 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                 },
                                 decoration: InputDecoration(
                                   hintText: context.i18n.bodyWeightWithUnit,
-                                  labelText: context.i18n.bodyWeightWithUnit + ' *',
+                                  labelText: context.i18n.bodyWeightWithUnit + (isPrehabToRehab || isKlimafit() ? '' : ' *'),
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -591,7 +855,7 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                             FormFieldPadding(
                               child: userRole == UserRole.PATIENT
                                   ? TextFormField(
-                                      initialValue: getDescription(activityValue),
+                                      initialValue: getRatingText(context, activityValue),
                                       readOnly: true,
                                       onChanged: (value) => {
                                             setState(() {
@@ -604,7 +868,7 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                         border: OutlineInputBorder(),
                                       ))
                                   : DropdownButtonFormField(
-                                      value: activityValue,
+                                      initialValue: activityValue,
                                       onChanged: (value) {
                                         setState(() {
                                           activityValue = int.tryParse(value.toString());
@@ -613,10 +877,15 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                       },
                                       isExpanded: true,
                                       decoration: InputDecoration(
-                                        labelText: context.i18n.activityClass + ' *',
+                                        labelText: context.i18n.activityClass + (isPrehabToRehab || isKlimafit() ? '' : ' *'),
                                         border: const OutlineInputBorder(),
                                       ),
-                                      validator: (value) => value == null || value == -1 ? context.i18n.validationNotEmpty : null,
+                                      validator: (value) {
+                                        if (isPrehabToRehab || isKlimafit()) {
+                                          return null;
+                                        }
+                                        return value == null || value == -1 ? context.i18n.validationNotEmpty : null;
+                                      },
                                       items: validValues.map((num) {
                                         return DropdownMenuItem<int>(
                                           child: FittedBox(
@@ -636,7 +905,7 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                                   SizedBox(
                                                     width: width * 0.003,
                                                   ),
-                                                Text("$num - ${getDescription(num)}")
+                                                Text("$num - ${getRatingText(context, num)}")
                                               ],
                                             ),
                                           ),
@@ -672,7 +941,8 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                 ),
                               ),
                             ),
-                            if (institution?.institutionFocus == InstitutionFocus.CARDIOVASCULAR_REHABILITATION)
+                            if (institution?.institutionFocus == InstitutionFocus.CARDIOVASCULAR_REHABILITATION ||
+                                institution?.institutionFocus == InstitutionFocus.PREHAB_TO_REHAB)
                               FormFieldPadding(
                                 child: TextFormField(
                                   controller: bloodPressureController,
@@ -707,7 +977,8 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                   ),
                                 ),
                               ),
-                            if (institution?.institutionFocus == InstitutionFocus.CARDIOVASCULAR_REHABILITATION)
+                            if (institution?.institutionFocus == InstitutionFocus.CARDIOVASCULAR_REHABILITATION ||
+                                institution?.institutionFocus == InstitutionFocus.PREHAB_TO_REHAB)
                               FormFieldPadding(
                                 child: TextFormField(
                                   controller: performanceController,
@@ -734,7 +1005,8 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                   ),
                                 ),
                               ),
-                            if (institution?.institutionFocus == InstitutionFocus.CARDIOVASCULAR_REHABILITATION)
+                            if (institution?.institutionFocus == InstitutionFocus.CARDIOVASCULAR_REHABILITATION ||
+                                institution?.institutionFocus == InstitutionFocus.PREHAB_TO_REHAB)
                               FormFieldPadding(
                                 child: TextFormField(
                                   controller: oxygenController,
@@ -793,6 +1065,126 @@ class _ModifyPatientPageState extends State<ModifyPatientPage> with TraceablePag
                                 ),
                               ),
                             ),
+                            if (isKlimafit())
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 8),
+                                  LocationPicker(
+                                    labelText: context.i18n.homeLocation + ' *',
+                                    onLocationChanged: (location, address) {
+                                      setState(() {
+                                        homeLocation = location;
+                                        homeLocationAddress = address;
+                                        if (location != null) {
+                                          homeLocationErrorLabel = "";
+                                        }
+                                        hasChanges = true;
+                                      });
+                                    },
+                                    initialLocation: homeLocation,
+                                    initialLocationAddress: homeLocationAddress,
+                                    errorText: homeLocationErrorLabel,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  LocationPicker(
+                                      labelText: context.i18n.workLocation,
+                                      onLocationChanged: (location, address) {
+                                        setState(() {
+                                          workLocation = location;
+                                          workLocationAddress = address;
+                                          hasChanges = true;
+                                        });
+                                      },
+                                      initialLocation: workLocation,
+                                      initialLocationAddress: workLocationAddress),
+                                  const SizedBox(height: 16),
+                                  DropdownButtonFormField(
+                                    initialValue: heatTolerance,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        heatTolerance = value!;
+                                        this.hasChanges = true;
+                                      });
+                                    },
+                                    decoration: InputDecoration(
+                                      hintText: context.i18n.heatTolerance,
+                                      labelText: context.i18n.heatTolerance,
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    items: [
+                                      DropdownMenuItem(
+                                        child: Text(context.i18n.heatTolerance_POOR),
+                                        value: HeatTolerance.POOR,
+                                      ),
+                                      DropdownMenuItem(
+                                        child: Text(context.i18n.heatTolerance_AVERAGE),
+                                        value: HeatTolerance.AVERAGE,
+                                      ),
+                                      DropdownMenuItem(
+                                        child: Text(context.i18n.heatTolerance_GOOD),
+                                        value: HeatTolerance.GOOD,
+                                      ),
+                                    ],
+                                  ),
+                                  FormFieldPadding(
+                                    child: MultiDropdown<MobilityPreference>(
+                                      controller: mobilityPreferencesController,
+                                      items: mobilityPreferencesItems,
+                                      fieldDecoration: FieldDecoration(
+                                        hintText: context.i18n.mobilityPreference,
+                                        labelText: context.i18n.mobilityPreference,
+                                        border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                                      ),
+                                      dropdownDecoration: dropdownDecoration,
+                                      chipDecoration: chipDecoration,
+                                      onSelectionChange: (_) => _syncDislikedMobilityProperties(),
+                                    ),
+                                  ),
+                                  FormFieldPadding(
+                                    child: MultiDropdown<MobilityPreference>(
+                                      controller: dislikedMobilityPreferencesController,
+                                      items: dislikedMobilityPreferencesItems,
+                                      fieldDecoration: FieldDecoration(
+                                        hintText: context.i18n.dislikedMobilityPreference,
+                                        labelText: context.i18n.dislikedMobilityPreference,
+                                        border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                                      ),
+                                      dropdownDecoration: dropdownDecoration,
+                                      chipDecoration: chipDecoration,
+                                      onSelectionChange: (_) => _syncPreferredMobilityProperties(),
+                                    ),
+                                  ),
+                                  FormFieldPadding(
+                                    child: MultiDropdown<PredefinedActivityType>(
+                                      controller: preferredActivityTypesController,
+                                      items: preferredActivityTypesItems,
+                                      fieldDecoration: FieldDecoration(
+                                        hintText: context.i18n.activityPreference,
+                                        labelText: context.i18n.activityPreference,
+                                        border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                                      ),
+                                      dropdownDecoration: dropdownDecoration,
+                                      chipDecoration: chipDecoration,
+                                      onSelectionChange: (_) => _syncDislikedActivityProperties(),
+                                    ),
+                                  ),
+                                  FormFieldPadding(
+                                    child: MultiDropdown<PredefinedActivityType>(
+                                      controller: dislikedActivityTypesController,
+                                      items: dislikedActivityTypesItems,
+                                      fieldDecoration: FieldDecoration(
+                                        hintText: context.i18n.dislikedActivityPreference,
+                                        labelText: context.i18n.dislikedActivityPreference,
+                                        border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                                      ),
+                                      dropdownDecoration: dropdownDecoration,
+                                      chipDecoration: chipDecoration,
+                                      onSelectionChange: (_) => _syncPreferredActivityProperties(),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ImageFormField(controller: photoController, callback: getImage),
                             Padding(
                               padding: const EdgeInsets.only(top: 8.0),

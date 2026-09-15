@@ -25,6 +25,9 @@ class AppointmentPostDTO {
     this.name,
     this.location,
     this.details,
+    this.useLocationCoordinates,
+    this.locationCoordinates,
+    this.locationAddress,
   });
 
   ///
@@ -51,24 +54,54 @@ class AppointmentPostDTO {
   ///
   String? details;
 
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  bool? useLocationCoordinates;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  LocationDTO? locationCoordinates;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? locationAddress;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is AppointmentPostDTO &&
           other.name == name &&
           other.location == location &&
-          other.details == details;
+          other.details == details &&
+          other.useLocationCoordinates == useLocationCoordinates &&
+          other.locationCoordinates == locationCoordinates &&
+          other.locationAddress == locationAddress;
 
   @override
   int get hashCode =>
       // ignore: unnecessary_parenthesis
       (name == null ? 0 : name!.hashCode) +
       (location == null ? 0 : location!.hashCode) +
-      (details == null ? 0 : details!.hashCode);
+      (details == null ? 0 : details!.hashCode) +
+      (useLocationCoordinates == null ? 0 : useLocationCoordinates!.hashCode) +
+      (locationCoordinates == null ? 0 : locationCoordinates!.hashCode) +
+      (locationAddress == null ? 0 : locationAddress!.hashCode);
 
   @override
   String toString() =>
-      'AppointmentPostDTO[name=$name, location=$location, details=$details]';
+      'AppointmentPostDTO[name=$name, location=$location, details=$details, useLocationCoordinates=$useLocationCoordinates, locationCoordinates=$locationCoordinates, locationAddress=$locationAddress]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -86,6 +119,21 @@ class AppointmentPostDTO {
       json[r'details'] = this.details;
     } else {
       json[r'details'] = null;
+    }
+    if (this.useLocationCoordinates != null) {
+      json[r'useLocationCoordinates'] = this.useLocationCoordinates;
+    } else {
+      json[r'useLocationCoordinates'] = null;
+    }
+    if (this.locationCoordinates != null) {
+      json[r'locationCoordinates'] = this.locationCoordinates;
+    } else {
+      json[r'locationCoordinates'] = null;
+    }
+    if (this.locationAddress != null) {
+      json[r'locationAddress'] = this.locationAddress;
+    } else {
+      json[r'locationAddress'] = null;
     }
     return json;
   }
@@ -114,6 +162,10 @@ class AppointmentPostDTO {
         name: mapValueOfType<String>(json, r'name'),
         location: mapValueOfType<String>(json, r'location'),
         details: mapValueOfType<String>(json, r'details'),
+        useLocationCoordinates:
+            mapValueOfType<bool>(json, r'useLocationCoordinates'),
+        locationCoordinates: LocationDTO.fromJson(json[r'locationCoordinates']),
+        locationAddress: mapValueOfType<String>(json, r'locationAddress'),
       );
     }
     return null;

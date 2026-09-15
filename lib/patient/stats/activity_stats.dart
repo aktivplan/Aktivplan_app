@@ -10,11 +10,13 @@
 import 'package:apt_api/api.dart';
 import 'package:aptapp/activity/bloc/activity_bloc.dart';
 import 'package:aptapp/l10n/i18n.dart';
+import 'package:aptapp/utils/constants.dart';
 import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/translation_helper.dart';
 import 'package:aptapp/widget/borg_slider.dart';
 import 'package:aptapp/widget/delete_button.dart';
 import 'package:aptapp/widget/save_button.dart';
+import 'package:aptapp/widget/video_player_activity.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
@@ -50,21 +52,31 @@ class ActivityStats extends StatefulWidget {
 }
 
 class ActivityStatPair {
+  final Widget? titleWidget;
   final String title;
   final String value;
   final bool appendColon;
 
-  ActivityStatPair({this.title = "", this.value = "", this.appendColon = true});
+  ActivityStatPair({this.titleWidget, this.title = "", this.value = "", this.appendColon = true});
 }
 
 class _ActivityStatsState extends State<ActivityStats> {
+  Map<int, int> workoutExerciseIndexToVideoSourceIndex = {};
+  int initialVideoIndex = 0;
+  bool hasVideo = false;
+
   List<ActivityStatPair> getStatPairs() {
     List<ActivityStatPair> toReturn = [];
     if (widget.activity.type == ActivityType.APPOINTMENT) {
-      toReturn.add(ActivityStatPair(title: context.i18n.time, value: getTranslatedTimeString(widget.activity.time ?? "", context)));
+      toReturn.add(ActivityStatPair(
+          title: context.i18n.time, value: getTranslatedTimeString(widget.activity.time ?? "", widget.activity.endTime ?? "", context)));
       toReturn.add(ActivityStatPair(title: context.i18n.name, value: getTranslatedText(widget.activity.name, context)));
-      if ((widget.activity.activity!.appointment!.location ?? "").isNotEmpty) {
+      if ((widget.activity.activity!.appointment!.location ?? "").isNotEmpty &&
+          !(widget.activity.activity!.appointment!.useLocationCoordinates ?? false)) {
         toReturn.add(ActivityStatPair(title: context.i18n.location, value: widget.activity.activity!.appointment!.location!));
+      } else if ((widget.activity.activity!.appointment!.locationAddress ?? "").isNotEmpty &&
+          (widget.activity.activity!.appointment!.useLocationCoordinates ?? false)) {
+        toReturn.add(ActivityStatPair(title: context.i18n.location, value: widget.activity.activity!.appointment!.locationAddress!));
       }
       if ((widget.activity.activity!.appointment!.details ?? "").isNotEmpty) {
         toReturn.add(ActivityStatPair(title: context.i18n.details, value: widget.activity.activity!.appointment!.details!));
@@ -84,7 +96,7 @@ class _ActivityStatsState extends State<ActivityStats> {
     }
 
     toReturn.add(ActivityStatPair(title: context.i18n.trainingType, value: widget.activity.type!.getTranslatedText(context)));
-    toReturn.add(ActivityStatPair(title: context.i18n.exercise, value: getTranslatedText(widget.activity.name, context)));
+    toReturn.add(ActivityStatPair(title: context.i18n.exercise, value: getActivityName(widget.activity, context)));
     toReturn
         .add(ActivityStatPair(title: context.i18n.state, value: widget.activity.rating!.done! ? context.i18n.executed : context.i18n.notExecuted));
     if (widget.activity.rating!.done!) {
@@ -178,7 +190,24 @@ class _ActivityStatsState extends State<ActivityStats> {
       final WorkoutPostDTO workout = widget.activity.activity!.workout!;
       for (int i = 0; i < workout.exercises.length; i++) {
         toReturn.add(ActivityStatPair(
-            title: "${i + 1}. ${context.i18n.exercise}: ${getTranslatedText(workout.exercises[i].name, context)}", appendColon: false));
+            titleWidget: (workout.exercises[i].videoFileKey ?? "").isNotEmpty
+                ? IconButton(
+                    padding: EdgeInsets.only(right: 8),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      setState(() {
+                        initialVideoIndex = workoutExerciseIndexToVideoSourceIndex[i] ?? 0;
+                      });
+                    },
+                    icon: Icon(
+                      Icons.play_arrow,
+                      size: 24,
+                      color: Colors.black,
+                    ),
+                  )
+                : null,
+            title: "${i + 1}. ${context.i18n.exercise}: ${getTranslatedText(workout.exercises[i].name, context)}",
+            appendColon: false));
         toReturn.addAll(getStrenghteningStatPairs(workout.exercises[i]));
         final String youTubeUrl = getTranslatedText(workout.exercises[i].youTubeUrl, context);
         if (youTubeUrl.isNotEmpty) {
@@ -204,6 +233,15 @@ class _ActivityStatsState extends State<ActivityStats> {
           toReturn.add(ActivityStatPair(title: context.i18n.youTubeUrl, value: youTubeUrl));
         }
         toReturn.add(ActivityStatPair(title: context.i18n.notes, value: notes));
+      }
+    } else if (widget.activity.type == ActivityType.PREDEFINED_ACTIVITY || widget.activity.type == ActivityType.PREDEFINED_ACTIVE_MOBILITY) {
+      final PredefinedActivityPostDTO exercise = widget.activity.activity!.predefinedActivity!;
+      toReturn.add(ActivityStatPair(title: context.i18n.duration, value: "${exercise.durationMinutes} ${context.i18n.durationValueMinutes}"));
+      if (exercise.startLocationAddress?.isNotEmpty ?? false) {
+        toReturn.add(ActivityStatPair(title: context.i18n.startLocation, value: exercise.startLocationAddress!));
+      }
+      if (exercise.endLocationAddress?.isNotEmpty ?? false) {
+        toReturn.add(ActivityStatPair(title: context.i18n.endLocation, value: exercise.endLocationAddress!));
       }
     }
     toReturn.add(ActivityStatPair());
@@ -337,11 +375,22 @@ class _ActivityStatsState extends State<ActivityStats> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: EdgeInsets.only(bottom: hasVideo ? 12 : 0),
+            child: VideoPlayerActivity(
+                activity: widget.activity,
+                initialVideoIndex: initialVideoIndex,
+                updateExerciseToVideoIndex: (value) => setState(() {
+                      hasVideo = true;
+                      workoutExerciseIndexToVideoSourceIndex = value;
+                    })),
+          ),
           ...getStatPairs()
               .map(
                 (e) => Wrap(
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
+                    if (e.titleWidget != null) e.titleWidget!,
                     SelectableText(
                       e.title.isNotEmpty ? e.title + (e.appendColon ? ": " : "") : "",
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -384,8 +433,8 @@ class _ActivityStatsState extends State<ActivityStats> {
                     ),
                   ],
                 ),
-                SelectableText("6 = ${context.i18n.ratingValue_6_8}", style: Theme.of(context).textTheme.bodyLarge),
-                SelectableText("20 = ${context.i18n.ratingValue_19_20}", style: Theme.of(context).textTheme.bodyLarge),
+                SelectableText("0 = ${context.i18n.ratingValue_0_1}", style: Theme.of(context).textTheme.bodyLarge),
+                SelectableText("10 = ${context.i18n.ratingValue_10}", style: Theme.of(context).textTheme.bodyLarge),
                 SizedBox(
                   height: height * 0.07,
                 ),
@@ -412,109 +461,111 @@ class _ActivityStatsState extends State<ActivityStats> {
                 ),
               ],
             ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              if (widget.activity.type != ActivityType.EXTRA)
+          if ((widget.activity.plannedBy ?? "") != SYSTEM_CREATED) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (widget.activity.type != ActivityType.EXTRA)
+                  Expanded(
+                    child: SaveButton(
+                      title: context.i18n.editThis.toUpperCase(),
+                      callback: () {
+                        if (widget.onEditThis != null) {
+                          widget.onEditThis!();
+                        } else {
+                          editThisActivity();
+                        }
+                      },
+                      disabled: widget.activity.rating!.done!,
+                      tooltipText: widget.activity.rating!.done! ? context.i18n.editThisActivityTooltip : "",
+                    ),
+                  ),
+                if (widget.activity.type != ActivityType.EXTRA) SizedBox(width: 15),
                 Expanded(
-                  child: SaveButton(
-                    title: context.i18n.editThis.toUpperCase(),
+                  child: DeleteButton(
+                    label: context.i18n.deleteThis.toUpperCase(),
                     callback: () {
-                      if (widget.onEditThis != null) {
-                        widget.onEditThis!();
+                      if (widget.onDeleteThis != null) {
+                        widget.onDeleteThis!();
                       } else {
-                        editThisActivity();
+                        deleteThis();
                       }
                     },
+                    confirmationTitle: widget.activity.type != ActivityType.APPOINTMENT
+                        ? context.i18n.deleteMessageThisActivityTitle
+                        : context.i18n.deleteMessageThisAppointmentTitle,
+                    confirmationText: (widget.activity.type != ActivityType.APPOINTMENT
+                            ? context.i18n.deleteMessageThisActivity
+                            : context.i18n.deleteMessageThisAppointment) +
+                        "\n\n${widget.activity.type!.getTranslatedText(context)} - ${getTranslatedText(widget.activity.name, context)}" +
+                        ((widget.activity.date ?? '').isNotEmpty ? "\n${dateFormat.format(DateTime.parse(widget.activity.date!))}" : ""),
                     disabled: widget.activity.rating!.done!,
-                    tooltipText: widget.activity.rating!.done! ? context.i18n.editThisActivityTooltip : "",
+                    tooltipText: widget.activity.rating!.done! ? context.i18n.deleteMessageThisActivityTooltip : "",
                   ),
                 ),
-              if (widget.activity.type != ActivityType.EXTRA) SizedBox(width: 15),
-              Expanded(
-                child: DeleteButton(
-                  label: context.i18n.deleteThis.toUpperCase(),
-                  callback: () {
-                    if (widget.onDeleteThis != null) {
-                      widget.onDeleteThis!();
-                    } else {
-                      deleteThis();
-                    }
-                  },
-                  confirmationTitle: widget.activity.type != ActivityType.APPOINTMENT
-                      ? context.i18n.deleteMessageThisActivityTitle
-                      : context.i18n.deleteMessageThisAppointmentTitle,
-                  confirmationText: (widget.activity.type != ActivityType.APPOINTMENT
-                          ? context.i18n.deleteMessageThisActivity
-                          : context.i18n.deleteMessageThisAppointment) +
-                      "\n\n${widget.activity.type!.getTranslatedText(context)} - ${getTranslatedText(widget.activity.name, context)}" +
-                      ((widget.activity.date ?? '').isNotEmpty ? "\n${dateFormat.format(DateTime.parse(widget.activity.date!))}" : ""),
-                  disabled: widget.activity.rating!.done!,
-                  tooltipText: widget.activity.rating!.done! ? context.i18n.deleteMessageThisActivityTooltip : "",
+              ],
+            ),
+            if ((widget.isTrainingPlan && (widget.activity.activity!.repeatCount! > 1 || widget.activity.activity!.days.length > 1)) ||
+                (widget.activity.activity!.startDate != widget.activity.activity!.endDate))
+              Padding(
+                padding: EdgeInsets.only(top: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: SaveButton(
+                        title: context.i18n.editAll.toUpperCase(),
+                        callback: () {
+                          if (widget.onEditAll != null) {
+                            widget.onEditAll!();
+                          } else {
+                            editActivity();
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 15),
+                    Expanded(
+                      child: DeleteButton(
+                        label: context.i18n.deleteAll.toUpperCase(),
+                        callback: () {
+                          if (widget.onDeleteAll != null) {
+                            widget.onDeleteAll!();
+                          } else {
+                            deleteAll();
+                          }
+                        },
+                        confirmationTitle: widget.activity.type != ActivityType.APPOINTMENT
+                            ? context.i18n.deleteMessageThisActivityTitle
+                            : context.i18n.deleteMessageThisAppointmentTitle,
+                        confirmationText: widget.activity.type != ActivityType.APPOINTMENT
+                            ? (widget.isTrainingPlan ? context.i18n.deleteMessageAllActivitiesTrainingPlan : context.i18n.deleteMessageAllActivities)
+                            : context.i18n.deleteMessageAllAppointments,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-          if ((widget.isTrainingPlan && (widget.activity.activity!.repeatCount! > 1 || widget.activity.activity!.days.length > 1)) ||
-              (widget.activity.activity!.startDate != widget.activity.activity!.endDate))
-            Padding(
-              padding: EdgeInsets.only(top: 15),
-              child: Row(
+            SizedBox(height: 15),
+            if (widget.activity.type != ActivityType.EXTRA)
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: SaveButton(
-                      title: context.i18n.editAll.toUpperCase(),
+                      title: context.i18n.duplicate.toUpperCase(),
                       callback: () {
-                        if (widget.onEditAll != null) {
-                          widget.onEditAll!();
+                        if (widget.onDuplicate != null) {
+                          widget.onDuplicate!();
                         } else {
-                          editActivity();
+                          duplicateActivity();
                         }
                       },
-                    ),
-                  ),
-                  SizedBox(width: 15),
-                  Expanded(
-                    child: DeleteButton(
-                      label: context.i18n.deleteAll.toUpperCase(),
-                      callback: () {
-                        if (widget.onDeleteAll != null) {
-                          widget.onDeleteAll!();
-                        } else {
-                          deleteAll();
-                        }
-                      },
-                      confirmationTitle: widget.activity.type != ActivityType.APPOINTMENT
-                          ? context.i18n.deleteMessageThisActivityTitle
-                          : context.i18n.deleteMessageThisAppointmentTitle,
-                      confirmationText: widget.activity.type != ActivityType.APPOINTMENT
-                          ? (widget.isTrainingPlan ? context.i18n.deleteMessageAllActivitiesTrainingPlan : context.i18n.deleteMessageAllActivities)
-                          : context.i18n.deleteMessageAllAppointments,
                     ),
                   ),
                 ],
               ),
-            ),
-          SizedBox(height: 15),
-          if (widget.activity.type != ActivityType.EXTRA)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: SaveButton(
-                    title: context.i18n.duplicate.toUpperCase(),
-                    callback: () {
-                      if (widget.onDuplicate != null) {
-                        widget.onDuplicate!();
-                      } else {
-                        duplicateActivity();
-                      }
-                    },
-                  ),
-                ),
-              ],
-            )
+          ]
         ],
       ),
     );

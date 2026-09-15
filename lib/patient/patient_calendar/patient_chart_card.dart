@@ -14,6 +14,7 @@ import 'package:aptapp/activity/bloc/activity_repository.dart';
 import 'package:aptapp/colors.dart';
 import 'package:aptapp/l10n/i18n.dart';
 import 'package:aptapp/utils/constants.dart';
+import 'package:aptapp/utils/enums.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
@@ -81,7 +82,8 @@ class _PatientChartCardState extends State<PatientChartCard> {
     activityPercentageLastFourWeeks = widget.patientOverview.user!.activityPercentageLastFourWeeks;
     activityGraphData = widget.patientOverview.activityPercentageGraphData;
     if (widget.patientOverview.institution?.institutionFocus != null) {
-      showPercentageGraph = widget.patientOverview.institution!.institutionFocus != InstitutionFocus.PROMOTING_A_HEALTHY_LIFESTYLE;
+      showPercentageGraph = widget.patientOverview.institution!.institutionFocus == InstitutionFocus.CARDIOVASCULAR_REHABILITATION ||
+          widget.patientOverview.institution!.institutionFocus == InstitutionFocus.PREHAB_TO_REHAB;
     }
   }
 
@@ -215,7 +217,9 @@ class _PatientChartCardState extends State<PatientChartCard> {
             SelectableText("⌀ $averageActiveMinutes",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black, fontWeight: FontWeight.bold)),
             SelectableText(
-              context.i18n.activeMinutesPerWeek,
+              widget.patientOverview.institution?.institutionFocus?.isKlimafit() == true
+                  ? context.i18n.activeMinutesPerWeekKlimafit
+                  : context.i18n.activeMinutesPerWeek,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: lightTextColor,
                   ),

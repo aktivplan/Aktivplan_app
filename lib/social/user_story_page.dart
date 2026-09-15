@@ -120,9 +120,11 @@ class _UserStoryPageState extends State<UserStoryPage> with TraceablePageMixin, 
                   },
                   onRightTap: () {
                     controller.next();
+                    return Future.value(true);
                   },
                   onLeftTap: () {
                     controller.previous();
+                    return Future.value(true);
                   },
                   onSlideDown: (p0) {
                     controller.pause();

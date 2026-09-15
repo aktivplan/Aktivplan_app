@@ -56,12 +56,13 @@ class _TrainingVideosPageState extends State<TrainingVideosPage> with TraceableP
                 .toList();
             playerControllers = videoList
                 .map((e) => YoutubePlayerController.fromVideoId(
-                  videoId: e.id,
+                    videoId: e.id,
                     // initialVideoId: e.id,
                     params: YoutubePlayerParams(
                       // autoPlay: false,
                       // desktopMode: true,
                       showFullscreenButton: true,
+                      origin: 'https://www.youtube-nocookie.com',
                     )))
                 .toList();
           })

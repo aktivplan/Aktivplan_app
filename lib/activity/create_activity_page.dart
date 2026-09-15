@@ -9,7 +9,9 @@
 
 import 'package:apt_api/api.dart';
 import 'package:aptapp/activity/bloc/activity_bloc.dart';
+import 'package:aptapp/beamer/guards.dart';
 import 'package:aptapp/l10n/i18n.dart';
+import 'package:aptapp/user/user_controller_repository.dart';
 import 'package:aptapp/utils/constants.dart';
 import 'package:aptapp/utils/exercise_time_data.dart';
 import 'package:aptapp/utils/translation_helper.dart';
@@ -17,6 +19,8 @@ import 'package:aptapp/widget/form_field_padding.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart';
+import 'package:kiwi/kiwi.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import 'step_one.dart';
@@ -26,6 +30,7 @@ import 'widgets/planning_progress.dart';
 
 class CreateActivityPage extends StatefulWidget {
   final PatientGetDTO? patient;
+  final String? patientId;
   final DateTime chosenDate;
   final int progressLevel;
   final ActivityPostDTO? editActivity;
@@ -41,6 +46,7 @@ class CreateActivityPage extends StatefulWidget {
   CreateActivityPage(
       {Key? key,
       this.patient,
+      this.patientId,
       required this.chosenDate,
       required this.progressLevel,
       this.editActivity,
@@ -64,10 +70,15 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
   int progressLevel = 0;
   bool selectedTrainingPlan = false;
   String selectedTrainingPlanId = "";
+  PatientGetDTO? patient;
+  InstitutionDTO? institution;
+  bool didChangeVideoFile = false;
+  MultipartFile? videoFile;
 
   @override
   void initState() {
     super.initState();
+
     if (widget.editActivity != null) {
       setState(() {
         activityType = widget.activityType;
@@ -88,6 +99,8 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
             activityType = ActivityType.APPOINTMENT;
           } else if (widget.editActivity?.task != null) {
             activityType = ActivityType.TASK;
+          } else if (widget.editActivity?.predefinedActivity != null) {
+            activityType = widget.editActivity?.predefinedActivity?.activityType;
           }
         }
         if (activityType == ActivityType.ENDURANCE) {
@@ -104,8 +117,26 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
           plannedActivity = widget.editActivity?.appointment;
         } else if (activityType == ActivityType.TASK) {
           plannedActivity = widget.editActivity?.task;
+        } else if (activityType == ActivityType.PREDEFINED_ACTIVITY || activityType == ActivityType.PREDEFINED_ACTIVE_MOBILITY) {
+          plannedActivity = widget.editActivity?.predefinedActivity;
         }
         progressLevel = widget.progressLevel;
+      });
+    }
+
+    getPatient();
+    if (institution == null) {
+      institution = userRepository.currentInstitution;
+    }
+  }
+
+  getPatient() async {
+    patient = widget.patient;
+    if (widget.patientId != null) {
+      var patientData = (await KiwiContainer().resolve<UserControllerRepository>().getPatientbyId(id: widget.patientId!));
+      setState(() {
+        institution = patientData!.institution;
+        patient = patientData.user!;
       });
     }
   }
@@ -146,16 +177,21 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
       ..days = data.selectedWeekdays
       ..repeatCount = data.repeatCount
       ..repeats = data.repeats
-      ..time = data.time;
+      ..time = data.time
+      ..endTime = data.endTime;
 
-    if (widget.patient != null) {
-      newActivity.patientId = widget.patient?.id;
+    if (widget.patientId != null) {
+      newActivity.patientId = widget.patientId;
     }
     newActivity.startDate = englishDateFormat.format(data.startDate);
     newActivity.endDate = englishDateFormat.format(data.endDate);
 
-    if (activityType != ActivityType.APPOINTMENT && !selectedTrainingPlan) {
+    if (activityType != ActivityType.APPOINTMENT &&
+        activityType != ActivityType.PREDEFINED_ACTIVITY &&
+        activityType != ActivityType.PREDEFINED_ACTIVE_MOBILITY &&
+        !selectedTrainingPlan) {
       newActivity.youTubeUrl = plannedActivity.youTubeUrl;
+      newActivity.videoFileKey = plannedActivity.videoFileKey;
     }
 
     if (plannedActivity.name is String) {
@@ -181,6 +217,11 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
       newActivity.trainingPlan = plannedActivity;
     } else if (plannedActivity is TaskPostDTO) {
       newActivity.task = plannedActivity;
+    } else if (plannedActivity is PredefinedActivityPostDTO) {
+      (plannedActivity as PredefinedActivityPostDTO).durationMinutes =
+          ExerciseTypeTimeData.calculateMinutesBetween(startTime: data.time, endTime: data.endTime);
+      (plannedActivity as PredefinedActivityPostDTO).activityType = activityType;
+      newActivity.predefinedActivity = plannedActivity;
     }
     return newActivity;
   }
@@ -189,30 +230,44 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
     ActivityBloc activityBloc = BlocProvider.of<ActivityBloc>(context);
     var newActivity = getActivityDataFromTimeData(data);
     if (widget.editActivity == null || widget.isDuplication) {
-      activityBloc.add(AddActivityEvent(activity: newActivity, patientId: widget.patient?.id ?? "", type: activityType!));
+      activityBloc.add(AddActivityEvent(
+          activity: newActivity,
+          patientId: widget.patientId ?? "",
+          type: activityType!,
+          didChangeVideoFile: didChangeVideoFile,
+          videoFile: videoFile));
     } else if (widget.doEditSingleActivity) {
-      activityBloc.add(AddActivityEvent(activity: newActivity, patientId: widget.patient!.id!, type: activityType!));
+      activityBloc.add(AddActivityEvent(
+          activity: newActivity, patientId: widget.patientId!, type: activityType!, didChangeVideoFile: didChangeVideoFile, videoFile: videoFile));
       activityBloc.add(HideActivityEvent(
           currentDate: widget.chosenDate,
-          patientId: widget.patient!.id!,
+          patientId: widget.patientId!,
           hideActivity: HideActivityPostDTO(activityId: widget.activityId!, hideDate: englishDateFormat.format(widget.chosenDate), hideAll: false)));
     } else {
-      activityBloc.add(UpdateActivityEvent(activity: newActivity, id: widget.activityId!, patientId: widget.patient!.id!, type: activityType!));
+      activityBloc.add(UpdateActivityEvent(
+          activity: newActivity,
+          id: widget.activityId!,
+          patientId: widget.patientId!,
+          type: activityType!,
+          didChangeVideoFile: didChangeVideoFile,
+          videoFile: videoFile));
     }
 
     context.beamToNamed(
-      "/patients/${widget.patient!.id!}/calendar",
+      "/patients/${widget.patientId!}/calendar",
       data: {
-        "patient": widget.patient,
+        "patient": patient,
       },
     );
   }
 
-  goToStepThree(var exercise) {
+  goToStepThree(var exercise, bool didChangeVideoFile, MultipartFile? videoFile) {
     setState(() {
       progressLevel++;
     });
     plannedActivity = exercise;
+    this.didChangeVideoFile = didChangeVideoFile;
+    this.videoFile = videoFile;
   }
 
   @override
@@ -243,7 +298,11 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
                   if (widget.showStepper)
                     FormFieldPadding(
                       child: Text(
-                        (progressLevel == 0 || activityType != ActivityType.APPOINTMENT) ? context.i18n.activity : context.i18n.activity_APPOINTMENT,
+                        (progressLevel == 0 || (activityType != ActivityType.APPOINTMENT && activityType != ActivityType.TASK)
+                            ? context.i18n.activity
+                            : activityType == ActivityType.TASK
+                                ? context.i18n.activity_TASK
+                                : context.i18n.activity_APPOINTMENT),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
@@ -257,15 +316,19 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
                           progressLevel: progressLevel,
                           longTexts: [
                             context.i18n.activityPlanStep1,
-                            ...(progressLevel == 0 || activityType != ActivityType.APPOINTMENT
+                            ...(progressLevel == 0 || (activityType != ActivityType.APPOINTMENT && activityType != ActivityType.TASK)
                                 ? [context.i18n.activityPlanStep2, context.i18n.activityPlanStep3]
-                                : [context.i18n.activityPlanStep2Appointment, context.i18n.activityPlanStep3Appointment])
+                                : activityType == ActivityType.TASK
+                                    ? [context.i18n.activityPlanStep2Task, context.i18n.activityPlanStep3Task]
+                                    : [context.i18n.activityPlanStep2Appointment, context.i18n.activityPlanStep3Appointment])
                           ],
                           shortTexts: [
                             context.i18n.activityPlanStep1Short,
-                            ...(progressLevel == 0 || activityType != ActivityType.APPOINTMENT
+                            ...(progressLevel == 0 || (activityType != ActivityType.APPOINTMENT && activityType != ActivityType.TASK)
                                 ? [context.i18n.activityPlanStep2, context.i18n.activityPlanStep3]
-                                : [context.i18n.activityPlanStep2Appointment, context.i18n.activityPlanStep3Appointment])
+                                : activityType == ActivityType.TASK
+                                    ? [context.i18n.activityPlanStep2Task, context.i18n.activityPlanStep3Task]
+                                    : [context.i18n.activityPlanStep2Appointment, context.i18n.activityPlanStep3Appointment])
                           ],
                         ),
                       if (progressLevel == 0)
@@ -274,10 +337,11 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
                           planTrainingPlan: planTrainingPlan,
                           onCancelled: widget.onCancelled,
                           isTrainingPlan: widget.isTrainingPlan,
+                          institution: institution,
                         ),
                       if (progressLevel == 1)
                         StepTwo(
-                          patient: widget.patient,
+                          patient: patient,
                           plannedActivity: plannedActivity,
                           activityType: activityType!,
                           back: backToStepOne,
@@ -285,6 +349,9 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
                           onCancelled: widget.onCancelled,
                           isTrainingPlan: selectedTrainingPlan,
                           trainingPlanId: selectedTrainingPlanId,
+                          institution: institution,
+                          didChangeVideoFile: didChangeVideoFile,
+                          videoFile: videoFile,
                         ),
                       if (progressLevel == 2)
                         StepThree(
@@ -301,6 +368,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
                           onCancelled: widget.onCancelled,
                           isTrainingPlan: widget.isTrainingPlan,
                           selectedTrainingPlan: selectedTrainingPlan,
+                          institution: institution,
                         )
                     ],
                   ),

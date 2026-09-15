@@ -12,6 +12,7 @@ Name | Type | Description | Notes
 **institutionId** | **String** |  | [optional] 
 **importId** | **String** |  | [optional] 
 **type** | [**MessageType**](MessageType.md) |  | [optional] 
+**restriction** | [**MessageRestriction**](MessageRestriction.md) |  | [optional] 
 **title** | **Map<String, String>** |  | [optional] [default to const {}]
 **text** | **Map<String, String>** |  | [optional] [default to const {}]
 **pictureId** | **Map<String, String>** |  | [optional] [default to const {}]

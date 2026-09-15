@@ -21,10 +21,12 @@ import 'package:aptapp/widget/delete_button.dart';
 import 'package:aptapp/widget/form_field_padding.dart';
 import 'package:aptapp/widget/language_tabs.dart';
 import 'package:aptapp/widget/save_button.dart';
+import 'package:aptapp/widget/video_form_field.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class ModifyExercisePage extends StatefulWidget {
@@ -41,6 +43,7 @@ class ModifyExercisePage extends StatefulWidget {
 }
 
 class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceablePageMixin {
+  final double FIELD_SPACING = 16;
   final _exerciseFormKey = GlobalKey<FormState>();
   ExerciseBloc? exerciseBloc;
 
@@ -77,6 +80,8 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
   ExerciseType exerciseType = ExerciseType.ENDURANCE;
   var exercise;
   bool hasChanges = false;
+  bool didChangeVideoFile = false;
+  MultipartFile? videoFile;
 
   buildExerciseType() {
     if (exerciseType == ExerciseType.ENDURANCE) {
@@ -87,7 +92,8 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
           type: exerciseType,
           exerciseDurationSeconds: (int.tryParse(durationController.text) ?? 0) * MINUTES_TO_SECONDS,
           exerciseIntensityPercentageStart: int.tryParse(intensityStartController.text),
-          exerciseIntensityPercentageEnd: int.tryParse(intensityEndController.text));
+          exerciseIntensityPercentageEnd: int.tryParse(intensityEndController.text),
+          videoFileKey: exercise?.videoFileKey ?? "");
     } else if (exerciseType == ExerciseType.INTERVAL) {
       return IntervalExercisePostDTO(
           name: getTranslationObjectFromController(exerciseNameController, exerciseEnglishNameController),
@@ -103,7 +109,8 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
           recoveryIntensityPercentageStart: int.tryParse(recoveryStartController.text),
           recoveryIntensityPercentageEnd: int.tryParse(recoveryEndController.text),
           selectedExerciseSeconds: selectedIntensityDurationUnit == "sec",
-          selectedRecoverySeconds: selectedRecoveryDurationUnit == "sec");
+          selectedRecoverySeconds: selectedRecoveryDurationUnit == "sec",
+          videoFileKey: exercise?.videoFileKey ?? "");
     } else if (exerciseType == ExerciseType.STRENGTHENING || exerciseType == ExerciseType.HYPERTROPHY) {
       return StrengtheningExercisePostDTO(
           name: getTranslationObjectFromController(exerciseNameController, exerciseEnglishNameController),
@@ -119,7 +126,8 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
           muscleGroups: muscleGroups,
           type: exerciseType,
           needsEquipment: needsEquipment,
-          weight: int.tryParse(weightController.text) ?? 0);
+          weight: int.tryParse(weightController.text) ?? 0,
+          videoFileKey: exercise?.videoFileKey ?? "");
     } else if (exerciseType == ExerciseType.OTHER) {
       return OtherExercisePostDTO(
           name: getTranslationObjectFromController(exerciseNameController, exerciseEnglishNameController),
@@ -128,13 +136,15 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
           type: exerciseType,
           exerciseDurationSeconds: (int.tryParse(durationController.text) ?? 0) * MINUTES_TO_SECONDS,
           exerciseIntensityPercentageStart: int.tryParse(intensityStartController.text),
-          exerciseIntensityPercentageEnd: int.tryParse(intensityEndController.text));
+          exerciseIntensityPercentageEnd: int.tryParse(intensityEndController.text),
+          videoFileKey: exercise?.videoFileKey ?? "");
     } else if (exerciseType == ExerciseType.TASK) {
       return TaskPostDTO(
           name: getTranslationObjectFromController(exerciseNameController, exerciseEnglishNameController),
           youTubeUrl: getTranslationObjectFromController(youTubeUrlController, youTubeUrlEnglishController),
           hint: getTranslationObjectFromController(hintController, hintEnglishController),
-          type: exerciseType);
+          type: exerciseType,
+          videoFileKey: exercise?.videoFileKey ?? "");
     }
   }
 
@@ -153,6 +163,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
         SaveExerciseEvent(
           type: exerciseType,
           exercise: exercise,
+          videoFile: videoFile,
         ),
       );
       context.beamToNamed('/training/${exerciseType.value.toLowerCase()}');
@@ -167,6 +178,8 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
           id: this.exercise.id,
           type: exerciseType,
           exercise: exercise,
+          videoFile: videoFile,
+          didChangeVideoFile: didChangeVideoFile,
         ),
       );
       context.beamToNamed('/training/${exerciseType.value.toLowerCase()}');
@@ -300,10 +313,24 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
     }
   }
 
+  _getVideoFormField() {
+    return Padding(
+      padding: EdgeInsets.only(bottom: FIELD_SPACING),
+      child: VideoFormField(
+          initialFileKey: widget.exercise?.videoFileKey ?? "",
+          onUpdateFile: (file) {
+            setState(() {
+              videoFile = file;
+              hasChanges = true;
+              didChangeVideoFile = true;
+            });
+          }),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
 
     return SingleChildScrollView(
       child: Center(
@@ -381,14 +408,13 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
                         ),
                       ),
                       SizedBox(
-                        height: height * 0.02,
+                        height: FIELD_SPACING,
                       ),
-                      if (exerciseType == ExerciseType.ENDURANCE || exerciseType == ExerciseType.OTHER)
-                        _buildEndurance(intensityWidth, height, width, size),
-                      if (exerciseType == ExerciseType.INTERVAL) _buildInterval(intensityWidth, height, width, size, containerWidth),
+                      if (exerciseType == ExerciseType.ENDURANCE || exerciseType == ExerciseType.OTHER) _buildEndurance(intensityWidth, width, size),
+                      if (exerciseType == ExerciseType.INTERVAL) _buildInterval(intensityWidth, width, size, containerWidth),
                       if (exerciseType == ExerciseType.STRENGTHENING || exerciseType == ExerciseType.HYPERTROPHY)
-                        _buildStrengthening(intensityWidth, strengthWidth, height, width, size, muscleBoxSize),
-                      if (exerciseType == ExerciseType.TASK) _buildTask(height),
+                        _buildStrengthening(intensityWidth, strengthWidth, width, size, muscleBoxSize),
+                      if (exerciseType == ExerciseType.TASK) _buildTask(),
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Row(
@@ -402,7 +428,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
                         ),
                       ),
                       SizedBox(
-                        height: height * 0.02,
+                        height: FIELD_SPACING,
                       ),
                       Row(
                         children: [
@@ -433,7 +459,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
                         ],
                       ),
                       SizedBox(
-                        height: height * 0.08,
+                        height: FIELD_SPACING,
                       ),
                     ],
                     englishFields: [
@@ -468,7 +494,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
                         ),
                       ),
                       SizedBox(
-                        height: height * 0.02,
+                        height: FIELD_SPACING,
                       ),
                       TextFormField(
                         textAlign: TextAlign.start,
@@ -486,7 +512,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
                         ),
                       ),
                       SizedBox(
-                        height: height * 0.02,
+                        height: FIELD_SPACING,
                       ),
                       TextFormField(
                         textAlign: TextAlign.start,
@@ -517,7 +543,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
     );
   }
 
-  _buildStrengthening(intensityWidth, strengthWidth, height, width, size, muscleBoxSize) {
+  _buildStrengthening(intensityWidth, strengthWidth, width, size, muscleBoxSize) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -701,7 +727,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
           ),
         Padding(
           padding: EdgeInsets.symmetric(
-            vertical: height * 0.02,
+            vertical: FIELD_SPACING,
           ),
           child: Wrap(
             alignment: WrapAlignment.spaceBetween,
@@ -889,7 +915,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
             ],
           ),
         SizedBox(
-          height: height * 0.02,
+          height: FIELD_SPACING,
         ),
         TextFormField(
           controller: repeatSetController,
@@ -919,7 +945,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
           ),
         ),
         SizedBox(
-          height: height * 0.02,
+          height: FIELD_SPACING,
         ),
         TextFormField(
           controller: breakBetweenSetsController,
@@ -942,7 +968,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
           ),
         ),
         SizedBox(
-          height: height * 0.02,
+          height: FIELD_SPACING,
         ),
         if (!size.isMobile)
           Row(
@@ -1038,7 +1064,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
                 ),
               ),
               SizedBox(
-                height: height * 0.02,
+                height: FIELD_SPACING,
               ),
               Container(
                 width: intensityWidth * 2,
@@ -1062,7 +1088,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
             ],
           ),
         SizedBox(
-          height: height * 0.02,
+          height: FIELD_SPACING,
         ),
         TextFormField(
           textAlign: TextAlign.start,
@@ -1084,9 +1110,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
             ),
           ),
         ),
-        SizedBox(
-          height: height * 0.02,
-        ),
+        _getVideoFormField(),
         TextFormField(
           textAlign: TextAlign.start,
           controller: hintController,
@@ -1114,7 +1138,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
     );
   }
 
-  _buildInterval(intensityWidth, height, width, size, containerWidth) {
+  _buildInterval(intensityWidth, width, size, containerWidth) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1313,7 +1337,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
                       ],
                     ),
                   SizedBox(
-                    height: height * 0.02,
+                    height: FIELD_SPACING,
                   ),
                   Row(
                     mainAxisSize: MainAxisSize.max,
@@ -1353,7 +1377,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
                       Container(
                         width: 80,
                         child: DropdownButtonFormField(
-                          value: selectedIntensityDurationUnit,
+                          initialValue: selectedIntensityDurationUnit,
                           onChanged: (value) {
                             setState(() {
                               selectedIntensityDurationUnit = value?.toString() ?? "min";
@@ -1402,7 +1426,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
           ],
         ),
         SizedBox(
-          height: height * 0.02,
+          height: FIELD_SPACING,
         ),
         Stack(
           children: [
@@ -1586,7 +1610,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
                       ],
                     ),
                   SizedBox(
-                    height: height * 0.02,
+                    height: FIELD_SPACING,
                   ),
                   Row(
                     mainAxisSize: MainAxisSize.max,
@@ -1626,7 +1650,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
                       Container(
                         width: 80,
                         child: DropdownButtonFormField(
-                          value: selectedRecoveryDurationUnit,
+                          initialValue: selectedRecoveryDurationUnit,
                           onChanged: (value) {
                             setState(() {
                               selectedRecoveryDurationUnit = value?.toString() ?? "min";
@@ -1675,7 +1699,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
           ],
         ),
         SizedBox(
-          height: height * 0.02,
+          height: FIELD_SPACING,
         ),
         //Dauer
         TextFormField(
@@ -1706,7 +1730,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
           ),
         ),
         SizedBox(
-          height: height * 0.02,
+          height: FIELD_SPACING,
         ),
         TextFormField(
           textAlign: TextAlign.start,
@@ -1728,9 +1752,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
             ),
           ),
         ),
-        SizedBox(
-          height: height * 0.02,
-        ),
+        _getVideoFormField(),
         TextFormField(
           textAlign: TextAlign.start,
           controller: hintController,
@@ -1753,7 +1775,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
     );
   }
 
-  _buildEndurance(intensityWidth, height, width, size) {
+  _buildEndurance(intensityWidth, width, size) {
     //ENDURANCE
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -1937,7 +1959,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
             ],
           ),
         SizedBox(
-          height: height * 0.02,
+          height: FIELD_SPACING,
         ),
         //Dauer
         TextFormField(
@@ -1968,7 +1990,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
           ),
         ),
         SizedBox(
-          height: height * 0.02,
+          height: FIELD_SPACING,
         ),
         TextFormField(
           textAlign: TextAlign.start,
@@ -1990,9 +2012,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
             ),
           ),
         ),
-        SizedBox(
-          height: height * 0.02,
-        ),
+        _getVideoFormField(),
         TextFormField(
           textAlign: TextAlign.start,
           textAlignVertical: TextAlignVertical.top,
@@ -2018,13 +2038,13 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
           ),
         ),
         SizedBox(
-          height: height * 0.02,
+          height: FIELD_SPACING,
         ),
       ],
     );
   }
 
-  _buildTask(height) {
+  _buildTask() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -2049,9 +2069,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
             ),
           ),
         ),
-        SizedBox(
-          height: height * 0.02,
-        ),
+        _getVideoFormField(),
         TextFormField(
           textAlign: TextAlign.start,
           textAlignVertical: TextAlignVertical.top,
@@ -2077,7 +2095,7 @@ class _ModifyExercisePageState extends State<ModifyExercisePage> with TraceableP
           ),
         ),
         SizedBox(
-          height: height * 0.02,
+          height: FIELD_SPACING,
         ),
       ],
     );

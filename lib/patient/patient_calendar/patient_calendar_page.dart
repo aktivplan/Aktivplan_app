@@ -15,14 +15,13 @@ import 'package:aptapp/message/bloc/message_repository.dart';
 import 'package:aptapp/mixins/traceable_page_mixin.dart';
 import 'package:aptapp/patient/activity_dialog.dart';
 import 'package:aptapp/patient/onboarding_page.dart';
-import 'package:aptapp/patient/patient_calendar/add_extra_activity.dart';
 import 'package:aptapp/patient/patient_calendar/patient_calendar_mobile.dart';
 import 'package:aptapp/patient/patient_calendar/patient_calendar_web.dart';
-import 'package:aptapp/patient/patient_calendar/personal_goal_activity_card.dart';
 import 'package:aptapp/patient/patient_calendar/personal_goals_card.dart';
-import 'package:aptapp/patient/patient_calendar/planned_activity_card.dart';
+import 'package:aptapp/theme.dart';
 import 'package:aptapp/user/bloc/user_bloc.dart';
 import 'package:aptapp/utils/constants.dart';
+import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/trace_helpers.dart';
 import 'package:aptapp/widget/get_snackbar.dart';
 import 'package:beamer/beamer.dart';
@@ -49,7 +48,8 @@ class PatientCalendarPage extends StatefulWidget {
 
 class _PatientCalendarPageState extends State<PatientCalendarPage> with TraceablePageMixin {
   ActivityBloc? activityBloc;
-  PatientGetDTO? patient;
+  FetchedPatientActivitiesState? lastFetchedState;
+  FetchedPatientDatahubRecommendationsState? lastFetchedDatahubState;
   double? width;
   double? height;
   DateTime? focusedDay;
@@ -66,7 +66,7 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
     if (userRepository.userRole == UserRole.PATIENT) {
       SharedPreferences.getInstance().then((preferences) {
         if (preferences.getBool("onboardingShown") == null || !preferences.getBool("onboardingShown")!) {
-          OnboardingPage.showOnboardingDialog(context);
+          OnboardingPage.showOnboardingDialog(context, isKlimafit: userRepository.user?.institution?.institutionFocus?.isKlimafit() ?? false);
           preferences.setBool("onboardingShown", true);
         }
       });
@@ -81,8 +81,27 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
       );
   }
 
-  deleteActivity(String id, ActivityType type) {
-    activityBloc!.add(DeleteActivityEvent(id: id, patientId: patient!.id!, activityDate: focusedDay!, type: type));
+  deleteActivity(ActivityOverviewDTO activity) {
+    // in klimafit patient can delete appointments planned by hp, so only delete the entry of the current day
+    if (activity.type == ActivityType.APPOINTMENT &&
+        userRepository.userRole == UserRole.PATIENT &&
+        activity.plannedBy != userRepository.user?.patient!.id) {
+      activityBloc!.add(HideActivityEvent(
+          currentDate: focusedDay!,
+          patientId: lastFetchedState!.patient.user!.id!,
+          hideActivity: HideActivityPostDTO(
+            activityId: activity.activityId!,
+            hideDate: activity.date!,
+            hideAll: false,
+          )));
+    } else {
+      activityBloc!.add(DeleteActivityEvent(
+        id: activity.activityId!,
+        patientId: lastFetchedState!.patient.user!.id!,
+        activityDate: focusedDay!,
+        type: activity.type!,
+      ));
+    }
   }
 
   moveActivity(MoveActivityPostDTO moveActivity) {
@@ -123,25 +142,106 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
     }
   }
 
-  createExtraActivity(DateTime date, ActivityOverviewDTO? activity, ActiveMinutesOverviewDTO activeMinutes) {
+  createActivityByType(DateTime date, ActivityType? type) {
+    if (type == null) {
+      _showAddActivityDialog(date);
+      return;
+    }
     showDialog(
       context: context,
       builder: (context) {
-        return AddExtraActivity(
-          patient: patient!,
-          chosenDate: date,
-          plannedActivity: activity,
-          activeMinutes: activeMinutes,
+        final activity = ActivityOverviewDTO(type: type, date: englishDateFormat.format(date), rating: ActivityPatientRatingPostDTO(done: false));
+        return ActivityDialog(
+            patient: lastFetchedState!.patient.user!,
+            activity: activity,
+            activeMinutes: lastFetchedState!.activeMinutes,
+            rateActivity: true,
+            deleteActivity: () => deleteActivity(activity),
+            institution: lastFetchedState!.patient.institution!);
+      },
+    );
+  }
+
+  createActivityByRecommendation(DatahubResponseRecommendationsInner recommendation) {
+    ActivityType activityType = recommendation.activityType ??
+        (recommendation.type == RecommendationType.ACTIVITY ? ActivityType.PREDEFINED_ACTIVITY : ActivityType.PREDEFINED_ACTIVE_MOBILITY);
+    final route = recommendation.route ?? recommendation.proposedRoute;
+    DateTime date = DateTime.now();
+    String? time;
+    String? endTime;
+    if (route != null && route.startTimestamp != null) {
+      date = route.startTimestamp!;
+      final timeFormat = DateFormat('HH:mm');
+      time = timeFormat.format(route.startTimestamp!);
+      if (route.durationMins != null) {
+        final endTimeStamp = route.startTimestamp!.add(Duration(minutes: route.durationMins!));
+        endTime = timeFormat.format(endTimeStamp);
+      }
+    }
+    showDialog(
+      context: context,
+      builder: (context) {
+        final activity = ActivityOverviewDTO(
+          type: activityType,
+          date: englishDateFormat.format(date),
+          rating: ActivityPatientRatingPostDTO(done: false),
+          time: time,
+          endTime: endTime,
+        );
+        return ActivityDialog(
+          patient: lastFetchedState!.patient.user!,
+          activity: activity,
+          activeMinutes: lastFetchedState!.activeMinutes,
+          rateActivity: true,
+          deleteActivity: () => deleteActivity(activity),
+          institution: lastFetchedState!.patient.institution!,
+          recommendation: recommendation,
         );
       },
     );
   }
 
-  createActivity(date) {
+  void _showAddActivityDialog(DateTime day) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(context.i18n.addActivity),
+          titlePadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [ActivityType.PREDEFINED_ACTIVITY, ActivityType.PREDEFINED_ACTIVE_MOBILITY, ActivityType.APPOINTMENT].map((activityType) {
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 6),
+                child: ElevatedButton.icon(
+                  style: getElevatedButtonStyle(
+                    context,
+                    backgroundColor: activityType.backgroundColor,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    createActivityByType(day, activityType);
+                  },
+                  icon: Icon(activityType.iconData, color: Colors.white),
+                  label: Text(
+                    activityType.getTranslatedText(context).toUpperCase(),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+
+  createActivity(DateTime date) {
     context.beamToNamed(
-      '/patients/${patient!.id!}/calendar/add-activity',
+      '/patients/${lastFetchedState!.patient.user!.id!}/calendar/add-activity',
       data: {
-        "patient": patient,
+        "patient": lastFetchedState!.patient.user!,
         "chosenDate": date,
       },
       beamBackOnPop: true,
@@ -153,7 +253,7 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
       focusedDay = date;
     });
     activityBloc!.add(
-      FetchPatientActivitiesEvent(patientId: patient!.id!, date: date),
+      FetchPatientActivitiesEvent(patientId: lastFetchedState!.patient.user!.id!, date: date),
     );
   }
 
@@ -183,45 +283,44 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
 
   Widget renderCalendar(ActivityState state, SizingInformation size) {
     if (state is FetchedPatientActivitiesState) {
-      patient = state.patient.user;
+      lastFetchedState = state;
       if (state.date != null) {
         focusedDay = state.date;
       }
+    } else if (state is FetchedPatientDatahubRecommendationsState) {
+      lastFetchedDatahubState = state;
+    }
+    if (lastFetchedState != null) {
       if (size.isMobile) {
         return PatientCalendarMobile(
-          patientOverview: state.patient,
-          patient: patient!,
-          addExtraActivity: createExtraActivity,
-          patientActivities: state.activities,
-          activeMinutes: state.activeMinutes,
-          personalGoals: state.personalGoals,
-          markAsDone: markActivityAsDone,
-          addActivity: createActivity,
-          deleteActivity: deleteActivity,
-          changeMonth: changeMonth,
-          changeDay: (date) => setState(() => focusedDay = date),
-          userPicture: state.userPicture,
-          focusedDay: focusedDay!,
-          currentFormat: calendarFormat,
-          changeFormat: (format) => setState(() => calendarFormat = format),
-        );
+            state: lastFetchedState!,
+            datahubState: lastFetchedDatahubState,
+            addActivityByType: createActivityByType,
+            addActivityByRecommendation: createActivityByRecommendation,
+            markAsDone: markActivityAsDone,
+            addActivity: createActivity,
+            deleteActivity: deleteActivity,
+            changeMonth: changeMonth,
+            changeDay: (date) => setState(() => focusedDay = date),
+            focusedDay: focusedDay!,
+            currentFormat: calendarFormat,
+            changeFormat: (format) => setState(() => calendarFormat = format),
+            refetchDatahub: () {
+              activityBloc!.add(FetchPatientDatahubRecommendationsEvent(patientId: lastFetchedState!.patient.user!.id!, date: focusedDay!));
+            });
       } else {
         return PatientCalendarWeb(
+          state: lastFetchedState!,
+          datahubState: lastFetchedDatahubState,
           isDesktop: size.isDesktop,
           isTablet: size.isTablet,
-          patientOverview: state.patient,
-          patient: patient!,
           addActivity: createActivity,
-          patientActivities: state.activities,
-          activeMinutes: state.activeMinutes,
-          personalGoals: state.personalGoals,
-          addExtraActivity: createExtraActivity,
-          showEvents: showEventsOfDay,
+          addActivityByType: createActivityByType,
+          addActivityByRecommendation: createActivityByRecommendation,
           markAsDone: markActivityAsDone,
           deleteActivity: deleteActivity,
           changeMonth: changeMonth,
           focusedDay: focusedDay!,
-          userPicture: state.userPicture,
           moveActivity: moveActivity,
           movePersonalGoal: movePersonalGoal,
         );
@@ -231,122 +330,25 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
     }
   }
 
-  Future<void> showEventsOfDay(
-      DateTime day, List events, activeMinutes, PatientGetDTO patient, Function deleteActivity, Function showActiveMinutes) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext dialogContext) {
-        double width = MediaQuery.of(dialogContext).size.width;
-        return ResponsiveBuilder(
-          builder: (context, size) {
-            double horizontalPadding = size.isDesktop
-                ? width * 0.38
-                : size.isTablet
-                    ? width * 0.1
-                    : width * 0.05;
-            return AlertDialog(
-              insetPadding: EdgeInsets.only(
-                left: horizontalPadding,
-                right: horizontalPadding,
-                top: 12,
-                bottom: 12,
-              ),
-              contentPadding: EdgeInsets.only(top: 20.0, bottom: 35, left: 8, right: 8),
-              title: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      InkWell(
-                        child: Icon(
-                          Icons.close,
-                          size: 24,
-                        ),
-                        onTap: () => Navigator.pop(context),
-                      ),
-                    ],
-                  ),
-                  FittedBox(
-                    fit: BoxFit.contain,
-                    child: SelectableText(
-                      '${DateFormat('EEEE, dd.MMMM yyyy', 'de').format(day)}',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Colors.black,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              content: Container(
-                width: width * 0.94,
-                child: SingleChildScrollView(
-                  child: ListBody(
-                    children: <Widget>[
-                      for (var event in events)
-                        event is ActivityOverviewDTO
-                            ? PlannedActivityCard(
-                                activity: event,
-                                markAsDone: markActivityAsDone,
-                                addExtraActivity: createExtraActivity,
-                                onShowEvents: true,
-                                activeMinutes: activeMinutes,
-                                patient: patient,
-                                deleteActivity: deleteActivity,
-                                activityBloc: activityBloc!,
-                              )
-                            : PersonalGoalActivityCard(goal: event),
-                      SizedBox(
-                        height: 18,
-                      ),
-                      ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(dialogContext);
-                            if (userRepository.userRole == UserRole.PATIENT) {
-                              createExtraActivity(day, null, activeMinutes);
-                            } else {
-                              createActivity(day);
-                            }
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(context.i18n.addActivity.toUpperCase()),
-                            ],
-                          ))
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Future<void> markActivityAsDone(dynamic activity, ActiveMinutesOverviewDTO activeMinutes, bool allowRescheduleActivities) async {
+  Future<void> markActivityAsDone(dynamic activity) async {
     final userRepository = KiwiContainer().resolve<UserRepository>();
     if (userRepository.userRole == UserRole.PATIENT) {
       if (activity is ActivityOverviewDTO) {
         if (activity.rating!.done ?? false) {
-          ActivityDialog.showUndoRatingDialog(context, patient!, activity, activeMinutes, true, allowRescheduleActivities, deleteActivity);
+          ActivityDialog.showUndoRatingDialog(context, lastFetchedState!.patient.user!, activity, lastFetchedState!.activeMinutes, true,
+              lastFetchedState!.patient.institution!, () => deleteActivity(activity));
         } else {
           showDialog<void>(
             context: context,
             barrierDismissible: true,
             builder: (BuildContext context) {
               return ActivityDialog(
-                patient: patient!,
+                patient: lastFetchedState!.patient.user!,
                 activity: activity,
-                activeMinutes: activeMinutes,
+                activeMinutes: lastFetchedState!.activeMinutes,
                 rateActivity: true,
-                deleteActivity: deleteActivity,
-                allowRescheduleActivities: allowRescheduleActivities,
+                deleteActivity: () => deleteActivity(activity),
+                institution: lastFetchedState!.patient.institution!,
               );
             },
           );
@@ -358,28 +360,29 @@ class _PatientCalendarPageState extends State<PatientCalendarPage> with Traceabl
             ..description = goal.description
             ..done = false
             ..endDate = englishDateFormat.format(DateTime.parse(goal.endDate!))
-            ..patientId = patient!.id;
+            ..patientId = lastFetchedState!.patient.user!.id;
           MatomoTracker.instance.trackEvent(
             eventInfo: EventInfo(category: EVENT_CATEGORY_PERSONAL_GOAL, name: EVENT_NAME_UNDONE, action: "Set Personal Goal to Undone"),
           );
-          activityBloc!.add(UpdatePersonalGoalEvent(id: goal.id!, goal: updateGoal, patientId: patient!.id!));
+          activityBloc!.add(UpdatePersonalGoalEvent(id: goal.id!, goal: updateGoal, patientId: lastFetchedState!.patient.user!.id!));
         } else {
           var updateGoal = PersonalGoalPostDTO()
             ..description = goal.description
             ..done = true
             ..endDate = englishDateFormat.format(DateTime.parse(goal.endDate!))
-            ..patientId = patient!.id;
+            ..patientId = lastFetchedState!.patient.user!.id;
+          ;
 
           await PersonalGoalsCard.showGoalAchieved(context, goal);
           MatomoTracker.instance.trackEvent(
             eventInfo: EventInfo(category: EVENT_CATEGORY_PERSONAL_GOAL, name: EVENT_NAME_DONE, action: "Set Personal Goal to Done"),
           );
-          activityBloc!.add(UpdatePersonalGoalEvent(id: goal.id!, goal: updateGoal, patientId: patient!.id!));
+          activityBloc!.add(UpdatePersonalGoalEvent(id: goal.id!, goal: updateGoal, patientId: lastFetchedState!.patient.user!.id!));
         }
       }
     } else {
       if (activity is ActivityOverviewDTO) {
-        showPlannedActivity(activity, patient!);
+        showPlannedActivity(activity, lastFetchedState!.patient.user!);
       } else {
         context.beamToNamed(
           "/patients/${widget.patientId}/goal-setting",

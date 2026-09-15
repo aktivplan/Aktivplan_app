@@ -67,10 +67,11 @@ class _ContactMessagePageState extends State<ContactMessagePage> with TraceableP
   updatePicture() async {
     PlatformFile _file;
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowMultiple: false,
         allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+        withData: true,
       );
       if ((result?.files ?? []).isEmpty) {
         return;

@@ -99,6 +99,7 @@ class _DatePickerRowState extends State<DatePickerRow> {
                     : null,
                 enabled: !widget.disabled,
                 controller: startDateController,
+                keyboardType: TextInputType.number,
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.digitsOnly,
                 ],
@@ -122,7 +123,7 @@ class _DatePickerRowState extends State<DatePickerRow> {
                   }
                 },
                 decoration: InputDecoration(
-                  fillColor: (widget.disabled ? infoIconColor : primaryColor).withOpacity(.2),
+                  fillColor: (widget.disabled ? infoIconColor : primaryColor).withValues(alpha: .2),
                   filled: widget.selected,
                   hintText: widget.labelText ?? context.i18n.startDate,
                   labelText: (widget.labelText ?? context.i18n.startDate) + (widget.isRequired ? " *" : ""),

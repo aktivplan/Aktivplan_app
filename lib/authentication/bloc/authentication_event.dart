@@ -25,11 +25,12 @@ class AuthenticationLoginEvent extends AuthenticationEvent {
   final String email;
   final String password;
   final TranslationLanguage language;
+  final String caatsToken; // only used for CAATS login, otherwise empty
 
-  AuthenticationLoginEvent({required this.email, required this.password, required this.language});
+  AuthenticationLoginEvent({required this.email, required this.password, required this.language, this.caatsToken = ""});
 
   @override
-  List<Object> get props => [email, password, language];
+  List<Object> get props => [email, password, language, caatsToken];
 }
 
 class AuthenticationLoggedIn extends AuthenticationEvent {

@@ -1,8 +1,10 @@
-# Aktivplanplus Application
+# aptapp
 
-Flutter multiplatform mobile application
+A new Flutter project.
 
 ## Getting Started
+
+This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
 
@@ -36,13 +38,13 @@ fvm flutter build web --release --dart-define=FLUTTER_WEB_USE_SKIA=true && cp -R
 #### WEB
 
 ```
-fvm flutter build web --release --dart-define=FLUTTER_WEB_USE_SKIA=true --dart-define BASE_URL=https://aktivplan.lbidhp.at --dart-define MATOMO_URL=https://analytics.alphaport.at --dart-define MATOMO_SITE_ID=5 && cp -R build/web/* ../apt-backend/src/main/resources/static
+fvm flutter build web --release --dart-define=FLUTTER_WEB_USE_SKIA=true --dart-define BASE_URL=https://aktivplan.lbidhp.at --dart-define MATOMO_URL=https://analytics.alphaport.at --dart-define MATOMO_SITE_ID=5 --dart-define IS_PRODUCTION=true && cp -R build/web/* ../apt-backend/src/main/resources/static
 ```
 
 #### IOS
 
 ```
-fvm flutter build ios --release --dart-define BASE_URL=https://aktivplan.lbidhp.at --dart-define MATOMO_URL=https://analytics.alphaport.at --dart-define MATOMO_SITE_ID=5
+fvm flutter build ios --release --dart-define BASE_URL=https://aktivplan.lbidhp.at --dart-define MATOMO_URL=https://analytics.alphaport.at --dart-define MATOMO_SITE_ID=5 --dart-define IS_PRODUCTION=true
 ```
 
 In Xcode have a valid release profile configured (see Apple docs)
@@ -54,13 +56,13 @@ For Uploading to Appstore Connect use `Product > Archive` make sure you have sel
 ##### Google Play Release
 
 ```
-fvm flutter build appbundle --release --dart-define BASE_URL=https://aktivplan.lbidhp.at --dart-define MATOMO_URL=https://analytics.alphaport.at --dart-define MATOMO_SITE_ID=5
+fvm flutter build appbundle --release --dart-define BASE_URL=https://aktivplan.lbidhp.at --dart-define MATOMO_URL=https://analytics.alphaport.at --dart-define MATOMO_SITE_ID=5 --dart-define IS_PRODUCTION=true
 ```
 
 ##### APK Release
 
 ```
-fvm flutter build apk --release --dart-define BASE_URL=https://aktivplan.lbidhp.at --dart-define MATOMO_URL=https://analytics.alphaport.at --dart-define MATOMO_SITE_ID=5
+fvm flutter build apk --release --dart-define BASE_URL=https://aktivplan.lbidhp.at --dart-define MATOMO_URL=https://analytics.alphaport.at --dart-define MATOMO_SITE_ID=5 --dart-define IS_PRODUCTION=true
 ```
 
 ### Testing

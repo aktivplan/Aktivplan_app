@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **title** | **Map<String, String>** |  | [optional] [default to const {}]
 **text** | **Map<String, String>** |  | [optional] [default to const {}]
+**restriction** | [**MessageRestriction**](MessageRestriction.md) |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

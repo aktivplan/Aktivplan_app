@@ -13,6 +13,7 @@ import 'package:aptapp/colors.dart';
 import 'package:aptapp/exercises/widgets/date_picker_row.dart';
 import 'package:aptapp/exercises/widgets/time_picker_row.dart';
 import 'package:aptapp/l10n/i18n.dart';
+import 'package:aptapp/utils/constants.dart';
 import 'package:aptapp/utils/exercise_time_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,6 +34,7 @@ class StepThree extends StatefulWidget {
   final bool isTrainingPlan;
   final bool selectedTrainingPlan;
   final Function() onCancelled;
+  final InstitutionDTO? institution;
 
   StepThree({
     Key? key,
@@ -47,6 +49,7 @@ class StepThree extends StatefulWidget {
     this.selectedTrainingPlan = false,
     this.doEditSingleActivity = false,
     required this.onCancelled,
+    this.institution,
   }) : super(key: key);
 
   @override
@@ -68,7 +71,11 @@ class _StepThreeState extends State<StepThree> {
   bool hasChanges = false;
   double inputSpacing = 20;
   String time = "";
+  String endTime = "";
   bool validated = false;
+  int durationInMinutes = 0;
+
+  bool get isKlimafit => widget.institution?.institutionFocus?.isKlimafit() ?? false;
 
   toggleDay(int value) {
     setState(() {
@@ -225,7 +232,12 @@ class _StepThreeState extends State<StepThree> {
       }
       if (!widget.doEditSingleActivity) {
         (widget.editActivity?.days ?? []).forEach((element) {
-          selectedDays.add(element.getWeekday());
+          int weekDayForToggle = element.getWeekday();
+          // on toggle it is standardized from 1 to 7, getWeekday returns 0 for sunday, so we need to add 7 to get the right day in toggle
+          if (weekDayForToggle == 0) {
+            weekDayForToggle = 7;
+          }
+          selectedDays.add(weekDayForToggle);
         });
         if (widget.editActivity?.repeats != null) {
           repetition = widget.editActivity!.repeats!;
@@ -248,6 +260,7 @@ class _StepThreeState extends State<StepThree> {
         toggleDay(date.weekday);
       }
       time = widget.editActivity?.time ?? "";
+      endTime = widget.editActivity?.endTime ?? "";
     } else if (!widget.isDuplication) {
       toggleDay(widget.selectedDay.weekday);
     }
@@ -255,7 +268,9 @@ class _StepThreeState extends State<StepThree> {
 
   setRepetition() {
     setState(() {
-      if (repetitionAmountController.text != "") repetitionAmount = int.parse(repetitionAmountController.text);
+      if (repetitionAmountController.text != "") {
+        repetitionAmount = int.parse(repetitionAmountController.text);
+      }
       selectedEndDate = null;
     });
   }
@@ -273,7 +288,7 @@ class _StepThreeState extends State<StepThree> {
     if (_planFormKey.currentState!.validate() && selectedDays.isNotEmpty) {
       List<DayOfWeek> days = selectedDays.map((e) => DayOfWeek.values[e - 1]).toList();
       DateTime? end = realEnddate ?? activityEnd;
-      widget.planExercise(ExerciseTypeTimeData(activityStart!, end!, days, repetitionAmount, repetition, time));
+      widget.planExercise(ExerciseTypeTimeData(activityStart!, end!, days, repetitionAmount, repetition, time, endTime));
     }
   }
 
@@ -366,7 +381,7 @@ class _StepThreeState extends State<StepThree> {
               ),
             ),
           ),
-          value: repetition,
+          initialValue: repetition,
           validator: (value) => value == null ? context.i18n.validationNotEmpty : null,
           items: ActivityRepeat.values
               .map((value) => DropdownMenuItem<ActivityRepeat>(
@@ -450,15 +465,16 @@ class _StepThreeState extends State<StepThree> {
         key: _planFormKey,
         child: Column(
           children: [
-            if (!widget.isTrainingPlan) SizedBox(height: inputSpacing),
-            if (!widget.isTrainingPlan)
+            if (!widget.isTrainingPlan) ...[
+              SizedBox(height: inputSpacing),
               DatePickerRow(
                 startDate: widget.isDuplication ? null : selectedDay,
                 selectDate: selectStartDate,
                 labelText: widget.activityType == ActivityType.APPOINTMENT ? context.i18n.date : null,
               ),
-            if (!widget.selectedTrainingPlan) SizedBox(height: inputSpacing),
-            if (!widget.selectedTrainingPlan)
+            ],
+            if (!widget.selectedTrainingPlan && !isKlimafit) ...[
+              SizedBox(height: inputSpacing),
               TimePickerRow(
                 initialTime: time,
                 requiredField: widget.activityType == ActivityType.APPOINTMENT,
@@ -466,7 +482,62 @@ class _StepThreeState extends State<StepThree> {
                   time = selectedTime;
                 },
               ),
-            if (!widget.selectedTrainingPlan) SizedBox(height: inputSpacing),
+            ],
+            if (isKlimafit && !widget.selectedTrainingPlan && widget.activityType != ActivityType.TASK) ...[
+              SizedBox(height: inputSpacing),
+              TimePickerRow(
+                initialTime: time,
+                requiredField: true,
+                labelText: context.i18n.startTime,
+                selectTime: (selectedTime) {
+                  time = selectedTime;
+                  if (endTime.isNotEmpty) {
+                    setState(() {
+                      durationInMinutes = ExerciseTypeTimeData.calculateMinutesBetween(startTime: time, endTime: endTime);
+                    });
+                  }
+                },
+              ),
+              SizedBox(height: inputSpacing),
+              TimePickerRow(
+                initialTime: endTime,
+                requiredField: widget.activityType != ActivityType.APPOINTMENT,
+                labelText: context.i18n.endTime,
+                selectTime: (selectedTime) {
+                  endTime = selectedTime;
+                  if (time.isNotEmpty) {
+                    setState(() {
+                      durationInMinutes = ExerciseTypeTimeData.calculateMinutesBetween(startTime: time, endTime: endTime);
+                    });
+                  }
+                },
+              ),
+              if (durationInMinutes > 0 &&
+                  (!isKlimafit || (widget.activityType != ActivityType.APPOINTMENT && widget.activityType != ActivityType.TASK)))
+                Padding(
+                  padding: EdgeInsets.only(left: 8.0, top: 2.0),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        color: lightTextColor,
+                        size: 14,
+                      ),
+                      SizedBox(width: 5),
+                      FittedBox(
+                        child: SelectableText(
+                          getFormattedDurationLine(durationInMinutes, isKlimafit, context),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: lightTextColor,
+                                letterSpacing: 1.1,
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+            SizedBox(height: inputSpacing),
             ...getActivityPlanningWidgets(),
             SizedBox(height: inputSpacing),
             BackNextButtons(

@@ -25,6 +25,7 @@ class StrengtheningExercisePostDTO {
     this.hint = const {},
     this.name = const {},
     this.youTubeUrl = const {},
+    this.videoFileKey,
     this.type,
     this.exerciseIntensityPercentageStart,
     this.exerciseIntensityPercentageEnd,
@@ -38,6 +39,8 @@ class StrengtheningExercisePostDTO {
     this.weight,
     this.needsEquipment,
     this.hasRepeatCount,
+    this.waitTimeAfterExerciseSeconds,
+    this.waitTimeText,
   });
 
   Map<String, String> hint;
@@ -45,6 +48,14 @@ class StrengtheningExercisePostDTO {
   Map<String, String> name;
 
   Map<String, String> youTubeUrl;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? videoFileKey;
 
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
@@ -145,6 +156,22 @@ class StrengtheningExercisePostDTO {
   ///
   bool? hasRepeatCount;
 
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  int? waitTimeAfterExerciseSeconds;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? waitTimeText;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -152,6 +179,7 @@ class StrengtheningExercisePostDTO {
           _deepEquality.equals(other.hint, hint) &&
           _deepEquality.equals(other.name, name) &&
           _deepEquality.equals(other.youTubeUrl, youTubeUrl) &&
+          other.videoFileKey == videoFileKey &&
           other.type == type &&
           other.exerciseIntensityPercentageStart ==
               exerciseIntensityPercentageStart &&
@@ -169,7 +197,9 @@ class StrengtheningExercisePostDTO {
           _deepEquality.equals(other.muscleGroups, muscleGroups) &&
           other.weight == weight &&
           other.needsEquipment == needsEquipment &&
-          other.hasRepeatCount == hasRepeatCount;
+          other.hasRepeatCount == hasRepeatCount &&
+          other.waitTimeAfterExerciseSeconds == waitTimeAfterExerciseSeconds &&
+          other.waitTimeText == waitTimeText;
 
   @override
   int get hashCode =>
@@ -177,6 +207,7 @@ class StrengtheningExercisePostDTO {
       (hint.hashCode) +
       (name.hashCode) +
       (youTubeUrl.hashCode) +
+      (videoFileKey == null ? 0 : videoFileKey!.hashCode) +
       (type == null ? 0 : type!.hashCode) +
       (exerciseIntensityPercentageStart == null
           ? 0
@@ -201,17 +232,26 @@ class StrengtheningExercisePostDTO {
       (muscleGroups.hashCode) +
       (weight == null ? 0 : weight!.hashCode) +
       (needsEquipment == null ? 0 : needsEquipment!.hashCode) +
-      (hasRepeatCount == null ? 0 : hasRepeatCount!.hashCode);
+      (hasRepeatCount == null ? 0 : hasRepeatCount!.hashCode) +
+      (waitTimeAfterExerciseSeconds == null
+          ? 0
+          : waitTimeAfterExerciseSeconds!.hashCode) +
+      (waitTimeText == null ? 0 : waitTimeText!.hashCode);
 
   @override
   String toString() =>
-      'StrengtheningExercisePostDTO[hint=$hint, name=$name, youTubeUrl=$youTubeUrl, type=$type, exerciseIntensityPercentageStart=$exerciseIntensityPercentageStart, exerciseIntensityPercentageEnd=$exerciseIntensityPercentageEnd, exerciseTrainingHeartRateLowerLimit=$exerciseTrainingHeartRateLowerLimit, exerciseTrainingHeartRateUpperLimit=$exerciseTrainingHeartRateUpperLimit, exerciseDurationSeconds=$exerciseDurationSeconds, exerciseRepeatCount=$exerciseRepeatCount, exerciseRepeatSets=$exerciseRepeatSets, exerciseBreakBetweenSetsDurationSeconds=$exerciseBreakBetweenSetsDurationSeconds, muscleGroups=$muscleGroups, weight=$weight, needsEquipment=$needsEquipment, hasRepeatCount=$hasRepeatCount]';
+      'StrengtheningExercisePostDTO[hint=$hint, name=$name, youTubeUrl=$youTubeUrl, videoFileKey=$videoFileKey, type=$type, exerciseIntensityPercentageStart=$exerciseIntensityPercentageStart, exerciseIntensityPercentageEnd=$exerciseIntensityPercentageEnd, exerciseTrainingHeartRateLowerLimit=$exerciseTrainingHeartRateLowerLimit, exerciseTrainingHeartRateUpperLimit=$exerciseTrainingHeartRateUpperLimit, exerciseDurationSeconds=$exerciseDurationSeconds, exerciseRepeatCount=$exerciseRepeatCount, exerciseRepeatSets=$exerciseRepeatSets, exerciseBreakBetweenSetsDurationSeconds=$exerciseBreakBetweenSetsDurationSeconds, muscleGroups=$muscleGroups, weight=$weight, needsEquipment=$needsEquipment, hasRepeatCount=$hasRepeatCount, waitTimeAfterExerciseSeconds=$waitTimeAfterExerciseSeconds, waitTimeText=$waitTimeText]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     json[r'hint'] = this.hint;
     json[r'name'] = this.name;
     json[r'youTubeUrl'] = this.youTubeUrl;
+    if (this.videoFileKey != null) {
+      json[r'videoFileKey'] = this.videoFileKey;
+    } else {
+      json[r'videoFileKey'] = null;
+    }
     if (this.type != null) {
       json[r'type'] = this.type;
     } else {
@@ -278,6 +318,16 @@ class StrengtheningExercisePostDTO {
     } else {
       json[r'hasRepeatCount'] = null;
     }
+    if (this.waitTimeAfterExerciseSeconds != null) {
+      json[r'waitTimeAfterExerciseSeconds'] = this.waitTimeAfterExerciseSeconds;
+    } else {
+      json[r'waitTimeAfterExerciseSeconds'] = null;
+    }
+    if (this.waitTimeText != null) {
+      json[r'waitTimeText'] = this.waitTimeText;
+    } else {
+      json[r'waitTimeText'] = null;
+    }
     return json;
   }
 
@@ -306,6 +356,7 @@ class StrengtheningExercisePostDTO {
         name: mapCastOfType<String, String>(json, r'name') ?? const {},
         youTubeUrl:
             mapCastOfType<String, String>(json, r'youTubeUrl') ?? const {},
+        videoFileKey: mapValueOfType<String>(json, r'videoFileKey'),
         type: ExerciseType.fromJson(json[r'type']),
         exerciseIntensityPercentageStart:
             mapValueOfType<int>(json, r'exerciseIntensityPercentageStart'),
@@ -326,6 +377,9 @@ class StrengtheningExercisePostDTO {
         weight: mapValueOfType<int>(json, r'weight'),
         needsEquipment: mapValueOfType<bool>(json, r'needsEquipment'),
         hasRepeatCount: mapValueOfType<bool>(json, r'hasRepeatCount'),
+        waitTimeAfterExerciseSeconds:
+            mapValueOfType<int>(json, r'waitTimeAfterExerciseSeconds'),
+        waitTimeText: mapValueOfType<String>(json, r'waitTimeText'),
       );
     }
     return null;

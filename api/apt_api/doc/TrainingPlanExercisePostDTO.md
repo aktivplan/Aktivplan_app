@@ -18,6 +18,7 @@ Name | Type | Description | Notes
 **task** | [**TaskPostDTO**](TaskPostDTO.md) |  | [optional] 
 **days** | [**List<DayOfWeek>**](DayOfWeek.md) |  | [optional] [default to const []]
 **time** | **String** |  | [optional] 
+**endTime** | **String** |  | [optional] 
 **repeats** | [**ActivityRepeat**](ActivityRepeat.md) |  | [optional] 
 **repeatCount** | **int** |  | [optional] 
 **startingWeek** | **int** |  | [optional] 

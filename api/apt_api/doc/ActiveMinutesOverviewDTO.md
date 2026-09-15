@@ -16,6 +16,9 @@ Name | Type | Description | Notes
 **durationMinutesActive** | **int** |  | [optional] 
 **durationMinutes** | **int** |  | [optional] 
 **averageMinutesPerWeek** | **int** |  | [optional] 
+**activityPointsPredefinedActivity** | **int** |  | [optional] 
+**activityPointsActiveMobility** | **int** |  | [optional] 
+**klimafit** | **bool** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

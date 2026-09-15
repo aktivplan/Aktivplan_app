@@ -15,6 +15,7 @@ import 'package:aptapp/l10n/i18n.dart';
 import 'package:aptapp/message/bloc/message_bloc.dart';
 import 'package:aptapp/mixins/traceable_page_mixin.dart';
 import 'package:aptapp/theme.dart';
+import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/widget/cancel_button.dart';
 import 'package:aptapp/widget/delete_button.dart';
 import 'package:aptapp/widget/image_form_field.dart';
@@ -51,6 +52,7 @@ class _ModifyMessagePageState extends State<ModifyMessagePage> with TraceablePag
   final titleEnglishController = TextEditingController();
   final contentEnglishController = TextEditingController();
   final pictureEnglishController = TextEditingController();
+  MessageRestriction messageRestriction = MessageRestriction.NO_RESTRICTION;
   bool hasChanges = false;
   bool loading = true;
 
@@ -72,6 +74,7 @@ class _ModifyMessagePageState extends State<ModifyMessagePage> with TraceablePag
     super.initState();
     messageBloc = BlocProvider.of<MessageBloc>(context);
     if (widget.messageId == null) {
+      messageRestriction = MessageRestriction.NO_RESTRICTION;
       titleController.text = "";
       contentController.text = "";
       titleEnglishController.text = "";
@@ -98,6 +101,10 @@ class _ModifyMessagePageState extends State<ModifyMessagePage> with TraceablePag
     contentEnglishController.text = message.text['EN']!;
     pictureController.text = "";
     pictureEnglishController.text = "";
+
+    setState(() {
+      messageRestriction = message.restriction ?? MessageRestriction.NO_RESTRICTION;
+    });
 
     if (message.pictureId.containsKey(TranslationLanguage.DE.toString())) {
       messageApi.getMessagePicture(MessageType.INFORMATION, message.pictureId[TranslationLanguage.DE.toString()]!).then((value) {
@@ -128,10 +135,11 @@ class _ModifyMessagePageState extends State<ModifyMessagePage> with TraceablePag
 
   updatePicture(TranslationLanguage language) async {
     try {
-      final List<PlatformFile> _paths = (await FilePicker.platform.pickFiles(
+      final List<PlatformFile> _paths = (await FilePicker.pickFiles(
             type: FileType.custom,
             allowMultiple: false,
             allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            withData: true,
           ))
               ?.files ??
           [];
@@ -200,8 +208,10 @@ class _ModifyMessagePageState extends State<ModifyMessagePage> with TraceablePag
 
   MessageTemplatePostDTO getMessagePostDTO() {
     return MessageTemplatePostDTO(
-        title: {"DE": titleController.text, "EN": titleEnglishController.text},
-        text: {"DE": contentController.text, "EN": contentEnglishController.text});
+      title: {"DE": titleController.text, "EN": titleEnglishController.text},
+      text: {"DE": contentController.text, "EN": contentEnglishController.text},
+      restriction: messageRestriction,
+    );
   }
 
   addMessage() {
@@ -352,6 +362,30 @@ class _ModifyMessagePageState extends State<ModifyMessagePage> with TraceablePag
                         ),
                       ),
                     ),
+                    FormFieldPadding(
+                      child: DropdownButtonFormField(
+                        initialValue: messageRestriction,
+                        onChanged: (value) {
+                          setState(() {
+                            messageRestriction = value as MessageRestriction;
+                            this.hasChanges = true;
+                          });
+                        },
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          labelText: context.i18n.messageRestriction + ' *',
+                          border: const OutlineInputBorder(),
+                        ),
+                        focusColor: Colors.transparent,
+                        validator: (value) => value == null ? context.i18n.validationNotEmpty : null,
+                        items: MessageRestriction.values.map((value) {
+                          return DropdownMenuItem<MessageRestriction>(
+                            child: FittedBox(child: Text(value.getTranslatedText(context))),
+                            value: value,
+                          );
+                        }).toList(),
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Row(
@@ -386,7 +420,7 @@ class _ModifyMessagePageState extends State<ModifyMessagePage> with TraceablePag
                                 )),
                         ],
                       ),
-                    )
+                    ),
                   ],
                   englishFields: [
                     FormFieldPadding(

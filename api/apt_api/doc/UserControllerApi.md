@@ -5,10 +5,11 @@
 import 'package:apt_api/api.dart';
 ```
 
-All URIs are relative to *https://aktivplan-plus.ap-stage.at*
+All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**canSelfSignIn**](UserControllerApi.md#canselfsignin) | **GET** /users/public/can-self-sign-in | 
 [**changeHealthcareProfessionalForPatients**](UserControllerApi.md#changehealthcareprofessionalforpatients) | **PUT** /users/change-healthcare-professional | 
 [**createHealthcareProfessional**](UserControllerApi.md#createhealthcareprofessional) | **POST** /users/HEALTHCARE_PROFESSIONAL | createHealthcareProfessional
 [**createPatient**](UserControllerApi.md#createpatient) | **POST** /users/PATIENT | createPatient
@@ -25,6 +26,7 @@ Method | HTTP request | Description
 [**getPatientUserCountByHealthcareProfessionalId**](UserControllerApi.md#getpatientusercountbyhealthcareprofessionalid) | **GET** /users/HEALTHCARE_PROFESSIONAL/{id}/user-count | 
 [**getPatientsOverview**](UserControllerApi.md#getpatientsoverview) | **GET** /users/PATIENT | getPatientsOverview
 [**getUserPictureById**](UserControllerApi.md#getuserpicturebyid) | **GET** /users/userPicture/{id} | 
+[**importPatientsFromCsv**](UserControllerApi.md#importpatientsfromcsv) | **POST** /users/INSTITUTION/{institutionId}/HEALTHCARE_PROFESSIONAL/{healthcareProfessionalId}/PATIENTS/import | importPatientsFromCsv
 [**requestHealthDataChange**](UserControllerApi.md#requesthealthdatachange) | **POST** /users/PATIENT/request-health-data-change | requestHealthDataChange
 [**requestProfileDeletion**](UserControllerApi.md#requestprofiledeletion) | **POST** /users/PATIENT/request-deletion | requestProfileDeletion
 [**sendPatientWelcomeMail**](UserControllerApi.md#sendpatientwelcomemail) | **PUT** /users/PATIENT/WELCOME_MAIL/{id} | sendPatientWelcomeMail
@@ -35,6 +37,51 @@ Method | HTTP request | Description
 [**updatePatient**](UserControllerApi.md#updatepatient) | **PUT** /users/PATIENT/{id} | 
 [**uploadUserPictureById**](UserControllerApi.md#uploaduserpicturebyid) | **POST** /users/userPicture/{id} | 
 
+
+# **canSelfSignIn**
+> bool canSelfSignIn(healthcareProfessionalId)
+
+
+
+### Example
+```dart
+import 'package:apt_api/api.dart';
+// TODO Configure API key authorization: apiKey
+//defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKey = 'YOUR_API_KEY';
+// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKeyPrefix = 'Bearer';
+
+final api_instance = UserControllerApi();
+final healthcareProfessionalId = healthcareProfessionalId_example; // String | 
+
+try {
+    final result = api_instance.canSelfSignIn(healthcareProfessionalId);
+    print(result);
+} catch (e) {
+    print('Exception when calling UserControllerApi->canSelfSignIn: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **healthcareProfessionalId** | **String**|  | 
+
+### Return type
+
+**bool**
+
+### Authorization
+
+[apiKey](../README.md#apiKey)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **changeHealthcareProfessionalForPatients**
 > changeHealthcareProfessionalForPatients(changeHealthcareProfessionalDTO)
@@ -770,6 +817,57 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
  - **Content-Type**: Not defined
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **importPatientsFromCsv**
+> ImportSummaryDTO importPatientsFromCsv(institutionId, healthcareProfessionalId, file)
+
+importPatientsFromCsv
+
+ADMINISTRATOR
+
+### Example
+```dart
+import 'package:apt_api/api.dart';
+// TODO Configure API key authorization: apiKey
+//defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKey = 'YOUR_API_KEY';
+// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//defaultApiClient.getAuthentication<ApiKeyAuth>('apiKey').apiKeyPrefix = 'Bearer';
+
+final api_instance = UserControllerApi();
+final institutionId = institutionId_example; // String | 
+final healthcareProfessionalId = healthcareProfessionalId_example; // String | 
+final file = BINARY_DATA_HERE; // MultipartFile | 
+
+try {
+    final result = api_instance.importPatientsFromCsv(institutionId, healthcareProfessionalId, file);
+    print(result);
+} catch (e) {
+    print('Exception when calling UserControllerApi->importPatientsFromCsv: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **institutionId** | **String**|  | 
+ **healthcareProfessionalId** | **String**|  | 
+ **file** | **MultipartFile**|  | 
+
+### Return type
+
+[**ImportSummaryDTO**](ImportSummaryDTO.md)
+
+### Authorization
+
+[apiKey](../README.md#apiKey)
+
+### HTTP request headers
+
+ - **Content-Type**: multipart/form-data
  - **Accept**: */*
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

@@ -28,8 +28,8 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:kiwi/kiwi.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class InstitutionHealthcareProfessionalsPage extends StatefulWidget {

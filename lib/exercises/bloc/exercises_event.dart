@@ -96,10 +96,12 @@ class ExerciseTypesHomeEvent extends ExerciseEvent {
 class SaveExerciseEvent extends ExerciseEvent {
   final exercise;
   final ExerciseType type;
+  final MultipartFile? videoFile;
 
   SaveExerciseEvent({
     required this.type,
     required this.exercise,
+    required this.videoFile,
   });
 
   @override
@@ -110,14 +112,18 @@ class UpdateExerciseEvent extends ExerciseEvent {
   final exercise;
   final String id;
   final ExerciseType type;
+  final MultipartFile? videoFile;
+  final bool didChangeVideoFile;
   UpdateExerciseEvent({
     required this.id,
     required this.type,
     required this.exercise,
+    required this.videoFile,
+    required this.didChangeVideoFile,
   });
 
   @override
-  List<Object> get props => [exercise];
+  List<Object> get props => [exercise, id, type, didChangeVideoFile];
 }
 
 class DeleteExerciseEvent extends ExerciseEvent {
@@ -131,7 +137,8 @@ class DeleteExerciseEvent extends ExerciseEvent {
 
 class SaveWorkoutEvent extends ExerciseEvent {
   final WorkoutPostDTO workout;
-  SaveWorkoutEvent({required this.workout});
+  final MultipartFile? videoFile;
+  SaveWorkoutEvent({required this.workout, this.videoFile});
 
   @override
   List<Object> get props => [workout];
@@ -140,10 +147,12 @@ class SaveWorkoutEvent extends ExerciseEvent {
 class UpdateWorkoutEvent extends ExerciseEvent {
   final String id;
   final WorkoutPostDTO workout;
-  UpdateWorkoutEvent({required this.id, required this.workout});
+  final MultipartFile? videoFile;
+  final bool didChangeVideoFile;
+  UpdateWorkoutEvent({required this.id, required this.workout, this.videoFile, required this.didChangeVideoFile});
 
   @override
-  List<Object> get props => [this.id, workout];
+  List<Object> get props => [this.id, workout, didChangeVideoFile];
 }
 
 class DeleteWorkoutEvent extends ExerciseEvent {

@@ -12,6 +12,7 @@ Name | Type | Description | Notes
 **sendDate** | **String** |  | [optional] 
 **subject** | **String** |  | [optional] 
 **text** | **String** |  | [optional] 
+**language** | [**TranslationLanguage**](TranslationLanguage.md) |  | [optional] 
 **senderId** | **String** |  | [optional] 
 **senderName** | **String** |  | [optional] 
 **sentToAll** | **bool** |  | [optional] 

@@ -25,6 +25,7 @@ class IntervalExercisePostDTO {
     this.hint = const {},
     this.name = const {},
     this.youTubeUrl = const {},
+    this.videoFileKey,
     this.type,
     this.exerciseIntensityPercentageStart,
     this.exerciseIntensityPercentageEnd,
@@ -46,6 +47,14 @@ class IntervalExercisePostDTO {
   Map<String, String> name;
 
   Map<String, String> youTubeUrl;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? videoFileKey;
 
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
@@ -166,6 +175,7 @@ class IntervalExercisePostDTO {
           _deepEquality.equals(other.hint, hint) &&
           _deepEquality.equals(other.name, name) &&
           _deepEquality.equals(other.youTubeUrl, youTubeUrl) &&
+          other.videoFileKey == videoFileKey &&
           other.type == type &&
           other.exerciseIntensityPercentageStart ==
               exerciseIntensityPercentageStart &&
@@ -195,6 +205,7 @@ class IntervalExercisePostDTO {
       (hint.hashCode) +
       (name.hashCode) +
       (youTubeUrl.hashCode) +
+      (videoFileKey == null ? 0 : videoFileKey!.hashCode) +
       (type == null ? 0 : type!.hashCode) +
       (exerciseIntensityPercentageStart == null
           ? 0
@@ -234,13 +245,18 @@ class IntervalExercisePostDTO {
 
   @override
   String toString() =>
-      'IntervalExercisePostDTO[hint=$hint, name=$name, youTubeUrl=$youTubeUrl, type=$type, exerciseIntensityPercentageStart=$exerciseIntensityPercentageStart, exerciseIntensityPercentageEnd=$exerciseIntensityPercentageEnd, exerciseTrainingHeartRateLowerLimit=$exerciseTrainingHeartRateLowerLimit, exerciseTrainingHeartRateUpperLimit=$exerciseTrainingHeartRateUpperLimit, exerciseDurationSeconds=$exerciseDurationSeconds, recoveryIntensityPercentageStart=$recoveryIntensityPercentageStart, recoveryIntensityPercentageEnd=$recoveryIntensityPercentageEnd, recoveryTrainingHeartRateLowerLimit=$recoveryTrainingHeartRateLowerLimit, recoveryTrainingHeartRateUpperLimit=$recoveryTrainingHeartRateUpperLimit, recoveryDurationSeconds=$recoveryDurationSeconds, intervalCount=$intervalCount, selectedRecoverySeconds=$selectedRecoverySeconds, selectedExerciseSeconds=$selectedExerciseSeconds]';
+      'IntervalExercisePostDTO[hint=$hint, name=$name, youTubeUrl=$youTubeUrl, videoFileKey=$videoFileKey, type=$type, exerciseIntensityPercentageStart=$exerciseIntensityPercentageStart, exerciseIntensityPercentageEnd=$exerciseIntensityPercentageEnd, exerciseTrainingHeartRateLowerLimit=$exerciseTrainingHeartRateLowerLimit, exerciseTrainingHeartRateUpperLimit=$exerciseTrainingHeartRateUpperLimit, exerciseDurationSeconds=$exerciseDurationSeconds, recoveryIntensityPercentageStart=$recoveryIntensityPercentageStart, recoveryIntensityPercentageEnd=$recoveryIntensityPercentageEnd, recoveryTrainingHeartRateLowerLimit=$recoveryTrainingHeartRateLowerLimit, recoveryTrainingHeartRateUpperLimit=$recoveryTrainingHeartRateUpperLimit, recoveryDurationSeconds=$recoveryDurationSeconds, intervalCount=$intervalCount, selectedRecoverySeconds=$selectedRecoverySeconds, selectedExerciseSeconds=$selectedExerciseSeconds]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     json[r'hint'] = this.hint;
     json[r'name'] = this.name;
     json[r'youTubeUrl'] = this.youTubeUrl;
+    if (this.videoFileKey != null) {
+      json[r'videoFileKey'] = this.videoFileKey;
+    } else {
+      json[r'videoFileKey'] = null;
+    }
     if (this.type != null) {
       json[r'type'] = this.type;
     } else {
@@ -347,6 +363,7 @@ class IntervalExercisePostDTO {
         name: mapCastOfType<String, String>(json, r'name') ?? const {},
         youTubeUrl:
             mapCastOfType<String, String>(json, r'youTubeUrl') ?? const {},
+        videoFileKey: mapValueOfType<String>(json, r'videoFileKey'),
         type: ExerciseType.fromJson(json[r'type']),
         exerciseIntensityPercentageStart:
             mapValueOfType<int>(json, r'exerciseIntensityPercentageStart'),

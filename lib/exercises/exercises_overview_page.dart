@@ -23,6 +23,7 @@ import 'package:aptapp/exercises/workout_table.dart';
 import 'package:aptapp/l10n/i18n.dart';
 import 'package:aptapp/mixins/traceable_page_mixin.dart';
 import 'package:aptapp/theme.dart';
+import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/keys.dart';
 import 'package:aptapp/widget/rounded_icon_button.dart';
 import 'package:aptapp/widget/get_snackbar.dart';
@@ -260,6 +261,7 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> with Single
                       return ExerciseCategories(
                         optionCallback: getCategoryExerciseTypes,
                         hideTrainingPlan: !userRepository.showTrainingPlans,
+                        isKlimafit: userRepository.currentInstitution?.institutionFocus?.isKlimafit() ?? false,
                       );
                     } else if (state is FetchedWorkoutExerciseState) {
                       return WorkoutTable(fetchedWorkouts: state.workouts, editWorkout: editWorkout);

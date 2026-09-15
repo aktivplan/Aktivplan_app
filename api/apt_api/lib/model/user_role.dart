@@ -36,6 +36,7 @@ class UserRole {
   static const INSTITUTION_ADMINISTRATOR =
       UserRole._(r'INSTITUTION_ADMINISTRATOR');
   static const ADMINISTRATOR = UserRole._(r'ADMINISTRATOR');
+  static const p2RCLIENT = UserRole._(r'P2R_CLIENT');
 
   /// List of all possible values in this [enum][UserRole].
   static const values = <UserRole>[
@@ -43,6 +44,7 @@ class UserRole {
     HEALTHCARE_PROFESSIONAL,
     INSTITUTION_ADMINISTRATOR,
     ADMINISTRATOR,
+    p2RCLIENT,
   ];
 
   static UserRole? fromJson(dynamic value) =>
@@ -94,6 +96,8 @@ class UserRoleTypeTransformer {
           return UserRole.INSTITUTION_ADMINISTRATOR;
         case r'ADMINISTRATOR':
           return UserRole.ADMINISTRATOR;
+        case r'P2R_CLIENT':
+          return UserRole.p2RCLIENT;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');

@@ -25,6 +25,7 @@ class ActivityOverviewDTO {
     this.activityId,
     this.date,
     this.time,
+    this.endTime,
     this.name = const {},
     this.durationMinutes,
     this.plannedDurationMinutes,
@@ -59,6 +60,14 @@ class ActivityOverviewDTO {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? time;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? endTime;
 
   Map<String, String> name;
 
@@ -133,6 +142,7 @@ class ActivityOverviewDTO {
           other.activityId == activityId &&
           other.date == date &&
           other.time == time &&
+          other.endTime == endTime &&
           _deepEquality.equals(other.name, name) &&
           other.durationMinutes == durationMinutes &&
           other.plannedDurationMinutes == plannedDurationMinutes &&
@@ -149,6 +159,7 @@ class ActivityOverviewDTO {
       (activityId == null ? 0 : activityId!.hashCode) +
       (date == null ? 0 : date!.hashCode) +
       (time == null ? 0 : time!.hashCode) +
+      (endTime == null ? 0 : endTime!.hashCode) +
       (name.hashCode) +
       (durationMinutes == null ? 0 : durationMinutes!.hashCode) +
       (plannedDurationMinutes == null ? 0 : plannedDurationMinutes!.hashCode) +
@@ -163,7 +174,7 @@ class ActivityOverviewDTO {
 
   @override
   String toString() =>
-      'ActivityOverviewDTO[activityId=$activityId, date=$date, time=$time, name=$name, durationMinutes=$durationMinutes, plannedDurationMinutes=$plannedDurationMinutes, type=$type, repeats=$repeats, healthcareProfessionalName=$healthcareProfessionalName, plannedBy=$plannedBy, rating=$rating, activity=$activity]';
+      'ActivityOverviewDTO[activityId=$activityId, date=$date, time=$time, endTime=$endTime, name=$name, durationMinutes=$durationMinutes, plannedDurationMinutes=$plannedDurationMinutes, type=$type, repeats=$repeats, healthcareProfessionalName=$healthcareProfessionalName, plannedBy=$plannedBy, rating=$rating, activity=$activity]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -181,6 +192,11 @@ class ActivityOverviewDTO {
       json[r'time'] = this.time;
     } else {
       json[r'time'] = null;
+    }
+    if (this.endTime != null) {
+      json[r'endTime'] = this.endTime;
+    } else {
+      json[r'endTime'] = null;
     }
     json[r'name'] = this.name;
     if (this.durationMinutes != null) {
@@ -250,6 +266,7 @@ class ActivityOverviewDTO {
         activityId: mapValueOfType<String>(json, r'activityId'),
         date: mapValueOfType<String>(json, r'date'),
         time: mapValueOfType<String>(json, r'time'),
+        endTime: mapValueOfType<String>(json, r'endTime'),
         name: mapCastOfType<String, String>(json, r'name') ?? const {},
         durationMinutes: mapValueOfType<int>(json, r'durationMinutes'),
         plannedDurationMinutes:

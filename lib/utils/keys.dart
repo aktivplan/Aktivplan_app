@@ -52,6 +52,7 @@ const String KEY_HEALTHCARE_PROFESSIONALS_BREAD_CRUMB_INSTITUTIONS = "healthcare
 
 const String KEY_PATIENTS_SCROLL_VIEW = "patients-scroll-view";
 const String KEY_PATIENTS_BUTTON_EDIT_HEALTH_EXPERT = "patients-button-edit-health-expert";
+const String KEY_PATIENTS_BUTTON_IMPORT = "patients-button-import";
 const String KEY_PATIENTS_BREAD_CRUMB_INSTITUTION = "patients-bread-crumb-institution";
 const String KEY_PATIENTS_BUTTON_HANDOVER = "patients-button-handover";
 const String KEY_PATIENTS_BUTTON_MESSAGES = "patients-button-messages";

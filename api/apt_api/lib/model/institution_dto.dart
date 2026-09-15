@@ -31,10 +31,13 @@ class InstitutionDTO {
     this.showTrainingPlans,
     this.allowRescheduleActivities,
     this.enableSocialFeatures,
+    this.enableSelfSignIn,
     this.emailUserQueries,
     this.phoneNumberUserQueries,
     this.availabilityPhone = const {},
     this.getInTouchNotes = const {},
+    this.institutionP2RFocus,
+    this.minimumDaysBetweenInformationMessages,
     this.id,
   });
 
@@ -110,6 +113,14 @@ class InstitutionDTO {
   /// source code must fall back to having a nullable type.
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
+  bool? enableSelfSignIn;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
   String? emailUserQueries;
 
   ///
@@ -123,6 +134,22 @@ class InstitutionDTO {
   Map<String, String> availabilityPhone;
 
   Map<String, String> getInTouchNotes;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  InstitutionP2RFocus? institutionP2RFocus;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  int? minimumDaysBetweenInformationMessages;
 
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
@@ -145,10 +172,14 @@ class InstitutionDTO {
           other.showTrainingPlans == showTrainingPlans &&
           other.allowRescheduleActivities == allowRescheduleActivities &&
           other.enableSocialFeatures == enableSocialFeatures &&
+          other.enableSelfSignIn == enableSelfSignIn &&
           other.emailUserQueries == emailUserQueries &&
           other.phoneNumberUserQueries == phoneNumberUserQueries &&
           _deepEquality.equals(other.availabilityPhone, availabilityPhone) &&
           _deepEquality.equals(other.getInTouchNotes, getInTouchNotes) &&
+          other.institutionP2RFocus == institutionP2RFocus &&
+          other.minimumDaysBetweenInformationMessages ==
+              minimumDaysBetweenInformationMessages &&
           other.id == id;
 
   @override
@@ -165,15 +196,20 @@ class InstitutionDTO {
           ? 0
           : allowRescheduleActivities!.hashCode) +
       (enableSocialFeatures == null ? 0 : enableSocialFeatures!.hashCode) +
+      (enableSelfSignIn == null ? 0 : enableSelfSignIn!.hashCode) +
       (emailUserQueries == null ? 0 : emailUserQueries!.hashCode) +
       (phoneNumberUserQueries == null ? 0 : phoneNumberUserQueries!.hashCode) +
       (availabilityPhone.hashCode) +
       (getInTouchNotes.hashCode) +
+      (institutionP2RFocus == null ? 0 : institutionP2RFocus!.hashCode) +
+      (minimumDaysBetweenInformationMessages == null
+          ? 0
+          : minimumDaysBetweenInformationMessages!.hashCode) +
       (id == null ? 0 : id!.hashCode);
 
   @override
   String toString() =>
-      'InstitutionDTO[name=$name, institutionFocus=$institutionFocus, url=$url, email=$email, firstName=$firstName, lastName=$lastName, showTrainingPlans=$showTrainingPlans, allowRescheduleActivities=$allowRescheduleActivities, enableSocialFeatures=$enableSocialFeatures, emailUserQueries=$emailUserQueries, phoneNumberUserQueries=$phoneNumberUserQueries, availabilityPhone=$availabilityPhone, getInTouchNotes=$getInTouchNotes, id=$id]';
+      'InstitutionDTO[name=$name, institutionFocus=$institutionFocus, url=$url, email=$email, firstName=$firstName, lastName=$lastName, showTrainingPlans=$showTrainingPlans, allowRescheduleActivities=$allowRescheduleActivities, enableSocialFeatures=$enableSocialFeatures, enableSelfSignIn=$enableSelfSignIn, emailUserQueries=$emailUserQueries, phoneNumberUserQueries=$phoneNumberUserQueries, availabilityPhone=$availabilityPhone, getInTouchNotes=$getInTouchNotes, institutionP2RFocus=$institutionP2RFocus, minimumDaysBetweenInformationMessages=$minimumDaysBetweenInformationMessages, id=$id]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -218,6 +254,11 @@ class InstitutionDTO {
     } else {
       json[r'enableSocialFeatures'] = null;
     }
+    if (this.enableSelfSignIn != null) {
+      json[r'enableSelfSignIn'] = this.enableSelfSignIn;
+    } else {
+      json[r'enableSelfSignIn'] = null;
+    }
     if (this.emailUserQueries != null) {
       json[r'emailUserQueries'] = this.emailUserQueries;
     } else {
@@ -230,6 +271,17 @@ class InstitutionDTO {
     }
     json[r'availabilityPhone'] = this.availabilityPhone;
     json[r'getInTouchNotes'] = this.getInTouchNotes;
+    if (this.institutionP2RFocus != null) {
+      json[r'institutionP2RFocus'] = this.institutionP2RFocus;
+    } else {
+      json[r'institutionP2RFocus'] = null;
+    }
+    if (this.minimumDaysBetweenInformationMessages != null) {
+      json[r'minimumDaysBetweenInformationMessages'] =
+          this.minimumDaysBetweenInformationMessages;
+    } else {
+      json[r'minimumDaysBetweenInformationMessages'] = null;
+    }
     if (this.id != null) {
       json[r'id'] = this.id;
     } else {
@@ -270,6 +322,7 @@ class InstitutionDTO {
             mapValueOfType<bool>(json, r'allowRescheduleActivities'),
         enableSocialFeatures:
             mapValueOfType<bool>(json, r'enableSocialFeatures'),
+        enableSelfSignIn: mapValueOfType<bool>(json, r'enableSelfSignIn'),
         emailUserQueries: mapValueOfType<String>(json, r'emailUserQueries'),
         phoneNumberUserQueries:
             mapValueOfType<String>(json, r'phoneNumberUserQueries'),
@@ -278,6 +331,10 @@ class InstitutionDTO {
                 const {},
         getInTouchNotes:
             mapCastOfType<String, String>(json, r'getInTouchNotes') ?? const {},
+        institutionP2RFocus:
+            InstitutionP2RFocus.fromJson(json[r'institutionP2RFocus']),
+        minimumDaysBetweenInformationMessages:
+            mapValueOfType<int>(json, r'minimumDaysBetweenInformationMessages'),
         id: mapValueOfType<String>(json, r'id'),
       );
     }

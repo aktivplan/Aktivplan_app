@@ -27,6 +27,7 @@ class HealthcareProfessionalPostDTO {
     this.firstName,
     this.lastName,
     this.jobName,
+    this.hasSelfSignIn,
   });
 
   ///
@@ -69,6 +70,14 @@ class HealthcareProfessionalPostDTO {
   ///
   String? jobName;
 
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  bool? hasSelfSignIn;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -77,7 +86,8 @@ class HealthcareProfessionalPostDTO {
           other.institutionId == institutionId &&
           other.firstName == firstName &&
           other.lastName == lastName &&
-          other.jobName == jobName;
+          other.jobName == jobName &&
+          other.hasSelfSignIn == hasSelfSignIn;
 
   @override
   int get hashCode =>
@@ -86,11 +96,12 @@ class HealthcareProfessionalPostDTO {
       (institutionId == null ? 0 : institutionId!.hashCode) +
       (firstName == null ? 0 : firstName!.hashCode) +
       (lastName == null ? 0 : lastName!.hashCode) +
-      (jobName == null ? 0 : jobName!.hashCode);
+      (jobName == null ? 0 : jobName!.hashCode) +
+      (hasSelfSignIn == null ? 0 : hasSelfSignIn!.hashCode);
 
   @override
   String toString() =>
-      'HealthcareProfessionalPostDTO[email=$email, institutionId=$institutionId, firstName=$firstName, lastName=$lastName, jobName=$jobName]';
+      'HealthcareProfessionalPostDTO[email=$email, institutionId=$institutionId, firstName=$firstName, lastName=$lastName, jobName=$jobName, hasSelfSignIn=$hasSelfSignIn]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -118,6 +129,11 @@ class HealthcareProfessionalPostDTO {
       json[r'jobName'] = this.jobName;
     } else {
       json[r'jobName'] = null;
+    }
+    if (this.hasSelfSignIn != null) {
+      json[r'hasSelfSignIn'] = this.hasSelfSignIn;
+    } else {
+      json[r'hasSelfSignIn'] = null;
     }
     return json;
   }
@@ -148,6 +164,7 @@ class HealthcareProfessionalPostDTO {
         firstName: mapValueOfType<String>(json, r'firstName'),
         lastName: mapValueOfType<String>(json, r'lastName'),
         jobName: mapValueOfType<String>(json, r'jobName'),
+        hasSelfSignIn: mapValueOfType<bool>(json, r'hasSelfSignIn'),
       );
     }
     return null;

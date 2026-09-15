@@ -27,6 +27,7 @@ class HealthcareProfessionalGetDTO {
     this.firstName,
     this.lastName,
     this.jobName,
+    this.hasSelfSignIn,
     this.id,
     this.registerDate,
     this.lastActiveDate,
@@ -78,6 +79,14 @@ class HealthcareProfessionalGetDTO {
   /// source code must fall back to having a nullable type.
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
+  bool? hasSelfSignIn;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
   String? id;
 
   ///
@@ -105,6 +114,7 @@ class HealthcareProfessionalGetDTO {
           other.firstName == firstName &&
           other.lastName == lastName &&
           other.jobName == jobName &&
+          other.hasSelfSignIn == hasSelfSignIn &&
           other.id == id &&
           other.registerDate == registerDate &&
           other.lastActiveDate == lastActiveDate;
@@ -117,13 +127,14 @@ class HealthcareProfessionalGetDTO {
       (firstName == null ? 0 : firstName!.hashCode) +
       (lastName == null ? 0 : lastName!.hashCode) +
       (jobName == null ? 0 : jobName!.hashCode) +
+      (hasSelfSignIn == null ? 0 : hasSelfSignIn!.hashCode) +
       (id == null ? 0 : id!.hashCode) +
       (registerDate == null ? 0 : registerDate!.hashCode) +
       (lastActiveDate == null ? 0 : lastActiveDate!.hashCode);
 
   @override
   String toString() =>
-      'HealthcareProfessionalGetDTO[email=$email, institutionId=$institutionId, firstName=$firstName, lastName=$lastName, jobName=$jobName, id=$id, registerDate=$registerDate, lastActiveDate=$lastActiveDate]';
+      'HealthcareProfessionalGetDTO[email=$email, institutionId=$institutionId, firstName=$firstName, lastName=$lastName, jobName=$jobName, hasSelfSignIn=$hasSelfSignIn, id=$id, registerDate=$registerDate, lastActiveDate=$lastActiveDate]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -151,6 +162,11 @@ class HealthcareProfessionalGetDTO {
       json[r'jobName'] = this.jobName;
     } else {
       json[r'jobName'] = null;
+    }
+    if (this.hasSelfSignIn != null) {
+      json[r'hasSelfSignIn'] = this.hasSelfSignIn;
+    } else {
+      json[r'hasSelfSignIn'] = null;
     }
     if (this.id != null) {
       json[r'id'] = this.id;
@@ -196,6 +212,7 @@ class HealthcareProfessionalGetDTO {
         firstName: mapValueOfType<String>(json, r'firstName'),
         lastName: mapValueOfType<String>(json, r'lastName'),
         jobName: mapValueOfType<String>(json, r'jobName'),
+        hasSelfSignIn: mapValueOfType<bool>(json, r'hasSelfSignIn'),
         id: mapValueOfType<String>(json, r'id'),
         registerDate: mapValueOfType<String>(json, r'registerDate'),
         lastActiveDate: mapValueOfType<String>(json, r'lastActiveDate'),

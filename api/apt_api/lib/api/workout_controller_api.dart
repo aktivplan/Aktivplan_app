@@ -142,6 +142,70 @@ class WorkoutControllerApi {
     }
   }
 
+  /// deleteWorkoutVideoById
+  ///
+  /// ADMINISTRATOR | INSTITUTION_ADMINISTRATOR | HEALTHCARE_PROFESSIONAL
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  Future<Response> deleteWorkoutVideoByIdWithHttpInfo(
+    String id,
+  ) async {
+    // ignore: prefer_const_declarations
+    final path = r'/workouts/video/{id}'.replaceAll('{id}', id);
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+    return apiClient.invokeAPI(
+      path,
+      'DELETE',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// deleteWorkoutVideoById
+  ///
+  /// ADMINISTRATOR | INSTITUTION_ADMINISTRATOR | HEALTHCARE_PROFESSIONAL
+  ///
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  Future<bool?> deleteWorkoutVideoById(
+    String id,
+  ) async {
+    final response = await deleteWorkoutVideoByIdWithHttpInfo(
+      id,
+    );
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty &&
+        response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(
+        await _decodeBodyBytes(response),
+        'bool',
+      ) as bool;
+    }
+    return null;
+  }
+
   /// Performs an HTTP 'GET /workouts' operation and returns the [Response].
   Future<Response> getWorkoutsWithHttpInfo() async {
     // ignore: prefer_const_declarations
@@ -253,6 +317,88 @@ class WorkoutControllerApi {
         await _decodeBodyBytes(response),
         'Workout',
       ) as Workout;
+    }
+    return null;
+  }
+
+  /// uploadWorkoutVideoById
+  ///
+  /// ADMINISTRATOR | INSTITUTION_ADMINISTRATOR | HEALTHCARE_PROFESSIONAL
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  ///
+  /// * [MultipartFile] videoFile (required):
+  Future<Response> uploadWorkoutVideoByIdWithHttpInfo(
+    String id,
+    MultipartFile videoFile,
+  ) async {
+    // ignore: prefer_const_declarations
+    final path = r'/workouts/video/{id}'.replaceAll('{id}', id);
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['multipart/form-data'];
+
+    bool hasFields = false;
+    final mp = MultipartRequest('POST', Uri.parse(path));
+    if (videoFile != null) {
+      hasFields = true;
+      mp.fields[r'videoFile'] = videoFile.field;
+      mp.files.add(videoFile);
+    }
+    if (hasFields) {
+      postBody = mp;
+    }
+
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// uploadWorkoutVideoById
+  ///
+  /// ADMINISTRATOR | INSTITUTION_ADMINISTRATOR | HEALTHCARE_PROFESSIONAL
+  ///
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  ///
+  /// * [MultipartFile] videoFile (required):
+  Future<FileGetDTO?> uploadWorkoutVideoById(
+    String id,
+    MultipartFile videoFile,
+  ) async {
+    final response = await uploadWorkoutVideoByIdWithHttpInfo(
+      id,
+      videoFile,
+    );
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty &&
+        response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(
+        await _decodeBodyBytes(response),
+        'FileGetDTO',
+      ) as FileGetDTO;
     }
     return null;
   }

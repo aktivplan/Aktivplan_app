@@ -17,10 +17,13 @@ Name | Type | Description | Notes
 **showTrainingPlans** | **bool** |  | [optional] 
 **allowRescheduleActivities** | **bool** |  | [optional] 
 **enableSocialFeatures** | **bool** |  | [optional] 
+**enableSelfSignIn** | **bool** |  | [optional] 
 **emailUserQueries** | **String** |  | [optional] 
 **phoneNumberUserQueries** | **String** |  | [optional] 
 **availabilityPhone** | **Map<String, String>** |  | [optional] [default to const {}]
 **getInTouchNotes** | **Map<String, String>** |  | [optional] [default to const {}]
+**institutionP2RFocus** | [**InstitutionP2RFocus**](InstitutionP2RFocus.md) |  | [optional] 
+**minimumDaysBetweenInformationMessages** | **int** |  | [optional] 
 **id** | **String** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

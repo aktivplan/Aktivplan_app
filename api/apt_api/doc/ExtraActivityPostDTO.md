@@ -9,6 +9,8 @@ import 'package:apt_api/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **date** | **String** |  | [optional] 
+**time** | **String** |  | [optional] 
+**endTime** | **String** |  | [optional] 
 **name** | **String** |  | [optional] 
 **heartrate** | **int** |  | [optional] 
 **durationMinutes** | **int** |  | [optional] 

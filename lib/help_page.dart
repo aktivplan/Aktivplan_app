@@ -14,6 +14,7 @@ import 'package:aptapp/authentication/user_repository.dart';
 import 'package:aptapp/l10n/i18n.dart';
 import 'package:aptapp/mixins/traceable_page_mixin.dart';
 import 'package:aptapp/patient/onboarding_page.dart';
+import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/trace_helpers.dart';
 import 'package:aptapp/utils/translation_helper.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +69,7 @@ class _HelpPageState extends State<HelpPage> with TraceablePageMixin {
                   tags: {
                     'a': StyledTextActionTag(
                       (text, attrs) {
-                        OnboardingPage.showOnboardingDialog(context);
+                        OnboardingPage.showOnboardingDialog(context, isKlimafit: currentInstitution.institutionFocus?.isKlimafit() ?? false);
                       },
                       style: TextStyle(decoration: TextDecoration.underline),
                     )

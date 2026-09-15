@@ -10,12 +10,14 @@
 import 'package:apt_api/api.dart';
 import 'package:aptapp/colors.dart';
 import 'package:aptapp/l10n/i18n.dart';
+import 'package:aptapp/main.dart';
 import 'package:aptapp/theme.dart';
 import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/keys.dart';
 import 'package:aptapp/utils/translation_helper.dart';
 import 'package:aptapp/widget/cancel_button.dart';
 import 'package:aptapp/widget/form_field_padding.dart';
+import 'package:aptapp/widget/video_player_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
@@ -61,6 +63,10 @@ class _EditStrengtheningExerciseState extends State<EditStrengtheningExercise> {
   final breakBetweenSetsController = TextEditingController();
   final weightController = TextEditingController();
   bool hasChanges = false;
+  final FileControllerApi fileControllerApi = FileControllerApi(apiClient);
+  String videoSource = "";
+  final waitTimeAfterExerciseSecondsController = TextEditingController();
+  final waitTimeTextController = TextEditingController();
 
   @override
   void initState() {
@@ -74,38 +80,50 @@ class _EditStrengtheningExerciseState extends State<EditStrengtheningExercise> {
         : "";
     repeatCountController.text = widget.exercise.exerciseRepeatCount == 0 ? "" : widget.exercise.exerciseRepeatCount.toString();
     repeatSetController.text = widget.exercise.exerciseRepeatSets.toString();
-    if (widget.exercise?.exerciseBreakBetweenSetsDurationSeconds != null) {
-      breakBetweenSetsController.text = (widget.exercise.exerciseBreakBetweenSetsDurationSeconds / 60).toString();
-    } else {
-      breakBetweenSetsController.text = "";
-    }
+    breakBetweenSetsController.text = widget.exercise.exerciseBreakBetweenSetsDurationSeconds?.toString() ?? "";
     weightController.text = widget.exercise.weight.toString() == "0" ? "" : widget.exercise.weight.toString();
+    waitTimeAfterExerciseSecondsController.text = widget.exercise.waitTimeAfterExerciseSeconds?.toString() ?? "";
+    waitTimeTextController.text = widget.exercise.waitTimeText ?? "";
+    if ((widget.exercise.videoFileKey ?? "").isNotEmpty) {
+      fileControllerApi.getFile(widget.exercise.videoFileKey!).then((response) {
+        setState(() {
+          videoSource = response?.url ?? "";
+        });
+      }).catchError((error) {
+        print("Error fetching initial video file: $error");
+      });
+    }
   }
 
   addExerciseType() {
     if (_exerciseFormKey.currentState!.validate()) {
-      int? breakDuration = int.tryParse(breakBetweenSetsController.text);
       if (widget.editAlreadyChosen) {
         var old = widget.exercise;
+        widget.exercise.type = widget.exerciseType;
         widget.exercise.exerciseDurationSeconds = durationController.text.isNotEmpty ? (int.tryParse(durationController.text)) : 0;
         widget.exercise.exerciseIntensityPercentageStart = int.tryParse(intensityStartController.text);
         widget.exercise.exerciseIntensityPercentageEnd = int.tryParse(intensityEndController.text);
         widget.exercise.exerciseRepeatCount = repeatCountController.text.isNotEmpty ? (int.tryParse(repeatCountController.text)) : 0;
         widget.exercise.exerciseRepeatSets = int.tryParse(repeatSetController.text) ?? 0;
-        widget.exercise.exerciseBreakBetweenSetsDurationSeconds = breakDuration != null ? breakDuration * 60 : null;
+        widget.exercise.exerciseBreakBetweenSetsDurationSeconds = int.tryParse(breakBetweenSetsController.text);
         widget.exercise.weight = int.tryParse(weightController.text) ?? 0;
         widget.exercise.hasRepeatCount = repeatCountController.text.isNotEmpty;
+        widget.exercise.waitTimeAfterExerciseSeconds = int.tryParse(waitTimeAfterExerciseSecondsController.text);
+        widget.exercise.waitTimeText = waitTimeTextController.text;
         widget.updateStrengthExerciseType(old, widget.exercise);
       } else {
         StrengtheningExercisePostDTO exercise = StrengtheningExercisePostDTO.fromJson(widget.exercise.toJson())!;
+        exercise.type = widget.exerciseType;
         exercise.exerciseDurationSeconds = durationController.text.isNotEmpty ? (int.tryParse(durationController.text)) : 0;
         exercise.exerciseIntensityPercentageStart = int.tryParse(intensityStartController.text);
         exercise.exerciseIntensityPercentageEnd = int.tryParse(intensityEndController.text);
         exercise.exerciseRepeatCount = repeatCountController.text.isNotEmpty ? (int.tryParse(repeatCountController.text)) : 0;
         exercise.exerciseRepeatSets = int.tryParse(repeatSetController.text) ?? 0;
-        exercise.exerciseBreakBetweenSetsDurationSeconds = breakDuration != null ? breakDuration * 60 : null;
+        exercise.exerciseBreakBetweenSetsDurationSeconds = int.tryParse(breakBetweenSetsController.text);
         exercise.weight = int.tryParse(weightController.text) ?? 0;
         exercise.hasRepeatCount = repeatCountController.text.isNotEmpty;
+        exercise.waitTimeAfterExerciseSeconds = int.tryParse(waitTimeAfterExerciseSecondsController.text);
+        exercise.waitTimeText = waitTimeTextController.text;
         widget.addStrengthExerciseType(exercise);
       }
     }
@@ -468,6 +486,29 @@ class _EditStrengtheningExerciseState extends State<EditStrengtheningExercise> {
                                 ),
                               ),
                             ),
+                            SizedBox(
+                              height: height * 0.02,
+                            ),
+                            TextFormField(
+                              controller: breakBetweenSetsController,
+                              keyboardType: TextInputType.numberWithOptions(signed: true),
+                              inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                              onChanged: (value) => {
+                                setState(() {
+                                  this.hasChanges = true;
+                                })
+                              },
+                              decoration: InputDecoration(
+                                hintText: context.i18n.exerciseBreakBetweenSets,
+                                labelText: context.i18n.exerciseBreakBetweenSets,
+                                border: OutlineInputBorder(),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: datatableBorderColor,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       if (size.isMobile)
@@ -601,6 +642,50 @@ class _EditStrengtheningExerciseState extends State<EditStrengtheningExercise> {
                           ),
                         ),
                       ),
+                      SizedBox(
+                        height: height * 0.02,
+                      ),
+                      TextFormField(
+                        controller: waitTimeAfterExerciseSecondsController,
+                        keyboardType: TextInputType.numberWithOptions(signed: true),
+                        inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                        onChanged: (value) => {
+                          setState(() {
+                            this.hasChanges = true;
+                          })
+                        },
+                        decoration: InputDecoration(
+                          hintText: context.i18n.waitTimeAfterExerciseSeconds,
+                          labelText: context.i18n.waitTimeAfterExerciseSeconds,
+                          border: OutlineInputBorder(),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: datatableBorderColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: height * 0.02,
+                      ),
+                      TextFormField(
+                        controller: waitTimeTextController,
+                        onChanged: (value) => {
+                          setState(() {
+                            this.hasChanges = true;
+                          })
+                        },
+                        decoration: InputDecoration(
+                          hintText: context.i18n.waitTimeText,
+                          labelText: context.i18n.waitTimeText,
+                          border: OutlineInputBorder(),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: datatableBorderColor,
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -618,6 +703,7 @@ class _EditStrengtheningExerciseState extends State<EditStrengtheningExercise> {
                 ],
               ),
             ),
+            if (videoSource.isNotEmpty) VideoPlayerPreview(sources: [videoSource]),
             SizedBox(height: height * 0.02),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,

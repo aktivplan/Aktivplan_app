@@ -42,12 +42,16 @@ class ActiveMinutesPage extends StatelessWidget {
   final PatientGetDTO patient;
   final double parentHeight;
   final Jiffy selectedDate;
+  final bool isKlimafit;
+  final bool isEmbedded;
 
   ActiveMinutesPage({
     Key? key,
     required this.patient,
     required this.parentHeight,
     required this.selectedDate,
+    required this.isKlimafit,
+    this.isEmbedded = false,
   }) : super(key: key);
 
   @override
@@ -58,7 +62,7 @@ class ActiveMinutesPage extends StatelessWidget {
       child: ResponsiveBuilder(
         builder: (context, size) {
           var appBar = AppBar(
-            title: SelectableText(context.i18n.activeMinutes),
+            title: SelectableText(isKlimafit ? context.i18n.activeMinutesKlimafit : context.i18n.activeMinutes),
             automaticallyImplyLeading: false,
             leading: size.isMobile
                 ? IconButton(
@@ -101,40 +105,185 @@ class ActiveMinutesPage extends StatelessWidget {
 
           return DefaultTabController(
             length: 3,
-            child: Scaffold(
-              appBar: appBar,
-              body: TabBarView(
-                children: [
-                  BlocProvider(
-                    create: (context) => ActivityBloc(activityRepository: ActivityRepository(), messageRepository: MessageRepository()),
-                    child: ActiveMinutesDetail(
-                      patient: patient,
-                      timeframe: ActiveMinutesType.WEEK,
-                      parentHeight: parentHeight,
-                      selectedDate: this.selectedDate,
+            child: isEmbedded
+                ? Container(
+                    color: Colors.white,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: TabBarView(
+                            children: [
+                              BlocProvider(
+                                create: (context) => ActivityBloc(activityRepository: ActivityRepository(), messageRepository: MessageRepository()),
+                                child: ActiveMinutesDetail(
+                                  patient: patient,
+                                  timeframe: ActiveMinutesType.WEEK,
+                                  parentHeight: parentHeight,
+                                  selectedDate: this.selectedDate,
+                                  isKlimafit: isKlimafit,
+                                  isEmbedded: isEmbedded,
+                                ),
+                              ),
+                              BlocProvider(
+                                create: (context) => ActivityBloc(activityRepository: ActivityRepository(), messageRepository: MessageRepository()),
+                                child: ActiveMinutesDetail(
+                                  patient: patient,
+                                  timeframe: ActiveMinutesType.MONTH,
+                                  parentHeight: parentHeight,
+                                  selectedDate: this.selectedDate,
+                                  isKlimafit: isKlimafit,
+                                  isEmbedded: isEmbedded,
+                                ),
+                              ),
+                              BlocProvider(
+                                create: (context) => ActivityBloc(activityRepository: ActivityRepository(), messageRepository: MessageRepository()),
+                                child: ActiveMinutesDetail(
+                                  patient: patient,
+                                  timeframe: ActiveMinutesType.ALL,
+                                  parentHeight: parentHeight,
+                                  selectedDate: this.selectedDate,
+                                  isKlimafit: isKlimafit,
+                                  isEmbedded: isEmbedded,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        BottomAppBar(
+                          elevation: 0,
+                          color: Colors.white,
+                          child: Builder(
+                            builder: (context) {
+                              final tabController = DefaultTabController.of(context);
+                              Widget buildTabButton(int index, String label) {
+                                final selected = tabController.index == index;
+                                return TextButton(
+                                  onPressed: () {
+                                    if (tabController.index != index) {
+                                      tabController.animateTo(index);
+                                    }
+                                  },
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: tabController.index != index ? lightTextColor : extraActivityColor,
+                                    textStyle: TextStyle(
+                                      fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                  ),
+                                  child: Text(label.toUpperCase()),
+                                );
+                              }
+
+                              return AnimatedBuilder(
+                                animation: tabController,
+                                builder: (context, child) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 15),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        buildTabButton(0, context.i18n.week),
+                                        SizedBox(width: 20),
+                                        buildTabButton(1, context.i18n.month),
+                                        SizedBox(width: 20),
+                                        buildTabButton(2, context.i18n.year),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : Scaffold(
+                    backgroundColor: Colors.white,
+                    appBar: isKlimafit ? null : appBar,
+                    bottomNavigationBar: isKlimafit
+                        ? BottomAppBar(
+                            elevation: 0,
+                            color: Colors.white,
+                            child: Builder(
+                              builder: (context) {
+                                final tabController = DefaultTabController.of(context);
+                                Widget buildTabButton(int index, String label) {
+                                  final selected = tabController.index == index;
+                                  return TextButton(
+                                    onPressed: () {
+                                      if (tabController.index != index) {
+                                        tabController.animateTo(index);
+                                      }
+                                    },
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: tabController.index != index ? lightTextColor : extraActivityColor,
+                                      textStyle: TextStyle(
+                                        fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                    ),
+                                    child: Text(label.toUpperCase()),
+                                  );
+                                }
+
+                                return AnimatedBuilder(
+                                  animation: tabController,
+                                  builder: (context, child) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 15),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          buildTabButton(0, context.i18n.week),
+                                          SizedBox(width: 20),
+                                          buildTabButton(1, context.i18n.month),
+                                          SizedBox(width: 20),
+                                          buildTabButton(2, context.i18n.year),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          )
+                        : null,
+                    body: TabBarView(
+                      children: [
+                        BlocProvider(
+                          create: (context) => ActivityBloc(activityRepository: ActivityRepository(), messageRepository: MessageRepository()),
+                          child: ActiveMinutesDetail(
+                            patient: patient,
+                            timeframe: ActiveMinutesType.WEEK,
+                            parentHeight: parentHeight,
+                            selectedDate: this.selectedDate,
+                            isKlimafit: isKlimafit,
+                          ),
+                        ),
+                        BlocProvider(
+                          create: (context) => ActivityBloc(activityRepository: ActivityRepository(), messageRepository: MessageRepository()),
+                          child: ActiveMinutesDetail(
+                            patient: patient,
+                            timeframe: ActiveMinutesType.MONTH,
+                            parentHeight: parentHeight,
+                            selectedDate: this.selectedDate,
+                            isKlimafit: isKlimafit,
+                          ),
+                        ),
+                        BlocProvider(
+                          create: (context) => ActivityBloc(activityRepository: ActivityRepository(), messageRepository: MessageRepository()),
+                          child: ActiveMinutesDetail(
+                            patient: patient,
+                            timeframe: ActiveMinutesType.ALL,
+                            parentHeight: parentHeight,
+                            selectedDate: this.selectedDate,
+                            isKlimafit: isKlimafit,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  BlocProvider(
-                    create: (context) => ActivityBloc(activityRepository: ActivityRepository(), messageRepository: MessageRepository()),
-                    child: ActiveMinutesDetail(
-                      patient: patient,
-                      timeframe: ActiveMinutesType.MONTH,
-                      parentHeight: parentHeight,
-                      selectedDate: this.selectedDate,
-                    ),
-                  ),
-                  BlocProvider(
-                    create: (context) => ActivityBloc(activityRepository: ActivityRepository(), messageRepository: MessageRepository()),
-                    child: ActiveMinutesDetail(
-                      patient: patient,
-                      timeframe: ActiveMinutesType.ALL,
-                      parentHeight: parentHeight,
-                      selectedDate: this.selectedDate,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           );
         },
       ),

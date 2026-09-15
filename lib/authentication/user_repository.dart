@@ -17,6 +17,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:home_widget/home_widget.dart';
+import 'package:aptapp/widget_image_cache.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,7 +31,7 @@ class UserRepository {
   CurrentUserDTO? user;
 
   UserRole? userRole;
-  final _storage = FlutterSecureStorage(aOptions: AndroidOptions(encryptedSharedPreferences: true));
+  final _storage = FlutterSecureStorage();
   bool triggeredRefreshCheck = false;
 
   get currentUser {
@@ -60,13 +62,19 @@ class UserRepository {
     return user?.hasExternalApps ?? false;
   }
 
-  Future<AccessTokenDTO> authenticate({required String email, required String password, required TranslationLanguage language}) async {
+  Future<AccessTokenDTO> authenticate(
+      {required String email, required String password, required TranslationLanguage language, String caatsToken = ""}) async {
     await this.deleteToken();
-    final req = AuthenticationDTO()
-      ..username = email
-      ..password = password
-      ..language = language;
-    final res = await auth.createAuthenticationToken(req);
+    AccessTokenDTO? tokenResponse;
+    if (caatsToken.isEmpty) {
+      final req = AuthenticationDTO()
+        ..username = email
+        ..password = password
+        ..language = language;
+      tokenResponse = await auth.createAuthenticationToken(req);
+    } else {
+      tokenResponse = await auth.createAuthenticationTokenWithCredentials(TokenRequestDTO(caatsToken: caatsToken));
+    }
     if (!kIsWeb) {
       try {
         await _storage.write(key: "user", value: email);
@@ -75,8 +83,8 @@ class UserRepository {
         print(e);
       }
     }
-    this.persistToken(res!).then((value) => this.storeFirebaseToken());
-    return res;
+    this.persistToken(tokenResponse!).then((value) => this.storeFirebaseToken());
+    return tokenResponse;
   }
 
   Future<void> storeFirebaseToken() async {
@@ -125,8 +133,43 @@ class UserRepository {
     apiClient.addDefaultHeader("Authorization", await getToken());
     this.user = await auth.getCurrentUser();
     userRole = user!.userRole;
+    String currentUserId = currentUser?.id ?? "";
+    if (currentUserId.isEmpty) {
+      return;
+    }
+    updateWidgetData();
     MatomoTracker.instance.setOptOut(optOut: !user!.acceptedTracking);
-    MatomoTracker.instance.setVisitorUserId("${user!.userRole} ${currentUser.id}");
+    MatomoTracker.instance.setVisitorUserId("${user!.userRole} ${currentUserId}");
+  }
+
+  Future<void> updateWidgetData() async {
+    final currentUserId = currentUser?.id ?? "";
+    if (currentUserId.isEmpty) {
+      return;
+    }
+    await HomeWidget.setAppGroupId("group.at.lbidhp.aktivplan");
+    final widgetUrl = "$basePath/widget/klimafit-plant/${currentUserId}/png?cb=${DateTime.now().millisecondsSinceEpoch}";
+    final plantFilename = 'plant_${currentUserId}.png';
+    final plantLocalPath = await WidgetImageCache.fetchAndCache(widgetUrl, plantFilename);
+    if (plantLocalPath != null) {
+      await HomeWidget.saveWidgetData<String>('plantImagePath', 'file://$plantLocalPath');
+    }
+    await HomeWidget.saveWidgetData<String>('plantImageUrl', widgetUrl);
+    await HomeWidget.updateWidget(
+      androidName: "KlimafitPlantHomeWidgetReceiver",
+      iOSName: "KlimafitPlantHomeWidget",
+    );
+    final dailyActivitiesUrl = "$basePath/widget/daily-activities/${currentUserId}/png?cb=${DateTime.now().millisecondsSinceEpoch}";
+    final dailyFilename = 'daily_activities_${currentUserId}.png';
+    final dailyLocalPath = await WidgetImageCache.fetchAndCache(dailyActivitiesUrl, dailyFilename);
+    if (dailyLocalPath != null) {
+      await HomeWidget.saveWidgetData<String>('dailyActivitiesImagePath', 'file://$dailyLocalPath');
+    }
+    await HomeWidget.saveWidgetData<String>('dailyActivitiesImageUrl', dailyActivitiesUrl);
+    await HomeWidget.updateWidget(
+      androidName: "DailyActivitiesHomeWidgetReceiver",
+      iOSName: "DailyActivitiesHomeWidget",
+    );
   }
 
   updateShareActivityData(bool shareActivityData, bool shareActiveMinutes) async {

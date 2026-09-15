@@ -32,6 +32,7 @@ class TrainingPlanExercisePostDTO {
     this.task,
     this.days = const [],
     this.time,
+    this.endTime,
     this.repeats,
     this.repeatCount,
     this.startingWeek,
@@ -118,6 +119,14 @@ class TrainingPlanExercisePostDTO {
   /// source code must fall back to having a nullable type.
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
+  String? endTime;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
   ActivityRepeat? repeats;
 
   ///
@@ -152,6 +161,7 @@ class TrainingPlanExercisePostDTO {
           other.task == task &&
           _deepEquality.equals(other.days, days) &&
           other.time == time &&
+          other.endTime == endTime &&
           other.repeats == repeats &&
           other.repeatCount == repeatCount &&
           other.startingWeek == startingWeek &&
@@ -170,6 +180,7 @@ class TrainingPlanExercisePostDTO {
       (task == null ? 0 : task!.hashCode) +
       (days.hashCode) +
       (time == null ? 0 : time!.hashCode) +
+      (endTime == null ? 0 : endTime!.hashCode) +
       (repeats == null ? 0 : repeats!.hashCode) +
       (repeatCount == null ? 0 : repeatCount!.hashCode) +
       (startingWeek == null ? 0 : startingWeek!.hashCode) +
@@ -177,7 +188,7 @@ class TrainingPlanExercisePostDTO {
 
   @override
   String toString() =>
-      'TrainingPlanExercisePostDTO[type=$type, enduranceExercise=$enduranceExercise, intervalExercise=$intervalExercise, strengtheningExercise=$strengtheningExercise, otherExercise=$otherExercise, workout=$workout, appointment=$appointment, task=$task, days=$days, time=$time, repeats=$repeats, repeatCount=$repeatCount, startingWeek=$startingWeek, datesToHide=$datesToHide]';
+      'TrainingPlanExercisePostDTO[type=$type, enduranceExercise=$enduranceExercise, intervalExercise=$intervalExercise, strengtheningExercise=$strengtheningExercise, otherExercise=$otherExercise, workout=$workout, appointment=$appointment, task=$task, days=$days, time=$time, endTime=$endTime, repeats=$repeats, repeatCount=$repeatCount, startingWeek=$startingWeek, datesToHide=$datesToHide]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -226,6 +237,11 @@ class TrainingPlanExercisePostDTO {
       json[r'time'] = this.time;
     } else {
       json[r'time'] = null;
+    }
+    if (this.endTime != null) {
+      json[r'endTime'] = this.endTime;
+    } else {
+      json[r'endTime'] = null;
     }
     if (this.repeats != null) {
       json[r'repeats'] = this.repeats;
@@ -280,6 +296,7 @@ class TrainingPlanExercisePostDTO {
         task: TaskPostDTO.fromJson(json[r'task']),
         days: DayOfWeek.listFromJson(json[r'days']),
         time: mapValueOfType<String>(json, r'time'),
+        endTime: mapValueOfType<String>(json, r'endTime'),
         repeats: ActivityRepeat.fromJson(json[r'repeats']),
         repeatCount: mapValueOfType<int>(json, r'repeatCount'),
         startingWeek: mapValueOfType<int>(json, r'startingWeek'),

@@ -29,6 +29,7 @@ import 'package:screenshot/screenshot.dart';
 class PersonalGoalsCard extends StatefulWidget {
   final String patientId;
   final InstitutionDTO institution;
+
   PersonalGoalsCard({
     Key? key,
     required this.patientId,
@@ -78,35 +79,38 @@ class PersonalGoalsCard extends StatefulWidget {
               children: [
                 Screenshot(
                   controller: screenshotController,
-                  child: ListBody(
-                    children: <Widget>[
-                      SelectableText(
-                        context.i18n.personalGoalReachedPart1,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(height: 1.2),
-                      ),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        children: [
-                          SelectableText(
-                            '\"${goal.description}\"',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontWeight: FontWeight.w600, height: 1.2),
-                          ),
-                        ],
-                      ),
-                      DateTime.now().toLocal().isBefore(DateTime.parse(goal.endDate!))
-                          ? SelectableText(
-                              context.i18n.personalGoalReachedPart2earlier,
+                  child: Container(
+                    color: Colors.white,
+                    child: ListBody(
+                      children: <Widget>[
+                        SelectableText(
+                          context.i18n.personalGoalReachedPart1,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(height: 1.2),
+                        ),
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          children: [
+                            SelectableText(
+                              '\"${goal.description}\"',
                               textAlign: TextAlign.center,
-                            )
-                          : SelectableText(
-                              context.i18n.personalGoalReachedPart2,
-                              textAlign: TextAlign.center,
+                              style: TextStyle(fontWeight: FontWeight.w600, height: 1.2),
                             ),
-                      SizedBox(height: 15),
-                      Icon(Icons.emoji_events, color: goalColor, size: 35)
-                    ],
+                          ],
+                        ),
+                        DateTime.now().toLocal().isBefore(DateTime.parse(goal.endDate!))
+                            ? SelectableText(
+                                context.i18n.personalGoalReachedPart2earlier,
+                                textAlign: TextAlign.center,
+                              )
+                            : SelectableText(
+                                context.i18n.personalGoalReachedPart2,
+                                textAlign: TextAlign.center,
+                              ),
+                        SizedBox(height: 15),
+                        Center(child: Icon(Icons.emoji_events, color: goalColor, size: 35))
+                      ],
+                    ),
                   ),
                 ),
                 if (!kIsWeb)
@@ -128,6 +132,7 @@ class _PersonalGoalsCardState extends State<PersonalGoalsCard> {
   ActivityBloc? activityBloc;
   int personalGoalsCount = -1;
   final userRepository = KiwiContainer().resolve<UserRepository>();
+  FetchedPatientActivitiesState? lastFetchedState;
 
   @override
   void initState() {
@@ -170,147 +175,145 @@ class _PersonalGoalsCardState extends State<PersonalGoalsCard> {
   @override
   Widget build(BuildContext context) {
     final userRepository = KiwiContainer().resolve<UserRepository>();
-    List<String> goalsChecked = [];
     return BlocBuilder<ActivityBloc, ActivityState>(builder: (context, state) {
       if (state is FetchedPatientActivitiesState) {
-        personalGoalsCount = state.personalGoals.length;
-        goalsChecked = state.personalGoals.where((g) => (g.done ?? false)).map((g) => g.id!).toList();
-        return Container(
-          height: 360,
-          child: Stack(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(bottom: 20),
-                child: Card(
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(side: BorderSide(color: datatableBorderColor), borderRadius: BorderRadius.all(Radius.circular(6))),
-                  semanticContainer: true,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16, top: 16, bottom: 6),
-                        child: Row(
+        lastFetchedState = state;
+      }
+      if (lastFetchedState == null) {
+        return CircularProgressIndicator();
+      }
+      personalGoalsCount = lastFetchedState!.personalGoals.length;
+      List<String> goalsChecked = lastFetchedState!.personalGoals.where((g) => (g.done ?? false)).map((g) => g.id!).toList();
+      return Container(
+        height: 360,
+        child: Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(bottom: 20),
+              child: Card(
+                margin: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(side: BorderSide(color: datatableBorderColor), borderRadius: BorderRadius.all(Radius.circular(6))),
+                semanticContainer: true,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16, top: 16, bottom: 6),
+                      child: Row(
+                        children: [
+                          SelectableText(
+                            context.i18n.personalGoals,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: lightTextColor,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: lastFetchedState!.personalGoals.isEmpty ? MainAxisAlignment.center : MainAxisAlignment.start,
+                          crossAxisAlignment: lastFetchedState!.personalGoals.isEmpty ? CrossAxisAlignment.center : CrossAxisAlignment.start,
                           children: [
-                            SelectableText(
-                              context.i18n.personalGoals,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: lightTextColor,
+                            if (lastFetchedState!.personalGoals.isEmpty)
+                              Padding(
+                                padding: EdgeInsets.only(top: 360 * 0.35),
+                                child: SelectableText(
+                                  context.i18n.noPersonalGoals,
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: lightTextColor,
+                                      ),
+                                ),
+                              ),
+                            if (lastFetchedState!.personalGoals.isNotEmpty)
+                              for (PersonalGoal goal in lastFetchedState!.personalGoals)
+                                InkWell(
+                                  child: Row(children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 15, right: 10),
+                                      child: Checkbox(
+                                          shape: CircleBorder(),
+                                          activeColor: goalColor,
+                                          value: goalsChecked.contains(goal.id),
+                                          onChanged: (value) {
+                                            if (value ?? false) {
+                                              PersonalGoalsCard.showGoalAchieved(context, goal);
+                                              setState(() => goalsChecked.add(goal.id!));
+                                            } else {
+                                              setState(() => goalsChecked.remove(goal.id));
+                                            }
+                                            MatomoTracker.instance.trackEvent(
+                                              eventInfo: EventInfo(
+                                                  category: EVENT_CATEGORY_PERSONAL_GOAL,
+                                                  name: (value ?? false) ? EVENT_NAME_DONE : EVENT_NAME_UNDONE,
+                                                  action: "Set Personal Goal to ${(value ?? false) ? 'Done' : 'Undone'}"),
+                                            );
+                                            activityBloc!.add(UpdatePersonalGoalEvent(
+                                                id: goal.id!,
+                                                goal: PersonalGoalPostDTO(
+                                                    description: goal.description,
+                                                    done: value,
+                                                    endDate: englishDateFormat.format(DateTime.parse(goal.endDate!)),
+                                                    patientId: widget.patientId),
+                                                patientId: widget.patientId));
+                                          }),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                          left: 10,
+                                          top: 10,
+                                          bottom: 10,
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              goal.description ?? "",
+                                              style: Theme.of(context).textTheme.titleMedium,
+                                            ),
+                                            Text(
+                                              parseDate(goal.endDate!),
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                    color: lightTextColor,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    if (userRepository.userRole != UserRole.PATIENT ||
+                                        widget.institution.institutionFocus == InstitutionFocus.PROMOTING_A_HEALTHY_LIFESTYLE)
+                                      Padding(
+                                        padding: EdgeInsets.only(right: 20),
+                                        child: IconButton(
+                                            icon: Icon(Icons.edit), color: lightTextColor, padding: EdgeInsets.zero, onPressed: () => editGoal(goal)),
+                                      ),
+                                  ]),
+                                  onTap: () => showDialog<void>(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (BuildContext context) => PersonalGoalDialog(
+                                      personalGoal: goal,
+                                      isMobile: false,
+                                    ),
                                   ),
-                            ),
+                                ),
+                            SizedBox(height: 34)
                           ],
                         ),
                       ),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: state.personalGoals.isEmpty ? MainAxisAlignment.center : MainAxisAlignment.start,
-                            crossAxisAlignment: state.personalGoals.isEmpty ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-                            children: [
-                              if (state.personalGoals.isEmpty)
-                                Padding(
-                                  padding: EdgeInsets.only(top: 360 * 0.35),
-                                  child: SelectableText(
-                                    context.i18n.noPersonalGoals,
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          color: lightTextColor,
-                                        ),
-                                  ),
-                                ),
-                              if (state.personalGoals.isNotEmpty)
-                                for (PersonalGoal goal in state.personalGoals)
-                                  InkWell(
-                                    child: Row(children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 15, right: 10),
-                                        child: Checkbox(
-                                            shape: CircleBorder(),
-                                            activeColor: goalColor,
-                                            value: goalsChecked.contains(goal.id),
-                                            onChanged: (value) {
-                                              if (value ?? false) {
-                                                PersonalGoalsCard.showGoalAchieved(context, goal);
-                                                setState(() => goalsChecked.add(goal.id!));
-                                              } else {
-                                                setState(() => goalsChecked.remove(goal.id));
-                                              }
-                                              MatomoTracker.instance.trackEvent(
-                                                eventInfo: EventInfo(
-                                                    category: EVENT_CATEGORY_PERSONAL_GOAL,
-                                                    name: (value ?? false) ? EVENT_NAME_DONE : EVENT_NAME_UNDONE,
-                                                    action: "Set Personal Goal to ${(value ?? false) ? 'Done' : 'Undone'}"),
-                                              );
-                                              activityBloc!.add(UpdatePersonalGoalEvent(
-                                                  id: goal.id!,
-                                                  goal: PersonalGoalPostDTO(
-                                                      description: goal.description,
-                                                      done: value,
-                                                      endDate: englishDateFormat.format(DateTime.parse(goal.endDate!)),
-                                                      patientId: widget.patientId),
-                                                  patientId: widget.patientId));
-                                            }),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                            left: 10,
-                                            top: 10,
-                                            bottom: 10,
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                goal.description ?? "",
-                                                style: Theme.of(context).textTheme.titleMedium,
-                                              ),
-                                              Text(
-                                                parseDate(goal.endDate!),
-                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                      color: lightTextColor,
-                                                    ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      if (userRepository.userRole != UserRole.PATIENT ||
-                                          widget.institution.institutionFocus == InstitutionFocus.PROMOTING_A_HEALTHY_LIFESTYLE)
-                                        Padding(
-                                          padding: EdgeInsets.only(right: 20),
-                                          child: IconButton(
-                                              icon: Icon(Icons.edit),
-                                              color: lightTextColor,
-                                              padding: EdgeInsets.zero,
-                                              onPressed: () => editGoal(goal)),
-                                        ),
-                                    ]),
-                                    onTap: () => showDialog<void>(
-                                      context: context,
-                                      barrierDismissible: true,
-                                      builder: (BuildContext context) => PersonalGoalDialog(
-                                        personalGoal: goal,
-                                        isMobile: false,
-                                      ),
-                                    ),
-                                  ),
-                              SizedBox(height: 34)
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              if (userRepository.userRole != UserRole.PATIENT ||
-                  widget.institution.institutionFocus == InstitutionFocus.PROMOTING_A_HEALTHY_LIFESTYLE)
-                CardIconButton(key: Key(KEY_PATIENT_CALENDAR_BUTTON_ADD_PERSONAL_GOAL), iconData: Icons.add, callback: addGoal)
-            ],
-          ),
-        );
-      }
-      return CircularProgressIndicator();
+            ),
+            if (userRepository.userRole != UserRole.PATIENT || widget.institution.institutionFocus == InstitutionFocus.PROMOTING_A_HEALTHY_LIFESTYLE)
+              CardIconButton(key: Key(KEY_PATIENT_CALENDAR_BUTTON_ADD_PERSONAL_GOAL), iconData: Icons.add, callback: addGoal)
+          ],
+        ),
+      );
     });
   }
 }

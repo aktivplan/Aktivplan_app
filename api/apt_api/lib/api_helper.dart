@@ -104,11 +104,20 @@ String parameterToString(dynamic value) {
   if (value is FirebaseTokenTarget) {
     return FirebaseTokenTargetTypeTransformer().encode(value).toString();
   }
+  if (value is HeatTolerance) {
+    return HeatToleranceTypeTransformer().encode(value).toString();
+  }
   if (value is InstitutionFocus) {
     return InstitutionFocusTypeTransformer().encode(value).toString();
   }
   if (value is InstitutionImportType) {
     return InstitutionImportTypeTypeTransformer().encode(value).toString();
+  }
+  if (value is InstitutionP2RFocus) {
+    return InstitutionP2RFocusTypeTransformer().encode(value).toString();
+  }
+  if (value is MessageRestriction) {
+    return MessageRestrictionTypeTransformer().encode(value).toString();
   }
   if (value is MessageSendToType) {
     return MessageSendToTypeTypeTransformer().encode(value).toString();
@@ -116,8 +125,31 @@ String parameterToString(dynamic value) {
   if (value is MessageType) {
     return MessageTypeTypeTransformer().encode(value).toString();
   }
+  if (value is MobilityPreference) {
+    return MobilityPreferenceTypeTransformer().encode(value).toString();
+  }
   if (value is PatientState) {
     return PatientStateTypeTransformer().encode(value).toString();
+  }
+  if (value is PredefinedActivityType) {
+    return PredefinedActivityTypeTypeTransformer().encode(value).toString();
+  }
+  if (value is RecommendationLevel) {
+    return RecommendationLevelTypeTransformer().encode(value).toString();
+  }
+  if (value is RecommendationType) {
+    return RecommendationTypeTypeTransformer().encode(value).toString();
+  }
+  if (value is RecoomendationReason) {
+    return RecoomendationReasonTypeTransformer().encode(value).toString();
+  }
+  if (value is RoutingMode) {
+    return RoutingModeTypeTransformer().encode(value).toString();
+  }
+  if (value is SpaceTimeRecommendationChangeType) {
+    return SpaceTimeRecommendationChangeTypeTypeTransformer()
+        .encode(value)
+        .toString();
   }
   if (value is StatusFileType) {
     return StatusFileTypeTypeTransformer().encode(value).toString();
@@ -132,6 +164,12 @@ String parameterToString(dynamic value) {
   }
   if (value is UserRole) {
     return UserRoleTypeTransformer().encode(value).toString();
+  }
+  if (value is WeatherWarningLevel) {
+    return WeatherWarningLevelTypeTransformer().encode(value).toString();
+  }
+  if (value is WeatherWarningType) {
+    return WeatherWarningTypeTypeTransformer().encode(value).toString();
   }
   return value.toString();
 }

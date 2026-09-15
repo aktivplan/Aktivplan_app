@@ -8,6 +8,7 @@
 // https://commonsclause.com/).
 
 import 'package:apt_api/api.dart';
+import 'package:aptapp/activity/bloc/activity_bloc.dart';
 import 'package:aptapp/authentication/user_repository.dart';
 import 'package:aptapp/colors.dart';
 import 'package:aptapp/l10n/i18n.dart';
@@ -17,9 +18,11 @@ import 'package:aptapp/patient/patient_calendar/patient_activity_list.dart';
 import 'package:aptapp/patient/patient_calendar/patient_calendar.dart';
 import 'package:aptapp/patient/patient_calendar/patient_notes_card.dart';
 import 'package:aptapp/patient/patient_calendar/patient_chart_card.dart';
+import 'package:aptapp/patient/patient_calendar/patient_recommendation_list.dart';
 import 'package:aptapp/patient/personal_goal_dialog.dart';
 import 'package:aptapp/theme.dart';
 import 'package:aptapp/utils/constants.dart';
+import 'package:aptapp/utils/enums.dart';
 import 'package:aptapp/utils/keys.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
@@ -31,39 +34,35 @@ import '../activity_dialog.dart';
 import 'patient_info_line.dart';
 
 class PatientCalendarMobile extends StatefulWidget {
-  final PatientOverviewDTO patientOverview;
-  final PatientGetDTO patient;
-  final ActiveMinutesOverviewDTO activeMinutes;
-  final Function addExtraActivity;
-  final List<ActivityOverviewDTO> patientActivities;
-  final List<PersonalGoal> personalGoals;
-  final Function(dynamic, ActiveMinutesOverviewDTO, bool) markAsDone;
-  final Function addActivity;
-  final Function(String, ActivityType) deleteActivity;
+  final FetchedPatientActivitiesState state;
+  final FetchedPatientDatahubRecommendationsState? datahubState;
+  final Function(DateTime, ActivityType?) addActivityByType;
+  final Function(DatahubResponseRecommendationsInner) addActivityByRecommendation;
+  final Function(dynamic) markAsDone;
+  final Function(DateTime) addActivity;
+  final Function(ActivityOverviewDTO) deleteActivity;
   final Function(DateTime) changeMonth;
   final Function(DateTime) changeDay;
+  final Function() refetchDatahub;
   final Function(CalendarFormat) changeFormat;
-  final FileGetDTO userPicture;
   final DateTime focusedDay;
   final CalendarFormat currentFormat;
 
   PatientCalendarMobile(
       {Key? key,
-      required this.patient,
-      required this.patientOverview,
-      required this.addExtraActivity,
-      required this.patientActivities,
-      required this.activeMinutes,
-      required this.personalGoals,
+      required this.state,
+      required this.datahubState,
+      required this.addActivityByType,
       required this.markAsDone,
       required this.addActivity,
       required this.deleteActivity,
+      required this.addActivityByRecommendation,
       required this.changeMonth,
       required this.changeDay,
-      required this.userPicture,
       required this.focusedDay,
       required this.currentFormat,
-      required this.changeFormat})
+      required this.changeFormat,
+      required this.refetchDatahub})
       : super(key: key ?? Key(KEY_PATIENT_CALENDAR_SCROLL_VIEW));
 
   @override
@@ -83,6 +82,7 @@ class _PatientCalendarMobileState extends State<PatientCalendarMobile> {
   ScrollController _scrollController = ScrollController();
   Jiffy? _lastSelectedDate;
   CalendarFormat? _lastSelectedFormat;
+  int _lastStateHashCode = 0;
   Key _refreshKey = UniqueKey();
 
   @override
@@ -90,6 +90,15 @@ class _PatientCalendarMobileState extends State<PatientCalendarMobile> {
     super.initState();
     _currentDate = Jiffy.parseFromDateTime(widget.focusedDay).startOf(Unit.day);
     _lastSelectedFormat = widget.currentFormat;
+    _lastStateHashCode = widget.state.hashCode;
+  }
+
+  @override
+  didChangeDependencies() {
+    super.didChangeDependencies();
+    setState(() {
+      _lastStateHashCode = widget.state.hashCode;
+    });
   }
 
   void changeCurrentDate(Jiffy date) {
@@ -107,10 +116,11 @@ class _PatientCalendarMobileState extends State<PatientCalendarMobile> {
       setState(() {
         _lastSelectedDate = _currentDate.clone();
       });
-    } else if (_lastSelectedFormat == widget.currentFormat) {
+    } else if (_lastSelectedFormat == widget.currentFormat && _lastStateHashCode == widget.state.hashCode) {
       return;
     }
     _lastSelectedFormat = widget.currentFormat;
+    _lastStateHashCode = widget.state.hashCode;
     double appBarHeight = kToolbarHeight + 5;
     if (widget.currentFormat == CalendarFormat.week) {
       appBarHeight += kToolbarHeight;
@@ -175,8 +185,8 @@ class _PatientCalendarMobileState extends State<PatientCalendarMobile> {
       PatientCalendar(
         key: _refreshKey,
         showWeekNavigation: true,
-        patientActivities: widget.patientActivities,
-        personalGoals: widget.personalGoals,
+        patientActivities: widget.state.activities,
+        personalGoals: widget.state.personalGoals,
         changeDay: widget.changeDay,
         focusedDay: widget.focusedDay,
         changeMonth: widget.changeMonth,
@@ -196,12 +206,12 @@ class _PatientCalendarMobileState extends State<PatientCalendarMobile> {
     APTApp.globalAptCubit.reset();
   }
 
-  void _addActivity() {
+  void _addActivity(ActivityType? type) {
     final userRepository = KiwiContainer().resolve<UserRepository>();
     if (userRepository.userRole != UserRole.PATIENT) {
       widget.addActivity(_currentDate.dateTime);
     } else {
-      widget.addExtraActivity(_currentDate.dateTime, null, widget.activeMinutes);
+      widget.addActivityByType(_currentDate.dateTime, type);
     }
   }
 
@@ -209,6 +219,7 @@ class _PatientCalendarMobileState extends State<PatientCalendarMobile> {
   Widget build(BuildContext context) {
     initAptBar();
     final userRepository = KiwiContainer().resolve<UserRepository>();
+    final isKlimafit = widget.state.patient.institution!.institutionFocus?.isKlimafit() ?? false;
     return SafeArea(
       child: Scrollbar(
         controller: _scrollController,
@@ -226,8 +237,8 @@ class _PatientCalendarMobileState extends State<PatientCalendarMobile> {
                   PatientCalendar(
                     key: _refreshKey,
                     showWeekNavigation: false,
-                    patientActivities: widget.patientActivities,
-                    personalGoals: widget.personalGoals,
+                    patientActivities: widget.state.activities,
+                    personalGoals: widget.state.personalGoals,
                     changeDay: widget.changeDay,
                     changeMonth: widget.changeMonth,
                     focusedDay: widget.focusedDay,
@@ -239,10 +250,9 @@ class _PatientCalendarMobileState extends State<PatientCalendarMobile> {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 5),
                     child: PatientInfoLine(
-                      patient: widget.patient,
-                      patientOverview: widget.patientOverview,
-                      personalGoals: widget.personalGoals,
-                      userPicture: widget.userPicture,
+                      patientOverview: widget.state.patient,
+                      personalGoals: widget.state.personalGoals,
+                      userPicture: widget.state.userPicture,
                     ),
                   ),
                 Padding(
@@ -250,19 +260,19 @@ class _PatientCalendarMobileState extends State<PatientCalendarMobile> {
                   child: PatientActivityList(
                     events: _events,
                     currentDate: _currentDate,
-                    markAsDone: (item) =>
-                        widget.markAsDone(item, widget.activeMinutes, widget.patientOverview.institution?.allowRescheduleActivities ?? false),
+                    markAsDone: (item) => widget.markAsDone(item),
+                    isKlimafit: widget.state.patient.institution!.institutionFocus?.isKlimafit() ?? false,
                     onTapActivity: (item) => showDialog<void>(
                         context: context,
                         barrierDismissible: true,
                         builder: (BuildContext context) {
                           return ActivityDialog(
-                            patient: widget.patient,
+                            patient: widget.state.patient.user!,
                             activity: item,
-                            activeMinutes: widget.activeMinutes,
+                            activeMinutes: widget.state.activeMinutes,
                             rateActivity: false,
-                            deleteActivity: widget.deleteActivity,
-                            allowRescheduleActivities: widget.patientOverview.institution?.allowRescheduleActivities ?? false,
+                            deleteActivity: () => widget.deleteActivity(item),
+                            institution: widget.state.patient.institution!,
                           );
                         }),
                     onAddActivity: this._addActivity,
@@ -272,34 +282,58 @@ class _PatientCalendarMobileState extends State<PatientCalendarMobile> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   child: ActiveMinutesCard(
-                    activeMinutes: widget.activeMinutes,
-                    patient: widget.patient,
+                    activeMinutes: widget.state.activeMinutes,
+                    patient: widget.state.patient.user!,
                     startDate: _currentDate.clone(),
                   ),
                 ),
                 SizedBox(height: 5),
-                if (userRepository.userRole == UserRole.PATIENT)
+                if (userRepository.userRole == UserRole.PATIENT && !isKlimafit)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     child: PatientChartCard(
-                      patientOverview: widget.patientOverview,
+                      patientOverview: widget.state.patient,
                       height: 170,
                       startDate: _currentDate.clone(),
+                    ),
+                  ),
+                if (isKlimafit && !isProduction)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    child: ElevatedButton.icon(
+                      style: getElevatedButtonStyle(context, backgroundColor: goalColor),
+                      onPressed: () {
+                        widget.refetchDatahub();
+                      },
+                      icon: Icon(Icons.refresh),
+                      label: Text("Fetch datahub for ${germanDateFormat.format(widget.focusedDay)}"),
+                    ),
+                  ),
+                // no recommendations for klimafit light
+                if (widget.state.patient.institution!.institutionFocus == InstitutionFocus.KLIMAFIT)
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: PatientRecommendationList(
+                      recommendations: widget.datahubState?.datahubRecommendations?.recommendations ?? [],
+                      loading: widget.datahubState == null,
+                      activities: widget.state.activities,
+                      patientId: widget.state.patient.user!.id!,
+                      onAddActivity: widget.addActivityByRecommendation,
                     ),
                   ),
                 if (userRepository.userRole != UserRole.PATIENT)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 5),
                     child: PatientNotesCard(
-                      patientId: widget.patient.id!,
-                      patientNotes: widget.patientOverview.user!.patientNotes ?? "",
+                      patientId: widget.state.patient.user!.id!,
+                      patientNotes: widget.state.patient.user!.patientNotes ?? "",
                       isMobile: true,
                     ),
                   ),
                 SizedBox(height: 5),
                 ..._renderPersonalGoals(),
                 if (userRepository.userRole != UserRole.PATIENT ||
-                    widget.patientOverview.institution!.institutionFocus == InstitutionFocus.PROMOTING_A_HEALTHY_LIFESTYLE)
+                    widget.state.patient.institution!.institutionFocus == InstitutionFocus.PROMOTING_A_HEALTHY_LIFESTYLE)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     child: ElevatedButton.icon(
@@ -309,7 +343,7 @@ class _PatientCalendarMobileState extends State<PatientCalendarMobile> {
                         if (userRepository.userRole == UserRole.PATIENT) {
                           context.beamToNamed("/calendar/goal-setting", data: {"editGoal": null});
                         } else {
-                          context.beamToNamed("/patients/${widget.patient.id}/calendar/goal-setting", data: {"editGoal": null});
+                          context.beamToNamed("/patients/${widget.state.patient.user!.id}/calendar/goal-setting", data: {"editGoal": null});
                         }
                       },
                       icon: Icon(Icons.add),
@@ -326,8 +360,11 @@ class _PatientCalendarMobileState extends State<PatientCalendarMobile> {
   }
 
   List<Widget> _renderPersonalGoals() {
-    return widget.personalGoals
-        .map((entry) => ActivityListTile(
+    return widget.state.personalGoals
+        .map(
+          (entry) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            child: ActivityListTile(
               icon: Icon(Icons.flag, color: goalColor),
               color: goalColor,
               title: entry.description ?? "",
@@ -341,9 +378,10 @@ class _PatientCalendarMobileState extends State<PatientCalendarMobile> {
                   isMobile: true,
                 ),
               ),
-              markAsDone: () =>
-                  this.widget.markAsDone(entry, widget.activeMinutes, widget.patientOverview.institution?.allowRescheduleActivities ?? false),
-            ))
+              markAsDone: () => this.widget.markAsDone(entry),
+            ),
+          ),
+        )
         .toList();
   }
 }

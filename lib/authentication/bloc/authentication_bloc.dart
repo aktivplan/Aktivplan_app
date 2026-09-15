@@ -18,6 +18,12 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     final UserRepository userRepository = KiwiContainer().resolve<UserRepository>();
 
     on<AuthenticationStarted>((event, emit) async {
+      final String caatsToken = Uri.base.queryParameters['caatsToken'] ?? "";
+      if (caatsToken.isNotEmpty) {
+        this.add(AuthenticationLoginEvent(email: "", password: "", language: TranslationLanguage.DE, caatsToken: caatsToken));
+        return;
+      }
+
       final bool hasToken = await userRepository.hasToken(null);
       if (hasToken) {
         await userRepository.getCurrentUser();
@@ -46,7 +52,8 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
       emit(AuthenticationWaitingState());
       try {
         await userRepository.deleteToken();
-        final token = await userRepository.authenticate(email: event.email, password: event.password, language: event.language);
+        final token =
+            await userRepository.authenticate(email: event.email, password: event.password, language: event.language, caatsToken: event.caatsToken);
         //get user information
         await userRepository.getCurrentUser();
         this.add(AuthenticationLoggedIn(token: token));

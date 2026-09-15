@@ -370,7 +370,7 @@ class _MessageHistoryPageState extends State<MessageHistoryPage> with TraceableP
                                   onSelectChanged: message.editable ? (selected) => goToMessage(message) : null,
                                   color: WidgetStateProperty.resolveWith<Color?>(
                                     (Set<WidgetState> states) {
-                                      if (message.alreadySent) return Theme.of(context).colorScheme.primary.withOpacity(0.05);
+                                      if (message.alreadySent) return Theme.of(context).colorScheme.primary.withValues(alpha: 0.05);
                                       return null;
                                     },
                                   ),

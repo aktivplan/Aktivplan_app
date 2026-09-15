@@ -25,8 +25,11 @@ class ShareButton extends StatelessWidget {
   share(BuildContext context) async {
     final box = context.findRenderObject() as RenderBox;
     final image = this.widgetToShare != null
-        ? await screenshotController.captureFromWidget(widgetToShare!)
-        : await screenshotController.capture(delay: Duration(microseconds: 100));
+        ? await screenshotController.captureFromWidget(
+            Material(child: widgetToShare),
+            pixelRatio: MediaQuery.of(context).devicePixelRatio,
+          )
+        : await screenshotController.capture(pixelRatio: MediaQuery.of(context).devicePixelRatio);
     final list = image!.buffer.asUint8List(image.offsetInBytes, image.lengthInBytes);
     Share.shareXFiles([
       XFile.fromData(

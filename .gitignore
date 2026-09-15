@@ -24,6 +24,7 @@ untranslated_messages.json
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
+**/ios/Flutter/ephemeral/
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
@@ -34,6 +35,8 @@ untranslated_messages.json
 generated_plugin_registrant.dart
 /build/
 **/ios/build
+**/android/app/.settings/
+**/android/.settings/
 
 # Web related
 

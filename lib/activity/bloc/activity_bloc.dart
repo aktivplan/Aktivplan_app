@@ -11,11 +11,17 @@ import 'dart:async';
 
 import 'package:apt_api/api.dart';
 import 'package:aptapp/activity/bloc/activity_repository.dart';
+import 'package:aptapp/beamer/guards.dart';
+import 'package:aptapp/l10n/app_localizations_de.dart';
+import 'package:aptapp/l10n/app_localizations_en.dart';
 import 'package:aptapp/message/bloc/message_repository.dart';
 import 'package:aptapp/user/user_controller_repository.dart';
+import 'package:aptapp/utils/constants.dart';
 import 'package:aptapp/utils/trace_helpers.dart';
+import 'package:aptapp/utils/translation_helper.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:http/http.dart';
 import 'package:kiwi/kiwi.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 
@@ -35,14 +41,51 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
     });
 
     on<AddActivityEvent>((event, emit) async {
-      await activityRepository.createActivity(activity: event.activity);
+      final createdActivity =
+          await activityRepository.createActivity(activity: event.activity, videoFile: event.videoFile, didChangeVideoFile: event.didChangeVideoFile);
+      if (event.ratingEvent != null) {
+        final rating = event.ratingEvent!.rating;
+        if (event.routeProposal != null) {
+          rating.startLocation = event.routeProposal!.locOrigin;
+          rating.startLocationAddress = event.routeProposal!.locOriginAddr;
+          rating.endLocation = event.routeProposal!.locDestination;
+          rating.endLocationAddress = event.routeProposal!.locDestinationAddr;
+          rating.routeProposal = event.routeProposal;
+        }
+        UpdateActivityRatingEvent ratingEvent = UpdateActivityRatingEvent(
+            activityType: event.type,
+            rating: rating,
+            id: createdActivity!.id!,
+            date: createdActivity.startDate!,
+            patientId: event.patientId,
+            extraActivityName: event.ratingEvent!.extraActivityName);
+        this.add(ratingEvent);
+      } else if (event.routeProposal != null) {
+        this.add(UpdateActivityRatingEvent(
+            activityType: createdActivity!.type!,
+            rating: ActivityPatientRatingPostDTO(
+              done: false,
+              startLocation: event.routeProposal!.locOrigin,
+              startLocationAddress: event.routeProposal!.locOriginAddr,
+              endLocation: event.routeProposal!.locDestination,
+              endLocationAddress: event.routeProposal!.locDestinationAddr,
+              routeProposal: event.routeProposal,
+              time: createdActivity.time,
+              endTime: createdActivity.endTime,
+            ),
+            id: createdActivity.id!,
+            date: createdActivity.startDate!,
+            patientId: event.patientId,
+            extraActivityName: ""));
+      }
       MatomoTracker.instance.trackEvent(
-          eventInfo: EventInfo(
-            category: EVENT_CATEGORY_ACTIVITY,
-            name: EVENT_NAME_CREATE,
-            action: "Planned Activity with Type ${event.type}",
-          ),
-          dimensions: {"Start Date": event.activity.startDate ?? "", "End Date": event.activity.endDate ?? ""});
+        eventInfo: EventInfo(
+          category: EVENT_CATEGORY_ACTIVITY,
+          name: EVENT_NAME_CREATE,
+          action: "Planned Activity with Type ${event.type}",
+        ),
+      );
+      userRepository.updateWidgetData();
       this.add(FetchPatientActivitiesEvent(patientId: event.patientId, date: DateTime.parse(event.activity.startDate ?? "")));
     });
 
@@ -85,32 +128,63 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
         userControllerRepository.getUserPicture(id: event.patientId, userRole: UserRole.PATIENT),
       ]);
 
+      final activities = [...responses[0] as List<ActivityOverviewDTO>];
+      final patient = responses[3] as PatientOverviewDTO;
+
+      // no datahub for klimafit light
+      if (patient.institution?.institutionFocus == InstitutionFocus.KLIMAFIT) {
+        this.add(FetchPatientDatahubRecommendationsEvent(patientId: event.patientId, date: now));
+      }
+
+      if ((patient.user?.surgeryDate ?? "").isNotEmpty) {
+        ActivityOverviewDTO surgeryActivity = ActivityOverviewDTO(
+            name: getTranslationObjectFromText(AppLocalizationsDe().surgeryDate, AppLocalizationsEn().surgeryDate),
+            plannedBy: SYSTEM_CREATED,
+            type: ActivityType.APPOINTMENT,
+            date: patient.user!.surgeryDate!,
+            rating: ActivityPatientRatingPostDTO(done: false),
+            activity: ActivityPostDTO(appointment: AppointmentPostDTO()));
+        activities.add(surgeryActivity);
+      }
+
       emit(
         FetchedPatientActivitiesState(
-          activities: responses[0] as List<ActivityOverviewDTO>,
+          activities: activities,
           activeMinutes: responses[1] as ActiveMinutesOverviewDTO,
           personalGoals: responses[2] as List<PersonalGoal>,
-          patient: responses[3] as PatientOverviewDTO,
+          patient: patient,
           userPicture: responses[4] as FileGetDTO,
           date: event.setDate ? event.date : null,
         ),
       );
     });
 
-    // UPDATE
+    on<FetchPatientDatahubRecommendationsEvent>((event, emit) async {
+      DatahubResponse? datahubRecommendations = await activityRepository
+          .getDatahubRecommendations(patientId: event.patientId, date: englishDateFormat.format(event.date))
+          .catchError((error) {
+        print("Error fetching datahub recommendations: $error");
+        emit(FetchedPatientDatahubRecommendationsState(datahubRecommendations: null));
+        return null;
+      });
+
+      emit(FetchedPatientDatahubRecommendationsState(datahubRecommendations: datahubRecommendations));
+    });
+
     on<UpdateActivityEvent>((event, emit) async {
-      await activityRepository.updateActivity(id: event.id, activity: event.activity);
+      await activityRepository.updateActivity(
+          id: event.id, activity: event.activity, videoFile: event.videoFile, didChangeVideoFile: event.didChangeVideoFile);
+      userRepository.updateWidgetData();
       MatomoTracker.instance.trackEvent(
-          eventInfo: EventInfo(
-            category: EVENT_CATEGORY_ACTIVITY,
-            name: EVENT_NAME_UPDATE,
-            action: "Updated Planned Activity with Type ${event.type}",
-          ),
-          dimensions: {"Start Date": event.activity.startDate ?? "", "End Date": event.activity.endDate ?? ""});
+        eventInfo: EventInfo(
+          category: EVENT_CATEGORY_ACTIVITY,
+          name: EVENT_NAME_UPDATE,
+          action: "Updated Planned Activity with Type ${event.type}",
+        ),
+      );
       this.add(FetchPatientActivitiesEvent(patientId: event.patientId, date: DateTime.parse(event.activity.startDate ?? "")));
     });
 
-    //DELETE
     on<DeleteActivityEvent>((event, emit) async {
       await activityRepository.deleteActivity(id: event.id);
       MatomoTracker.instance.trackEvent(
@@ -121,7 +195,7 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
     });
 
     on<FetchAutocompleteEvent>((event, emit) async {
-      ActivityAutocompleteGetDTO autocomplete = await activityRepository.fetchAutocomplete() ?? ActivityAutocompleteGetDTO();
+      ActivityAutocompleteGetDTO autocomplete = await activityRepository.fetchAutocomplete(type: event.type);
       emit(AutocompleteState(autocomplete: autocomplete));
     });
 
@@ -149,6 +223,7 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
         await activityRepository.updateExtraActivity(id: event.id, activity: ExtraActivityPutDTO(name: event.extraActivityName));
       }
       await activityRepository.updateActivityRating(id: event.id, date: event.date, activityPatientRating: event.rating);
+      userRepository.updateWidgetData();
       this.add(FetchPatientActivitiesEvent(patientId: event.patientId, date: DateTime.parse(event.date)));
       emit(UpdatePatientActivityRatingState(activityId: event.id, date: event.date, rating: event.rating));
     });
@@ -185,6 +260,7 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
           eventInfo: EventInfo(category: EVENT_CATEGORY_ACTIVITY, name: EVENT_NAME_HIDE, action: "Hid all activities"),
         );
       }
+      userRepository.updateWidgetData();
       add(FetchPatientActivitiesEvent(patientId: event.patientId, date: event.currentDate));
     });
 
@@ -193,6 +269,7 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
       MatomoTracker.instance.trackEvent(
         eventInfo: EventInfo(category: EVENT_CATEGORY_ACTIVITY, name: EVENT_NAME_MOVE, action: "Moved Activity"),
       );
+      userRepository.updateWidgetData();
       add(FetchPatientActivitiesEvent(patientId: movedActivity?.patientId ?? "", date: DateTime.parse(event.moveActivity.toDate ?? "")));
     });
 

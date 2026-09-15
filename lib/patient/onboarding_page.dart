@@ -19,14 +19,14 @@ import 'package:flutter/services.dart';
 import 'package:styled_text/styled_text.dart';
 
 class OnboardingPage extends StatefulWidget {
-  const OnboardingPage({Key? key}) : super(key: key);
+  final bool isKlimafit;
+  final bool isSinglePage;
+  const OnboardingPage({Key? key, required this.isKlimafit, this.isSinglePage = false}) : super(key: key);
 
-  static Future<void> showOnboardingDialog(BuildContext context) {
-    return showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) => OnboardingPage(),
-    );
+  static Future<void> showOnboardingDialog(BuildContext context, {required bool isKlimafit}) {
+    return Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => OnboardingPage(isKlimafit: isKlimafit),
+    ));
   }
 
   @override
@@ -104,6 +104,8 @@ class _OnboardingPageState extends State<OnboardingPage> with TraceablePageMixin
                             setState(() {
                               if (currentStep < 7) {
                                 currentStep++;
+                              } else if (widget.isSinglePage) {
+                                currentStep = 1;
                               } else {
                                 Navigator.of(context).pop();
                               }
@@ -115,30 +117,33 @@ class _OnboardingPageState extends State<OnboardingPage> with TraceablePageMixin
                             child: Text((currentStep == 1
                                     ? context.i18n.startTour
                                     : currentStep == 7
-                                        ? context.i18n.letsGo
+                                        ? widget.isSinglePage
+                                            ? context.i18n.startTourAgain
+                                            : context.i18n.letsGo
                                         : context.i18n.next)
                                 .toUpperCase()),
                           ),
                         ),
                       ),
                       SizedBox(height: height * 0.01),
-                      Container(
-                        width: double.infinity,
-                        height: 40,
-                        child: TextButton(
-                          key: Key(KEY_ONBOARDING_BUTTON_BACK),
-                          child: Text(currentStep == 1 ? context.i18n.skip : context.i18n.back),
-                          onPressed: () {
-                            setState(() {
-                              if (currentStep > 1) {
-                                currentStep--;
-                              } else {
-                                Navigator.of(context).pop();
-                              }
-                            });
-                          },
+                      if (!widget.isSinglePage)
+                        Container(
+                          width: double.infinity,
+                          height: 40,
+                          child: TextButton(
+                            key: Key(KEY_ONBOARDING_BUTTON_BACK),
+                            child: Text(currentStep == 1 ? context.i18n.skip : context.i18n.back),
+                            onPressed: () {
+                              setState(() {
+                                if (currentStep > 1) {
+                                  currentStep--;
+                                } else {
+                                  Navigator.of(context).pop();
+                                }
+                              });
+                            },
+                          ),
                         ),
-                      ),
                       SizedBox(height: height * 0.02),
                       getProgessDots(),
                     ],
@@ -159,7 +164,7 @@ class _OnboardingPageState extends State<OnboardingPage> with TraceablePageMixin
       case 2:
         return context.i18n.onboardingText2;
       case 3:
-        return context.i18n.onboardingText3;
+        return widget.isKlimafit ? context.i18n.onboardingText3Klimafit : context.i18n.onboardingText3;
       case 4:
         return context.i18n.onboardingText4;
       case 5:

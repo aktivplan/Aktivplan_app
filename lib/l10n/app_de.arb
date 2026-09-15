@@ -3,7 +3,9 @@
   "achieveUntil": "Erreichen bis",
   "active": "aktiv",
   "activeMinutes": "Aktive Minuten",
+  "activeMinutesKlimafit": "Aktivitätspunkte",
   "activeMinutesHide": "Aktive Minuten ausblenden",
+  "activeMinutesHideKlimafit": "Aktivitätspunkte ausblenden",
   "activeMinutesInCalendarWeek": "Aktive Minuten in KW {calendarWeek}",
   "@activeMinutesInCalendarWeek": {
     "placeholders": {
@@ -13,8 +15,17 @@
       }
     }
   },
-  "activeMinutesLc": "aktive Minuten",
+  "activeMinutesInCalendarWeekKlimafit": "Aktivitätspunkte in KW {calendarWeek}",
+  "@activeMinutesInCalendarWeekKlimafit": {
+    "placeholders": {
+      "calendarWeek": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
   "activeMinutesPerWeek": "Aktive Minuten pro Woche",
+  "activeMinutesPerWeekKlimafit": "Aktivitätspunkte pro Woche",
   "activeMinutesPerWeekAmount": "{amount} aktive Minuten pro Woche",
   "@activeMinutesPerWeekAmount": {
     "placeholders": {
@@ -24,7 +35,17 @@
       }
     }
   },
+  "activeMinutesPerWeekAmountKlimafit": "{amount} Aktivitätspunkte pro Woche",
+  "@activeMinutesPerWeekAmountKlimafit": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
   "activeMinutesShow": "Aktive Minuten anzeigen",
+  "activeMinutesShowKlimafit": "Aktivitätspunkte anzeigen",
   "activities": "Aktivitäten",
   "activity": "Aktivität",
   "activity_APPOINTMENT": "Termin",
@@ -33,6 +54,8 @@
   "activity_HYPERTROPHY": "Hypertrophietraining",
   "activity_INTERVAL": "Intervall Ausdauer",
   "activity_OTHER": "Andere Übung",
+  "activity_PREDEFINED_ACTIVE_MOBILITY": "Aktive Mobilität",
+  "activity_PREDEFINED_ACTIVITY": "Sport",
   "activity_STRENGTHENING": "Kraftausdauer",
   "activity_TASK": "Aufgabe",
   "activity_WORKOUT": "Workout",
@@ -71,14 +94,18 @@
   "activityClass_10_frequency": "Täglich",
   "activityClass_10_duration": "Mehr als 15 Stunden",
   "activityClasses": "Aktivitätsklassen",
+  "activityDataCheckQuestion": "Sind die folgenden Angaben korrekt?",
   "activityMoveHint": "Drücke lange auf eine Aktivität, um sie auf einen anderen Tag zu verschieben.",
   "activityMoveWarning": "Hinweis: Durch das Verschieben ist diese Aktivität nun nicht mehr Teil der Terminserie.",
   "activityPlanStep1": "Art der Aktivität wählen",
   "activityPlanStep1Short": "Aktivität wählen",
   "activityPlanStep2": "Aktivität anpassen",
   "activityPlanStep2Appointment": "Termin anpassen",
+  "activityPlanStep2Task": "Aufgabe anpassen",
   "activityPlanStep3": "Aktivität planen",
   "activityPlanStep3Appointment": "Termin planen",
+  "activityPlanStep3Task": "Aufgabe planen",
+  "activityPreference": "Aktivitätspräferenz",
   "activityRepeat_BIWEEKLY": "Alle 2 Wochen",
   "activityRepeat_NEVER": "Keine Wiederholung",
   "activityRepeat_WEEKLY": "Wöchentliche Wiederholung",
@@ -142,6 +169,7 @@
   "allPatients": "Alle Patienten",
   "amount": "Anzahl",
   "amountRepeats": "Anzahl der Wiederholungen",
+  "apply": "Übernehmen",
   "appTitle": "aktivplan+",
   "back": "Zurück",
   "birthdate": "Geburtsdatum",
@@ -150,8 +178,18 @@
   "bodyWeight": "Körpergewicht",
   "bodyWeightWithUnit": "Körpergewicht (kg)",
   "browseGallery": "Galerie durchsuchen",
+  "calendarEntry": "Kalendereintrag",
   "calendarInfoActiveMinutes": "Hat in den letzten vier Wochen <color>{percentage}%</color> der geplanten aktiven Minuten absolviert.",
   "@calendarInfoActiveMinutes": {
+    "placeholders": {
+      "percentage": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "calendarInfoActiveMinutesKlimafit": "Hat in den letzten vier Wochen <color>{percentage}%</color> der geplanten Aktivitätspunkte absolviert.",
+  "@calendarInfoActiveMinutesKlimafit": {
     "placeholders": {
       "percentage": {
         "type": "int",
@@ -248,6 +286,7 @@
   "deleteActivity": "Aktivität löschen",
   "deleteAll": "Alle Löschen",
   "deleteImage": "Bild löschen",
+  "deleteVideo": "Video löschen",
   "deletedApp": "App erfolgreich gelöscht",
   "deletedExercise_ENDURANCE": "Ausdauertraining erfolgreich gelöscht",
   "deletedExercise_HYPERTROPHY": "Hypertrophietraining erfolgreich gelöscht",
@@ -384,12 +423,16 @@
   "descriptionShort": "Beschreibung",
   "details": "Details",
   "detailsToMessage": "Details zur Nachricht",
+  "dislikedActivityPreference": "Anti-Aktivität",
+  "dislikedMobilityPreference": "Anti-Mobilität",
   "documentation": "Dokumentation",
   "documentTitle": "Titel des Dokuments",
   "csvExport": "CSV Export",
   "duplicate": "Duplizieren",
   "duration": "Dauer",
   "durationValueMinutes": "min",
+  "durationValuePoints": "Punkte",
+  "durationValuePointsShort": "Pkt.",
   "durationValueSeconds": "sek",
   "edit": "Bearbeiten",
   "editActivity": "Aktivität bearbeiten",
@@ -406,6 +449,8 @@
   "emailSent": "E-Mail gesendet",
   "emailSentError": "E-Mail konnte nicht gesendet werden.",
   "enableSocialFeatures": "Soziale Funktionen aktivieren",
+  "endLocation": "Zielort",
+  "endTime": "Endzeit",
   "englishTranslationNote": "(englische Übersetzung)",
   "englishTranslationOptional": "Englische Übersetzung (optional)",
   "error": "Leider ist etwas schiefgelaufen. Versuchen Sie es später erneut.",
@@ -567,25 +612,62 @@
   "german": "Deutsch",
   "goal": "Ziel",
   "handOver": "Übergeben",
+  "heatTolerance": "Subjektive Hitzetoleranz",
+  "heatTolerance_AVERAGE": "Mittel",
+  "heatTolerance_GOOD": "Gut",
+  "heatTolerance_POOR": "Schlecht",
   "healthcareProfessional": "Gesundheitsexpert*in",
   "healthcareProfessionals": "Gesundheitsexpert*innen",
   "help": "Hilfe",
   "helpOnboardingGuide": "<a>App-Rundgang &gt;</a>",
   "helpTextProblems": "Bei Fragen oder Problemen mit aktivplan bitten wir um Kontaktaufnahme.",
-  "helpUserGuideExperts": "<a href='https://resources.lbi-dhp.at/aktivplan/consent/docs/Handbuch_Gesundheitsexperten.pdf'>Benutzerhandbuch &gt;</a>",
-  "helpUserGuidePatients": "<a href='https://resources.lbi-dhp.at/aktivplan/consent/docs/Handbuch_Patienten.pdf'>Benutzerhandbuch &gt;</a>",
+  "helpUserGuideExperts": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/Handbuch_Gesundheitsexperten.pdf'>Benutzerhandbuch &gt;</a>",
+  "helpUserGuidePatients": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/Handbuch_Patienten.pdf'>Benutzerhandbuch &gt;</a>",
   "hintRequiredFields": "* Pflichtfelder",
+  "homeLocation": "Heimatort",
   "id": "ID",
-  "identificator": "Identifikator",
-  "inactive": "inaktiv",
-  "institution": "Institut",
+  "identificator": "Identificator",
+  "inactive": "inactive",
+  "importPatientsFromCsv": "Patienten aus CSV importieren",
+  "importSummaryCreated": "Erstellt: {count}",
+  "@importSummaryCreated": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "importSummaryUpdated": "Aktualisiert: {count}",
+  "@importSummaryUpdated": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "importSummarySkipped": "Übersprungen: {count}",
+  "@importSummarySkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "0"
+      }
+    }
+  },
+  "institution": "Institute",
   "institutionAdministrator": "Administrator*in des Instituts",
   "institutionAvailabilityPhone": "Telefonische Erreichbarkeit (z.B. Montag - Freitag, 9.00 - 15.00 Uhr)",
   "institutionAvailabilityPhoneEnglish": "Telefonische Erreichbarkeit (z.B. Monday - Friday, 9.00 - 15.00 o'clock)",
   "institutionEmailUserQueries": "E-Mail für Rückfragen von Nutzer*innen",
   "institutionFocus": "Schwerpunkt des Instituts",
   "institutionFocus_CARDIOVASCULAR_REHABILITATION": "Herz-Kreislauf-Rehabilitation",
+  "institutionFocus_KLIMAFIT": "Klimafit",
+  "institutionFocus_KLIMAFIT_LIGHT": "Klimafit Light",
+  "institutionFocus_PREHAB_TO_REHAB": "Prehab2Rehab",
   "institutionFocus_PROMOTING_A_HEALTHY_LIFESTYLE": "Förderung eines gesunden Lebensstils",
+  "institutionFocusP2RFocus_GENERAL": "Allgemein",
   "institutionGetInTouchNotes": "Sonstige Hinweise zur Kontaktaufnahme (z.B. Wir bemühen uns, alle Anfragen innerhalb von 24 Stunden zu bearbeiten.)",
   "institutionGetInTouchNotesEnglish": "Sonstige Hinweise zur Kontaktaufnahme (z.B. We strive to process all requests within 24 hours.)",
   "institutionOverview": "Institutsübersicht",
@@ -640,8 +722,8 @@
   "legalNoticeCompanyName": "Ludwig Boltzmann Institut für digitale Gesundheit und Prävention",
   "legalNoticeDataProtection": "Datenschutz",
   "legalNoticeMoreInformation": "<a href='https://dhp.lbg.ac.at/impressum'>Weitere Infos &gt;</a>",
-  "legalNoticePrivacyPolicy": "<a href='https://resources.lbi-dhp.at/aktivplan/consent/docs/Datenschutzerklarung_v2.html'>Datenschutzerklärung &gt;</a>",
-  "legalNoticeTermsAndConditions": "<a href='https://resources.lbi-dhp.at/aktivplan/consent/docs/AGB_v1.pdf'>Allgemeine Geschäftsbedingungen &gt;</a>",
+  "legalNoticePrivacyPolicy": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/Datenschutzerklarung_v2.html'>Datenschutzerklärung &gt;</a>",
+  "legalNoticeTermsAndConditions": "<a href='https://resources.lbidhp.at/aktivplan/consent/docs/AGB_v1.pdf'>Allgemeine Geschäftsbedingungen &gt;</a>",
   "legalNoticeTermsAndConditionsMenu": "Impressum & Datenschutz",
   "less": "weniger",
   "letsGo": "Los geht's!",
@@ -665,6 +747,10 @@
   "message": "Nachricht",
   "messageHistoryHint": "Diese Funktion ist nur für Nachrichten an mehrere Personen gedacht. Nachrichten an einzelne Personen können über das Nutzerprofil versendet werden.",
   "messageHistoryHintPatient": "Über den Menüpunkt \"Nachrichten\" können Nachrichten an mehrere Personen gesendet werden.",
+  "messageRestriction": "Einschränkung",
+  "messageRestriction_AFTER_SURGERY": "Nach der Operation",
+  "messageRestriction_BEFORE_SURGERY": "Vor der Operation",
+  "messageRestriction_NO_RESTRICTION": "Keine Einschränkung",
   "messages": "Nachrichten",
   "messagesHint": "Nachrichten in dieser Liste sollten informativ oder motivierend sein. Vor dem Hinzufügen einer neuen Nachricht bitte beachten, dass diese an alle Nutzer*innen gesendet wird (zu unterschiedlichen, zufälligen Zeitpunkten) und daher alle Nutzer*innen ansprechen sollte.",
   "messagesScheduledFor": "Nachrichten geplant für {name}",
@@ -678,7 +764,14 @@
   },
   "messageSendToType_ALL": "Alle Nutzer*innen",
   "messageSendToType_SOME": "Ausgewählte Empfänger*innen",
+  "minimumDaysBetweenInformationMessages": "Mindestabstand Tage zwischen Informationsnachrichten",
   "minutes": "Minuten",
+  "minutesKlimafit": "Aktivitätspunkten",
+  "mobilityPreference": "Mobilitätspräferenz",
+  "mobilityPreference_BIKE": "Fahrrad",
+  "mobilityPreference_CAR": "Auto",
+  "mobilityPreference_FOOT": "Zu Fuß",
+  "mobilityPreference_PUBLIC_TRANSPORT": "Öffentliche Verkehrsmittel",
   "month": "Monat",
   "more": "mehr",
   "muscleGroup_ABDOMINAL": "Bauch",
@@ -708,6 +801,15 @@
     }
   },
   "next": "Weiter",
+  "nextExercise": "Nächste Übung: {name}",
+  "@nextExercise": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Kniebeugen"
+      }
+    }
+  },
   "nextPlannedActivity": "Nächste geplante Aktivität",
   "no": "Nein",
   "noApps": "Noch keine Apps erfasst.",
@@ -722,6 +824,7 @@
   "noPatients": "Noch keine Nutzer erfasst.",
   "noPersonalGoals": "Noch keine Ziele gesetzt",
   "noPlannedActivities": "Keine Aktivitäten geplant",
+  "noRecommendations": "Keine Empfehlungen für die aktuelle Woche.",
   "noTasks": "Noch keine Aufgaben erfasst.",
   "noTrainingPlans": "Noch keine Trainingspläne erfasst.",
   "notExecuted": "Noch nicht ausgeführt",
@@ -739,16 +842,19 @@
   "onboardingText1": "<h1>Willkommen!</h1>\n\nWir freuen uns, dass Du Dich dafür entschieden hast die <b>aktiv</b>plan App zu verwenden.\n\nMöchtest Du einen kurzen Überblick über die wichtigsten Funktionalitäten der App erhalten?",
   "onboardingText2": "<h1>Dein Trainingsplan</h1>\n\nBehalte den Überblick über Deine geplanten Aktivitäten und dokumentiere Details zur Ausführung.\n\nUm zusätzliche Informationen zu einer Aktivität zu erhalten, klicke auf diese Aktivität. Wenn Du eine Aktivität ausgeführt hast, klicke auf den Kreis, um sie abzuhaken.",
   "onboardingText3": "<h1>Aktive Minuten</h1>\n\nErreiche jede Woche Dein Ziel und beobachte Deine Fortschritte.\n\nAktive Minuten sammelst Du, indem Du Aktivitäten ausführst und abhakst.\n\nUm mehr Details über den zeitlichen Verlauf zu erfahren, klicke auf die Grafik.",
+  "onboardingText3Klimafit": "<h1>Aktivitätspunkte</h1>\n\nErreiche jede Woche Dein Ziel und beobachte Deine Fortschritte.\n\nAktivitätspunkte sammelst Du, indem Du Aktivitäten ausführst und abhakst.\n\nUm mehr Details über den zeitlichen Verlauf zu erfahren, klicke auf die Grafik.",
   "onboardingText4": "<h1>Einhaltung Trainingsplan</h1>\n\nVersuche stets, Dich an den mit den Gesundheitsexpert*innen ausgearbeiteten Trainingsplan zu halten und die Aktivitäten wie geplant durchzuführen.\n\nDiese Grafik zeigt Dir auf einen Blick, wie gut Dir das gelingt.",
   "onboardingText5": "<h1>Persönliche Ziele</h1>\n\nDeine persönlichen Ziele werden im Kalender am jeweiligen Tag und unten auf der Trainingsplanseite angezeigt.\n\nUm mehr Details zu einem Ziel anzuzeigen, klicke auf dieses Ziel. Um ein Ziel als erreicht zu markieren, klicke auf den Kreis.",
   "onboardingText6": "<h1>Dein Benutzerprofil</h1>\n\nÜber Dein Benutzerprofil kannst Du Deine Daten einsehen und Änderungen anfragen.\n\nAußerdem kannst Du einen &quot;Besonderen Status&quot; einstellen, der deinem/deiner Gesunheitsexpert*in angezeigt wird.",
   "onboardingText7": "<h1>Viel Spaß beim Aktivsein!</h1>\n\nEntdecke weitere Funktionen über das Menü.\n\nSollte noch etwas unklar sein, kannst Du unter dem Menüpunkt &quot;Hilfe&quot; ein umfassendes Benutzerhandbuch abrufen.",
+  "openInBrowser": "Im Browser öffnen",
   "or": "oder",
   "orSendLater": "oder später senden",
   "overwriteDataIrreversibly": "Daten unwiderruflich überschreiben",
   "overwriteDatabase": "Datenbank überschreiben",
   "overwriteDatabaseText": "Durch die Übertragung der Datenbank werden sämtliche Änderungen (Anpassungen/Löschungen/Ergänzungen), die ein Institut möglicherweise vorgenommen hat, unwiderruflich überschrieben. Bitte wähle aus, welche Daten du überschreiben möchtest:",
   "password": "Passwort",
+  "participantId": "Teilnehmer*in ID",
   "patient": "Nutzer*in",
   "patientHandover": "Nutzer*innen übergeben",
   "patientHandoverComplete": "Übergabe erfolgreich",
@@ -793,6 +899,7 @@
     }
   },
   "patientsInfoActiveMinutes": "Hat in den letzten vier Wochen <trafficLight1/> <b>mindestens 80%</b> <trafficLight2/> <b>50% bis 79%</b> <trafficLight3/> <b>weniger als 50%</b> der geplanten aktiven Minuten absolviert.",
+  "patientsInfoActiveMinutesKlimafit": "Hat in den letzten vier Wochen <trafficLight1/> <b>mindestens 80%</b> <trafficLight2/> <b>50% bis 79%</b> <trafficLight3/> <b>weniger als 50%</b> der geplanten Aktivitätspunkte absolviert.",
   "patientsInfoActiveMinutesThreeWeeks": "Hat in den letzten drei Wochen <trafficLight1/> <b>mindestens 80%</b> <trafficLight2/> <b>50% bis 79%</b> <trafficLight3/> <b>weniger als 50%</b> der aktiven Minuten absolviert.",
   "patientState_INAPPROPRIATE_TRAINING_PLAN": "Plan unpassend",
   "patientState_NO_STATE": "Plan passend",
@@ -815,6 +922,7 @@
   "patientStateFourWeekState": "Vier-Wochen-Status",
   "patientStateNotification": "Statusmitteilung",
   "patientStatePlannedActiveMinutes": "Geplante aktive Minuten Status",
+  "patientStatePlannedActiveMinutesKlimafit": "Geplante Aktivitätspunkte Status",
   "patientOverview": "Nutzer*innenübersicht",
   "patients": "Nutzer*innen",
   "performedOn": "Ausgeführt am",
@@ -824,6 +932,12 @@
   "personalGoalReachedPart2earlier": "früher erreicht als geplant.",
   "personalGoals": "Persönliche Ziele",
   "perWeek": "pro Woche",
+  "pesiQuestion": "Wie empfindest du die Temperatur für dich?",
+  "pesiValue_1": "Angenehm",
+  "pesiValue_2": "Leicht warm",
+  "pesiValue_3": "Warm",
+  "pesiValue_4": "Heiß",
+  "pesiValue_5": "Sehr heiß",
   "phone": "Telefon",
   "picture": "Foto",
   "plan": "Planen",
@@ -853,19 +967,101 @@
   "postedHoursAgo": "Std.",
   "postedItemRemoved": "Element erfolgreich entfernt",
   "postedItemRemovedError": "Element konnte nicht entfernt werden",
+  "predefinedActivityType_CAR_WALKING": "Auto & Gehen",
+  "predefinedActivityType_CYCLING": "Radfahren",
+  "predefinedActivityType_E_BIKING": "E-Bike",
+  "predefinedActivityType_FAST_WALKING": "Schnelles Gehen",
+  "predefinedActivityType_HIKING": "Wandern",
+  "predefinedActivityType_NORDIC_WALKING": "Nordic Walking",
+  "predefinedActivityType_OTHER": "Sonstige",
+  "predefinedActivityType_PUBLIC_TRANSPORT_WALKING": "Öffi & Gehen",
+  "predefinedActivityType_RUNNING": "Laufen",
+  "predefinedActivityType_STRENGTH_TRAINING": "Krafttraining",
+  "predefinedActivityType_SWIMMING": "Schwimmen",
+  "predefinedActivityType_WALKING": "Gehen",
+  "prehab2RehabFocus": "Prehab2Rehab-Fokus",
   "privacySettings": "Privatsphäre-Einstellungen",
   "qrCodeDescription": "Dein QR-Code ist privat. Wenn du ihn mit jemanden teilst, kann diese Person ihn über die aktivplan+ App scannen, um dich als Kontakt hinzuzufügen.",
   "qrCodeUnsupported": "Scanne den QR-Code mit der <b>aktiv</b>plan+ App, um einen Kontakt hinzuzufügen. Lade dazu die <b>aktiv</b>plan+ App auf Dein Handy oder Tablet herunter:",
   "rating": "Anstrengung",
   "ratingQuestion": "Wie anstrengend war diese Aktivität für dich?",
-  "ratingValue_6_8": "sehr, sehr leicht",
-  "ratingValue_9_12": "sehr leicht",
-  "ratingValue_13_14": "etwas anstrengend",
-  "ratingValue_15_16": "anstrengend",
-  "ratingValue_17_18": "sehr anstrengend",
-  "ratingValue_19_20": "sehr, sehr anstrengend",
+  "ratingValue_0_1": "sehr leicht",
+  "ratingValue_2_3": "leicht",
+  "ratingValue_4_5": "mäßig",
+  "ratingValue_6_7": "etwas anstrengend",
+  "ratingValue_8_9": "anstrengend",
+  "ratingValue_10": "sehr anstrengend",
   "recipient": "Empfänger*in",
   "recipients": "Empfänger*innen",
+  "recommendationMoveActivity": "Aktivität verschieben",
+  "recommendationMoveActivityRoute": "Routenempfehlung",
+  "recommendationMoveActivityToRoute": "Aktivität {name} wird von {startLocation} nach {endLocation} verschoben.",
+  "@recommendationMoveActivityToRoute": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Radfahren"
+      },
+      "startLocation": {
+        "type": "String",
+        "example": "Salzburg"
+      },
+      "endLocation": {
+        "type": "String",
+        "example": "Wien"
+      }
+    }
+  },
+  "recommendationMoveActivityToTime": "Aktivität {name} wird auf {time} Uhr verschoben.",
+  "@recommendationMoveActivityToTime": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Radfahren"
+      },
+      "time": {
+        "type": "String",
+        "example": "15:30"
+      }
+    }
+  },
+  "recommendationReason_ACTIVE_MOBILITY_UNFEASIBLE": "Aktivität nicht ausführbar",
+  "recommendationReason_ACTIVITY_LEVEL": "Aktivitätslevel",
+  "recommendationReason_ADDITIONAL_OPPORTUNITY": "Zusätzliche Aktivität",
+  "recommendationReason_HEAT": "Hitze",
+  "recommendationReason_PRECIPITATION": "Niederschlag",
+  "recommendationReason_SEVERE_WEATHER": "Schlechtes Wetter",
+  "recommendations": "Empfehlungen",
+  "recommendationWarningDay": "{warning} für {date}",
+  "@recommendationWarningDay": {
+    "placeholders": {
+      "warning": {
+        "type": "String",
+        "example": "Hitze"
+      },
+      "date": {
+        "type": "String",
+        "example": "01.01.2021"
+      }
+    }
+  },
+  "recommendationWarningDays": "{warning} von {startDate} bis {endDate}",
+  "@recommendationWarningDays": {
+    "placeholders": {
+      "warning": {
+        "type": "String",
+        "example": "Hitze"
+      },
+      "startDate": {
+        "type": "String",
+        "example": "01.01.2021"
+      },
+      "endDate": {
+        "type": "String",
+        "example": "07.01.2021"
+      }
+    }
+  },
   "recordedDuration": "Erfasster Zeitraum",
   "register": "Erfassen",
   "reminderActivity": "Erinnerung Aktivität",
@@ -937,7 +1133,9 @@
   "scanCode": "Code scannen",
   "scanCodeDescription": "Scanne den QR-Code eines Kontakts, um ihn hinzuzufügen.",
   "scheduledMessage": "Nachricht erfolgreich gespeichert",
+  "select": "Auswählen",
   "selectAll": "Alle auswählen",
+  "selectLocationFromMap": "Standort aus Karte auswählen",
   "send": "Senden",
   "sendDate": "Sendedatum",
   "sendInvitationMailAgain": "Einladungsmail",
@@ -966,12 +1164,19 @@
   "skip": "Überspringen",
   "start": "Starten",
   "startDate": "Startdatum",
+  "startLocation": "Startort",
+  "startNavigation": "Navigation starten",
+  "startTime": "Startzeit",
   "startTour": "Rundgang starten",
+  "startTourAgain": "Rundgang erneut starten",
   "state": "Status",
   "statusMessage": "Statusmeldung (nur für Kontakte sichtbar)",
   "subject": "Betreff",
+  "surgeryDate": "OP-Datum",
+  "surgeryTime": "OP-Zeit",
   "switchLanguage": "Sprache zu Englisch ändern",
-  "taskNotes": "Notizen zur Aufgabe",
+  "taskNotes": "Beschreibung",
+  "tapToExpand": "Zum Erweitern tippen",
   "till": "bis",
   "time": "Zeit",
   "tipsAndInfos": "Tipps & Infos",
@@ -1029,6 +1234,7 @@
   "uploadImage": "Bild hochladen",
   "uploadImageErrorTooBig": "Bild ist zu groß, maximale Dateigröße: 10 MB",
   "uploadProfilePicture": "Profilbild hochladen",
+  "uploadVideo": "Video hochladen",
   "validationDefaultLength": "Eingabe muss zwischen 2 und 100 Zeichen lang sein.",
   "validationDuplicateEmail": "Es existiert bereits ein Konto für diese E-Mail-Adresse.",
   "validationEmail": "Bitte eine gültige E-Mail-Adresse eingeben.",
@@ -1039,10 +1245,16 @@
   "validationPasswordsNotEqual": "Passwörter stimmen nicht überein.",
   "validationWrongCredentials": "Anmeldedaten nicht korrekt.",
   "validationWrongPassword": "Passwort nicht korrekt.",
+  "video": "Video",
+  "videoWaitBetweenExercisesSeconds": "Wartezeit zwischen Übungen (Sekunden)",
+  "waitTimeAfterExerciseSeconds": "Wartezeit nach Übung (Sekunden)",
+  "waitTimeText": "Zusatztext Wartezeit",
   "week": "Woche",
   "weeks": "Wochen",
   "weight": "Gewicht",
   "weightKg": "Gewicht (kg)",
+  "wholeDay": "ganztägig",
+  "workLocation": "Arbeitsort",
   "workout": "Workout",
   "workoutDurationHint": "Workout-Dauer errechnet sich automatisch aus der Summe der Dauer der Einzelübungen.",
   "workouts": "Workouts",

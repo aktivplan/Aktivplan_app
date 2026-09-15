@@ -41,6 +41,15 @@ class FetchedPatientActivitiesState extends ActivityState {
   List<Object> get props => [activities, activeMinutes, personalGoals];
 }
 
+class FetchedPatientDatahubRecommendationsState extends ActivityState {
+  final DatahubResponse? datahubRecommendations;
+
+  FetchedPatientDatahubRecommendationsState({this.datahubRecommendations});
+
+  @override
+  List<Object> get props => [datahubRecommendations ?? ''];
+}
+
 class UpdatePatientActivityRatingState extends ActivityState {
   final String activityId;
   final String date;

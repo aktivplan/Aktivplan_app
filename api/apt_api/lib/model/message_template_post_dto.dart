@@ -24,31 +24,49 @@ class MessageTemplatePostDTO {
   MessageTemplatePostDTO({
     this.title = const {},
     this.text = const {},
+    this.restriction,
   });
 
   Map<String, String> title;
 
   Map<String, String> text;
 
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  MessageRestriction? restriction;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is MessageTemplatePostDTO &&
           _deepEquality.equals(other.title, title) &&
-          _deepEquality.equals(other.text, text);
+          _deepEquality.equals(other.text, text) &&
+          other.restriction == restriction;
 
   @override
   int get hashCode =>
       // ignore: unnecessary_parenthesis
-      (title.hashCode) + (text.hashCode);
+      (title.hashCode) +
+      (text.hashCode) +
+      (restriction == null ? 0 : restriction!.hashCode);
 
   @override
-  String toString() => 'MessageTemplatePostDTO[title=$title, text=$text]';
+  String toString() =>
+      'MessageTemplatePostDTO[title=$title, text=$text, restriction=$restriction]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     json[r'title'] = this.title;
     json[r'text'] = this.text;
+    if (this.restriction != null) {
+      json[r'restriction'] = this.restriction;
+    } else {
+      json[r'restriction'] = null;
+    }
     return json;
   }
 
@@ -75,6 +93,7 @@ class MessageTemplatePostDTO {
       return MessageTemplatePostDTO(
         title: mapCastOfType<String, String>(json, r'title') ?? const {},
         text: mapCastOfType<String, String>(json, r'text') ?? const {},
+        restriction: MessageRestriction.fromJson(json[r'restriction']),
       );
     }
     return null;

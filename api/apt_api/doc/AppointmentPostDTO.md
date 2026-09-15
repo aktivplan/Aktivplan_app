@@ -11,6 +11,9 @@ Name | Type | Description | Notes
 **name** | **String** |  | [optional] 
 **location** | **String** |  | [optional] 
 **details** | **String** |  | [optional] 
+**useLocationCoordinates** | **bool** |  | [optional] 
+**locationCoordinates** | [**LocationDTO**](LocationDTO.md) |  | [optional] 
+**locationAddress** | **String** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

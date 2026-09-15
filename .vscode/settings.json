@@ -7,11 +7,7 @@
   },
   "editor.wordWrap": "wordWrapColumn",
   "editor.wordWrapColumn": 160,
-  "prettier.printWidth": 160,
-
-  "dart.flutterSdkPath": ".fvm/versions/3.24.5",
-
-  
+  "dart.flutterSdkPath": ".fvm/versions/3.44.2",
   "search.exclude": {
     "**/.fvm": true
   },
@@ -19,5 +15,6 @@
     "**/.fvm": true
   },
   "editor.formatOnSave": true,
-  "java.configuration.updateBuildConfiguration": "interactive"
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m -Xlog:disable"
 }
